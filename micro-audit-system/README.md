@@ -7,6 +7,7 @@ A lightweight and modern audit management web application built using HTML, CSS,
 * Add audit checkpoints/tasks
 * Mark audits as Pass or Fail
 * Delete audit items
+* Color-coded due date and status indicators
 * Dark/Light mode support
 * Responsive UI
 * Data persistence using localStorage

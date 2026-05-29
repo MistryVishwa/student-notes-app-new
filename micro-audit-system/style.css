@@ -457,11 +457,13 @@ body.dark-mode .filter-btn{
 }
 
 .today-badge{
-    background:#2563eb;
+    background:#f97316;
 }
 
 .soon-badge{
-    background:#f59e0b;
+    background:#facc15;
+
+    color:#422006;
 }
 
 .due-message{
@@ -470,22 +472,28 @@ body.dark-mode .filter-btn{
     font-weight:600;
 }
 
-.due-message.overdue-badge{
+.overdue-text{
     background:transparent;
 
     color:#dc2626;
 }
 
-.due-message.today-badge{
+.due-today-text{
     background:transparent;
 
-    color:#2563eb;
+    color:#f97316;
 }
 
-.due-message.soon-badge{
+.due-soon-text{
     background:transparent;
 
     color:#b45309;
+}
+
+.future-due-text{
+    background:transparent;
+
+    color:#16a34a;
 }
 
 body.dark-mode .audit-card.overdue-card{
@@ -501,14 +509,18 @@ body.dark-mode .due-date{
     color:#cbd5e1;
 }
 
-body.dark-mode .due-message.overdue-badge{
+body.dark-mode .overdue-text{
     color:#fca5a5;
 }
 
-body.dark-mode .due-message.today-badge{
-    color:#93c5fd;
+body.dark-mode .due-today-text{
+    color:#fdba74;
 }
 
-body.dark-mode .due-message.soon-badge{
+body.dark-mode .due-soon-text{
     color:#fcd34d;
+}
+
+body.dark-mode .future-due-text{
+    color:#86efac;
 }

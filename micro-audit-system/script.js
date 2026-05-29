@@ -119,6 +119,7 @@ function getDueDateInfo(audit){
         return {
             badge: "",
             badgeClass: "",
+            dueClass: "",
             message: ""
         };
     }
@@ -138,6 +139,7 @@ function getDueDateInfo(audit){
         return {
             badge: "DUE TODAY",
             badgeClass: "today-badge",
+            dueClass: "due-today-text",
             message: "Due today"
         };
     }
@@ -147,6 +149,7 @@ function getDueDateInfo(audit){
         return {
             badge: "",
             badgeClass: "",
+            dueClass: "",
             message: ""
         };
     }
@@ -158,6 +161,7 @@ function getDueDateInfo(audit){
         return {
             badge: "OVERDUE",
             badgeClass: "overdue-badge",
+            dueClass: "overdue-text",
             message:
                 overdueDays === 1
                     ? "1 day overdue"
@@ -170,6 +174,7 @@ function getDueDateInfo(audit){
         return {
             badge: "DUE SOON",
             badgeClass: "soon-badge",
+            dueClass: "due-soon-text",
             message:
                 daysDifference === 1
                     ? "Due in 1 day"
@@ -180,6 +185,7 @@ function getDueDateInfo(audit){
     return {
         badge: "",
         badgeClass: "",
+        dueClass: "future-due-text",
         message: `Due in ${daysDifference} days`
     };
 }
@@ -229,7 +235,7 @@ filteredAudits.forEach((audit)=>{
             ${audit.priority || "Low"}
              </span>
 
-             <span class="due-date">
+             <span class="due-date ${dueDateInfo.dueClass}">
 
             ${
                 audit.dueDate
@@ -251,7 +257,7 @@ filteredAudits.forEach((audit)=>{
 
             ${
                 dueDateInfo.message
-                ? `<p class="due-message ${dueDateInfo.badgeClass}">
+                ? `<p class="due-message ${dueDateInfo.dueClass}">
                     ${dueDateInfo.message}
                    </p>`
                 : ""
