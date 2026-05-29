@@ -9,12 +9,26 @@
 
     * { margin: 0; padding: 0; box-sizing: border-box; }
 
+    :root {
+      color-scheme: light;
+      --bg: #f0f4ff;
+      --grid: #c5d0f0;
+      --header: #3a3a6e;
+      --subtle: #888;
+      --strip: #3a3a6e;
+      --strip-text: #ffffff;
+      --strip-accent: #ffd93d;
+      --note-shadow: rgba(0,0,0,0.12);
+      --note-shadow-strong: rgba(0,0,0,0.08);
+    }
+
     body {
       min-height: 100vh;
-      background: #f0f4ff;
+      background: var(--bg);
       font-family: 'Poppins', sans-serif;
       overflow: hidden;
       position: relative;
+      color: #1f2430;
     }
 
     /* ---- Background grid lines like a notebook ---- */
@@ -23,8 +37,8 @@
       position: fixed;
       inset: 0;
       background-image:
-        linear-gradient(#c5d0f0 1px, transparent 1px),
-        linear-gradient(90deg, #c5d0f0 1px, transparent 1px);
+        linear-gradient(var(--grid) 1px, transparent 1px),
+        linear-gradient(90deg, var(--grid) 1px, transparent 1px);
       background-size: 40px 40px;
       opacity: 0.4;
       z-index: 0;
@@ -40,15 +54,34 @@
     .header h1 {
       font-family: 'Caveat', cursive;
       font-size: clamp(2rem, 5vw, 3.5rem);
-      color: #3a3a6e;
+      color: var(--header);
       font-weight: 700;
     }
     .header h1 span { color: #ff6b6b; }
     .header p {
       font-size: 0.85rem;
-      color: #888;
+      color: var(--subtle);
       margin-top: 0.3rem;
       letter-spacing: 0.05em;
+    }
+
+    .theme-toggle {
+      position: absolute;
+      right: 18px;
+      top: 18px;
+      border: none;
+      background: rgba(58, 58, 110, 0.1);
+      color: var(--header);
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: transform 0.2s ease, background 0.2s ease;
+    }
+
+    .theme-toggle:hover {
+      transform: translateY(-1px);
+      background: rgba(58, 58, 110, 0.18);
     }
 
     /* ---- Pencil icon (CSS drawn) ---- */
@@ -81,8 +114,8 @@
       font-size: 1.05rem;
       line-height: 1.5;
       box-shadow:
-        3px 3px 10px rgba(0,0,0,0.12),
-        0 1px 3px rgba(0,0,0,0.08);
+        3px 3px 10px var(--note-shadow),
+        0 1px 3px var(--note-shadow-strong);
       cursor: default;
       transition: transform 0.3s ease, box-shadow 0.3s ease;
     }
@@ -197,14 +230,36 @@
       position: fixed;
       bottom: 0; left: 0; right: 0;
       z-index: 10;
-      background: #3a3a6e;
-      color: #fff;
+      background: var(--strip);
+      color: var(--strip-text);
       text-align: center;
       padding: 0.45rem;
       font-size: 0.75rem;
       letter-spacing: 0.05em;
     }
-    .strip span { color: #ffd93d; font-weight: 600; }
+    .strip span { color: var(--strip-accent); font-weight: 600; }
+
+    body.dark {
+      color-scheme: dark;
+      --bg: #141622;
+      --grid: rgba(255, 255, 255, 0.08);
+      --header: #f5f5ff;
+      --subtle: #b6b6c8;
+      --strip: #1f2233;
+      --strip-text: #e9e9f6;
+      --strip-accent: #ffd93d;
+      --note-shadow: rgba(0,0,0,0.4);
+      --note-shadow-strong: rgba(0,0,0,0.25);
+    }
+
+    body.dark .theme-toggle {
+      background: rgba(255, 255, 255, 0.12);
+      color: #f5f5ff;
+    }
+
+    body.dark .theme-toggle:hover {
+      background: rgba(255, 255, 255, 0.18);
+    }
   </style>
 </head>
 <body>
@@ -212,6 +267,9 @@
   <div class="header">
     <h1>📒 Student <span>Notes</span></h1>
     <p>your ideas, always pinned ✨</p>
+    <button class="theme-toggle" type="button" id="theme-toggle" aria-label="Toggle theme">
+      🌙 Dark
+    </button>
   </div>
 
   <!-- Doodles -->
@@ -277,5 +335,23 @@
 
   <div class="strip">Made with ❤️ for <span>NSoC '26</span> · Student Notes App</div>
 
+  <script>
+    const toggle = document.getElementById("theme-toggle");
+    const body = document.body;
+
+    const applyTheme = (theme) => {
+      body.classList.toggle("dark", theme === "dark");
+      toggle.textContent = theme === "dark" ? "☀️ Light" : "🌙 Dark";
+    };
+
+    const savedTheme = localStorage.getItem("stickynotes-theme") || "light";
+    applyTheme(savedTheme);
+
+    toggle.addEventListener("click", () => {
+      const next = body.classList.contains("dark") ? "light" : "dark";
+      localStorage.setItem("stickynotes-theme", next);
+      applyTheme(next);
+    });
+  </script>
 </body>
 </html>
