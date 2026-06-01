@@ -1,58 +1,336 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SkyCast — Minimal Weather</title>
-    <link rel="stylesheet" href="style.css">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Focus Dashboard</title>
+  <meta name="description" content="Integrated Pomodoro Timer, Hydration Tracker and Productivity Dashboard." />
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- Preconnect for Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 </head>
 <body>
-    <div class="aurora-bg"></div>
-    
-    <main class="weather-container">
-        <header class="search-bar">
-            <i class="ph ph-magnifying-glass"></i>
-            <input type="text" id="city-input" placeholder="Search city..." spellcheck="false">
-            <button id="search-btn"><i class="ph ph-arrow-right"></i></button>
-        </header>
 
-        <section class="weather-card" id="weather-card">
-            <div class="main-info">
-                <div class="location">
-                    <h1 id="city-name">London</h1>
-                    <p id="current-date">Monday, 12 June</p>
-                </div>
-                <div class="temp-container">
-                    <span id="temperature">22</span><span class="unit">°C</span>
-                </div>
-                <div class="condition">
-                    <i id="weather-icon" class="ph-fill ph-sun"></i>
-                    <span id="weather-desc">Sunny Day</span>
-                </div>
-            </div>
+<!-- ================================================================
+     APP WRAPPER
+     ================================================================ -->
+<div class="app-wrapper">
 
-            <div class="details-grid">
-                <div class="detail-item">
-                    <i class="ph ph-drop"></i>
-                    <div class="detail-text">
-                        <span id="humidity">45%</span>
-                        <label>Humidity</label>
-                    </div>
-                </div>
-                <div class="detail-item">
-                    <i class="ph ph-wind"></i>
-                    <div class="detail-text">
-                        <span id="wind-speed">12 km/h</span>
-                        <label>Wind</label>
-                    </div>
-                </div>
+  <!-- ── Header ────────────────────────────────────────────────── -->
+  <header class="app-header">
+    <div class="app-logo">
+      <div class="app-logo__icon" aria-hidden="true">🚀</div>
+      <div class="app-logo__text">Focus<span>OS</span></div>
+    </div>
+
+    <div class="header-meta">
+      <div id="greeting"></div>
+      <div id="today-date" style="font-size:0.72rem;opacity:0.7;margin-top:2px;"></div>
+    </div>
+
+    <div class="header-actions">
+      <div class="streak-badge" aria-label="Daily streak">
+        🔥 <span id="streak-count">1</span> day streak
+      </div>
+      <button class="theme-btn" id="theme-toggle" title="Toggle theme" aria-label="Toggle dark/light theme">☀️</button>
+    </div>
+  </header>
+
+  <!-- ================================================================
+       MAIN DASHBOARD GRID
+       ================================================================ -->
+  <main class="dashboard-grid">
+
+    <!-- ════════════════════════════════════════════
+         LEFT COLUMN: Pomodoro + Hydration + Quote
+         ════════════════════════════════════════════ -->
+    <div class="col-left">
+
+      <!-- ── Pomodoro Timer Card ─────────────────── -->
+      <div class="card" id="pomodoro-card" role="region" aria-label="Pomodoro Timer">
+        <div class="card__title">⏱ Pomodoro Timer</div>
+
+        <!-- Mode label -->
+        <div class="timer-mode-label" id="timer-mode-label">🎯 FOCUS</div>
+
+        <!-- SVG ring + countdown -->
+        <div class="timer-ring-wrapper" aria-live="polite" aria-atomic="true">
+          <svg class="timer-svg" viewBox="0 0 120 120" role="img" aria-label="Timer progress">
+            <circle class="timer-ring-track" cx="60" cy="60" r="54" />
+            <circle class="timer-ring" id="timer-ring" cx="60" cy="60" r="54" />
+          </svg>
+          <div class="timer-display" id="timer-display">25:00</div>
+        </div>
+
+        <!-- Session progress dots -->
+        <div class="session-dots" id="session-dots" aria-label="Session progress"></div>
+
+        <!-- Controls -->
+        <div class="timer-controls">
+          <button class="btn btn--primary" id="pomo-start" aria-label="Start timer">▶ Start</button>
+          <button class="btn btn--secondary" id="pomo-pause" style="display:none;" aria-label="Pause timer">⏸ Pause</button>
+          <button class="btn btn--secondary btn--sm" id="pomo-reset" aria-label="Reset timer">↺ Reset</button>
+          <button class="btn btn--secondary btn--sm" id="pomo-skip" aria-label="Skip session">⏭ Skip</button>
+        </div>
+
+        <!-- Meta -->
+        <div class="pomo-meta">
+          <div>Sessions today: <strong id="session-count">0</strong></div>
+          <div id="linked-task-display" class="linked-task-display"></div>
+        </div>
+
+        <!-- Link a task -->
+        <div class="pomo-task-link">
+          <label for="pomo-task-select">Link task to this session</label>
+          <select id="pomo-task-select" aria-label="Select a task to link">
+            <option value="">— No linked task —</option>
+          </select>
+        </div>
+
+        <!-- Settings toggle -->
+        <div style="text-align:center; margin-top:12px;">
+          <button class="pomo-settings-toggle" id="pomo-settings-toggle" aria-expanded="false">⚙ Settings</button>
+        </div>
+
+        <!-- Settings panel -->
+        <div class="pomo-settings-panel" id="pomo-settings-panel" aria-hidden="true">
+          <div class="settings-grid">
+            <div class="setting-field">
+              <label for="setting-work">Work (min)</label>
+              <input type="number" id="setting-work" value="25" min="1" max="90" />
             </div>
-        </section>
-    </main>
-    <script src="script.js"></script>
+            <div class="setting-field">
+              <label for="setting-short-break">Short break (min)</label>
+              <input type="number" id="setting-short-break" value="5" min="1" max="30" />
+            </div>
+            <div class="setting-field">
+              <label for="setting-long-break">Long break (min)</label>
+              <input type="number" id="setting-long-break" value="15" min="5" max="60" />
+            </div>
+            <div class="setting-field">
+              <label for="setting-interval">Sessions/cycle</label>
+              <input type="number" id="setting-interval" value="4" min="2" max="8" />
+            </div>
+          </div>
+          <div style="margin-top:12px; text-align:right;">
+            <button class="btn btn--primary btn--sm" id="pomo-settings-apply">Apply</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── Hydration Tracker Card ─────────────── -->
+      <div class="card section" id="hydration" role="region" aria-label="Hydration Tracker">
+        <div class="card__title">💧 Hydration Tracker</div>
+
+        <div class="hydro-header">
+          <span class="hydro-count" id="hydro-count">0</span>
+          <span class="hydro-goal">/ <span id="hydro-goal-display">8</span> glasses</span>
+          <span class="hydro-ml" id="hydro-ml">0 ml</span>
+        </div>
+
+        <!-- Progress bar -->
+        <div class="hydro-bar" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100">
+          <div class="hydro-bar__fill" id="hydro-bar-fill" style="width:0%"></div>
+        </div>
+        <div class="hydro-percent" id="hydro-percent">0%</div>
+
+        <!-- Glass grid -->
+        <div class="glass-grid" id="glass-grid" aria-label="Water glass tracker"></div>
+
+        <!-- Controls -->
+        <div class="hydro-controls">
+          <button class="btn btn--primary" id="hydro-add" aria-label="Add a glass of water">+ Glass</button>
+          <button class="btn btn--secondary" id="hydro-remove" aria-label="Remove a glass">− Remove</button>
+        </div>
+
+        <!-- Hydration settings -->
+        <div class="hydro-settings">
+          <div class="hydro-settings-row">
+            <label for="hydro-goal-input">Daily goal</label>
+            <input type="number" id="hydro-goal-input" value="8" min="1" max="20" style="width:60px;" />
+            <button class="btn btn--secondary btn--sm" id="hydro-set-goal">Set</button>
+          </div>
+          <div class="hydro-settings-row">
+            <label for="hydro-reminder-input">Reminder</label>
+            <input type="number" id="hydro-reminder-input" value="30" min="5" max="120" style="width:60px;" />
+            <span class="text-muted">min</span>
+            <button class="btn btn--secondary btn--sm" id="hydro-reminder-start">Start</button>
+            <button class="btn btn--secondary btn--sm" id="hydro-reminder-stop">Stop</button>
+          </div>
+          <div id="reminder-status" class="reminder-status">Reminder off</div>
+        </div>
+      </div>
+
+      <!-- ── Quote Card ─────────────────────────── -->
+      <div class="card quote-card section" id="quotes" role="complementary" aria-label="Motivational Quote">
+        <div class="card__title">💬 Daily Inspiration</div>
+        <p id="quote-text" style="transition:opacity 0.3s;"></p>
+        <p id="quote-author" style="transition:opacity 0.3s;"></p>
+        <div style="margin-top:16px;">
+          <button class="btn btn--secondary btn--sm" id="new-quote-btn" aria-label="Get new quote">↻ New Quote</button>
+        </div>
+      </div>
+
+    </div><!-- /col-left -->
+
+    <!-- ════════════════════════════════════════════
+         RIGHT COLUMN: Stats + To-Do
+         ════════════════════════════════════════════ -->
+    <div class="col-right">
+
+      <!-- ── Stats Summary Cards ────────────────── -->
+      <div class="section" id="stats" role="region" aria-label="Statistics">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-card__icon">🍅</div>
+            <div class="stat-card__value" id="total-sessions-stat">0</div>
+            <div class="stat-card__label">Sessions today</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon">⏱</div>
+            <div class="stat-card__value" id="focus-time-stat">0 min</div>
+            <div class="stat-card__label">Focus time</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon">💧</div>
+            <div class="stat-card__value" id="hydro-stat">0/8</div>
+            <div class="stat-card__label">Hydration</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card__icon">✅</div>
+            <div class="stat-card__value" id="tasks-completed-stat">0</div>
+            <div class="stat-card__label">Tasks done</div>
+          </div>
+
+          <!-- Productivity Score — full width -->
+          <div class="stat-card productivity-score-card">
+            <div class="card__title" style="margin-bottom:14px;">⚡ Daily Productivity Score</div>
+            <div class="score-row">
+              <div class="score-number" id="productivity-score">0</div>
+              <div class="score-bar-wrap">
+                <div class="score-bar">
+                  <div class="score-bar__fill" id="productivity-score-fill" style="width:0%"></div>
+                </div>
+                <div class="score-label" id="productivity-score-label">🌱 Just Starting</div>
+                <div class="text-muted" style="margin-top:4px;">Streak: <span id="streak-stat">1 day</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Weekly Chart Card -->
+        <div class="card mt-16">
+          <div class="card__title">📊 Weekly Overview</div>
+          <div id="weekly-chart">
+            <div class="weekly-chart__inner"></div>
+          </div>
+        </div>
+
+        <!-- Badges Card -->
+        <div class="card mt-16">
+          <div class="card__title">🏅 Achievements</div>
+          <div class="badges-grid" id="badges-grid"></div>
+        </div>
+      </div>
+
+      <!-- ── To-Do List Card ─────────────────────── -->
+      <div class="card section" id="todo" role="region" aria-label="To-Do List">
+        <div class="card__title">📋 Task List</div>
+
+        <!-- Input row -->
+        <div class="todo-input-row">
+          <input type="text"
+                 id="todo-input"
+                 placeholder="Add a new task…"
+                 maxlength="120"
+                 aria-label="New task input" />
+          <select id="todo-priority" aria-label="Task priority" style="width:auto;">
+            <option value="medium">🟡 Med</option>
+            <option value="high">🔴 High</option>
+            <option value="low">🟢 Low</option>
+          </select>
+          <button class="btn btn--primary" id="todo-add-btn" aria-label="Add task">+ Add</button>
+        </div>
+
+        <!-- Filters + search -->
+        <div class="todo-filters">
+          <button class="todo-filter-btn active" data-filter="all" aria-pressed="true">All</button>
+          <button class="todo-filter-btn" data-filter="active" aria-pressed="false">Active</button>
+          <button class="todo-filter-btn" data-filter="completed" aria-pressed="false">Done</button>
+          <input type="text"
+                 id="todo-search"
+                 class="todo-search"
+                 placeholder="🔍 Search…"
+                 aria-label="Search tasks" />
+        </div>
+
+        <!-- Counts -->
+        <div class="todo-counts">
+          <span>Total: <span id="todo-total-count">0</span></span>
+          <span>Active: <span id="todo-active-count">0</span></span>
+          <span>Done: <span id="todo-done-count">0</span></span>
+        </div>
+
+        <!-- Task list -->
+        <div class="todo-list" id="todo-list" role="list" aria-label="Task list">
+          <div class="todo-empty">
+            <span class="todo-empty__icon">📝</span>
+            <p>No tasks yet. Add your first task above!</p>
+          </div>
+        </div>
+      </div>
+
+    </div><!-- /col-right -->
+
+  </main><!-- /dashboard-grid -->
+</div><!-- /app-wrapper -->
+
+<!-- ================================================================
+     CELEBRATION MODAL
+     ================================================================ -->
+<div class="celebration-modal" id="celebration-modal" role="dialog" aria-modal="true" aria-labelledby="celebration-message">
+  <div class="celebration-modal__inner">
+    <div class="celebration-modal__emoji">🎉</div>
+    <div id="celebration-message"></div>
+    <div id="celebration-subtitle"></div>
+    <button class="btn btn--primary" id="celebration-close" aria-label="Close celebration">Keep Going! 🚀</button>
+  </div>
+</div>
+
+<!-- ================================================================
+     MOBILE BOTTOM NAV
+     ================================================================ -->
+<nav class="mobile-nav" aria-label="Main navigation">
+  <button class="nav-btn active" data-section="pomodoro-card" aria-label="Pomodoro Timer">
+    <span class="nav-icon">⏱</span>Timer
+  </button>
+  <button class="nav-btn" data-section="hydration" aria-label="Hydration Tracker">
+    <span class="nav-icon">💧</span>Hydration
+  </button>
+  <button class="nav-btn" data-section="todo" aria-label="To-Do List">
+    <span class="nav-icon">📋</span>Tasks
+  </button>
+  <button class="nav-btn" data-section="stats" aria-label="Statistics">
+    <span class="nav-icon">📊</span>Stats
+  </button>
+  <button class="nav-btn" data-section="quotes" aria-label="Quotes">
+    <span class="nav-icon">💬</span>Quotes
+  </button>
+</nav>
+
+<!-- ================================================================
+     SCRIPTS — load order matters:
+     quotes → celebrations → pomodoro → hydration → todo → stats → app
+     ================================================================ -->
+<script src="js/quotes.js"></script>
+<script src="js/celebrations.js"></script>
+<script src="js/pomodoro.js"></script>
+<script src="js/hydration.js"></script>
+<script src="js/todo.js"></script>
+<script src="js/stats.js"></script>
+<script src="js/app.js"></script>
+
 </body>
 </html>
