@@ -45,6 +45,18 @@ body{
     color:#64748b;
 }
 
+.header-actions{
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+}
+
+.user-greeting{
+    font-weight:600;
+}
+
 /* Theme Toggle */
 
 #themeToggle{
@@ -71,6 +83,130 @@ body{
 
 #themeToggle:hover{
     transform:scale(1.05);
+}
+
+.logout-btn{
+    border:none;
+
+    border-radius:14px;
+
+    padding:14px 18px;
+
+    background:#0f172a;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    transition:0.3s ease;
+}
+
+.logout-btn:hover{
+    background:#1e293b;
+}
+
+/* Auth */
+
+.auth-container{
+    max-width:520px;
+}
+
+.auth-header{
+    align-items:flex-start;
+}
+
+.auth-form{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:16px;
+
+    background:rgba(255,255,255,0.65);
+
+    backdrop-filter:blur(12px);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    box-shadow:
+        0px 4px 20px rgba(0,0,0,0.06);
+}
+
+.auth-form input{
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:white;
+
+    color:#0f172a;
+
+    box-shadow:
+        0px 4px 20px rgba(0,0,0,0.05);
+
+    font-size:16px;
+
+    outline:none;
+}
+
+.auth-form button{
+    padding:16px 24px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:#2563eb;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:16px;
+
+    transition:0.3s ease;
+}
+
+.auth-form button:hover{
+    background:#1d4ed8;
+}
+
+.form-message{
+    min-height:20px;
+
+    font-size:14px;
+
+    font-weight:600;
+}
+
+.form-message.error{
+    color:#dc2626;
+}
+
+.form-message.success{
+    color:#16a34a;
+}
+
+.auth-link{
+    color:#64748b;
+
+    font-size:14px;
+
+    text-align:center;
+}
+
+.auth-link a{
+    color:#2563eb;
+
+    font-weight:700;
+
+    text-decoration:none;
 }
 
 /* Form */
@@ -372,6 +508,7 @@ body.dark-mode .audit-info p{
 body.dark-mode .audit-form input,
 body.dark-mode .stat-card,
 body.dark-mode .audit-card,
+body.dark-mode .auth-form,
 body.dark-mode #themeToggle{
     background:rgba(15,23,42,0.75);
 
@@ -379,6 +516,19 @@ body.dark-mode #themeToggle{
 
     box-shadow:
         0px 4px 20px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .auth-form input{
+    background:rgba(2,6,23,0.75);
+
+    color:white;
+
+    box-shadow:
+        0px 4px 20px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .auth-link{
+    color:#cbd5e1;
 }
 
 body.dark-mode .audit-card.editing-card{
@@ -409,6 +559,20 @@ body.dark-mode .edit-input{
 /* Responsive */
 
 @media(max-width:768px){
+
+    .header{
+        align-items:flex-start;
+
+        flex-direction:column;
+
+        gap:16px;
+    }
+
+    .header-actions{
+        width:100%;
+
+        flex-wrap:wrap;
+    }
 
     .audit-form{
         flex-direction:column;
