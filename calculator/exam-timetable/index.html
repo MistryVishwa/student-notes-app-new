@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Exam Timetable Generator</title>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;800&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #060810;
+      --surface: #0d1017;
+      --surface2: #131720;
+      --border: #1e2330;
+      --border2: #252c3d;
+      --text: #e2e6f0;
+      --muted: #5a6278;
+      --accent: #4f8eff;
+      --green: #3dd68c;
+      --yellow: #ffc53d;
+      --red: #ff5757;
+      --r: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      min-height: 100vh;
+      padding: 28px 16px 72px;
+      background-image:
+        radial-gradient(ellipse at 15% 0%, rgba(79,142,255,.07) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(61,214,140,.05) 0%, transparent 55%);
+    }
+
+    /* Header */
+    header {
+      max-width: 800px;
+      margin: 0 auto 30px;
+    }
+    .header-top {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+    .brand h1 {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.6rem, 4vw, 2.3rem);
+      letter-spacing: -1px;
+      line-height: 1;
+    }
+    .brand h1 span { color: var(--accent); }
+    .brand p { color: var(--muted); font-size: 0.7rem; margin-top: 4px; }
+
+    /* Stats row */
+    .stats {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .stat {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: 10px;
+      padding: 10px 16px;
+      flex: 1;
+      min-width: 100px;
+    }
+    .stat .val {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 1.5rem;
+      letter-spacing: -0.5px;
+    }
+    .stat .lbl { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 2px; }
+    .stat.s-total .val { color: var(--accent); }
+    .stat.s-pending .val { color: var(--yellow); }
+    .stat.s-done .val { color: var(--green); }
+    .stat.s-urgent .val { color: var(--red); }
+
+    /* Layout */
+    .layout {
+      max-width: 800px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 18px;
+      align-items: start;
+    }
+
+    /* Panel */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border2);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .panel-head {
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.82rem;
+      letter-spacing: 0.3px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+    .panel-body { padding: 18px; }
+
+    label {
+      display: block;
+      font-size: 0.62rem;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    input, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border2);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      padding: 9px 12px;
+      outline: none;
+      margin-bottom: 13px;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    input:focus, select:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(79,142,255,.12);
+    }
+    select option { background: var(--surface2); }
+
+    .add-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+    }
+    .add-btn:hover { opacity: 0.85; }
+    .add-btn:active { transform: scale(0.98); }
+
+    /* Timetable */
+    .tt-panel { position: sticky; top: 18px; }
+
+    .sort-row {
+      display: flex;
+      gap: 8px;
+      padding: 12px 18px;
+      border-bottom: 1px solid var(--border);
+      align-items: center;
+    }
+    .sort-label { font-size: 0.62rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1.5px; }
+    .sort-btn {
+      padding: 4px 12px;
+      border-radius: 99px;
+      border: 1px solid var(--border2);
+      background: transparent;
+      color: var(--muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.68rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .sort-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+
+    .exam-scroll { max-height: 420px; overflow-y: auto; }
+    .exam-scroll::-webkit-scrollbar { width: 3px; }
+    .exam-scroll::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+    .empty {
+      padding: 36px 18px;
+      text-align: center;
+      color: var(--muted);
+    }
+    .empty .icon { font-size: 2.2rem; display: block; margin-bottom: 8px; }
+    .empty p { font-size: 0.75rem; }
+
+    /* Exam Item */
+    .exam-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 13px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+      animation: fadeIn 0.3s ease;
+    }
+    .exam-item:last-child { border-bottom: none; }
+    .exam-item:hover { background: var(--surface2); }
+    .exam-item.done { opacity: 0.45; }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateX(-8px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    /* Checkbox */
+    .check-box {
+      width: 20px; height: 20px;
+      border-radius: 6px;
+      border: 2px solid var(--border2);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      transition: all 0.2s;
+      font-size: 0.7rem;
+    }
+    .check-box:hover { border-color: var(--green); }
+    .exam-item.done .check-box { background: var(--green); border-color: var(--green); color: #fff; }
+
+    .exam-info { flex: 1; min-width: 0; }
+    .exam-subject {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.88rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .exam-item.done .exam-subject { text-decoration: line-through; }
+    .exam-meta { font-size: 0.65rem; color: var(--muted); margin-top: 3px; }
+
+    .countdown {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 700;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 99px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+    .cd-urgent  { background: rgba(255,87,87,.15);  color: var(--red); }
+    .cd-soon    { background: rgba(255,197,61,.12); color: var(--yellow); }
+    .cd-ok      { background: rgba(79,142,255,.12); color: var(--accent); }
+    .cd-done    { background: rgba(61,214,140,.12); color: var(--green); }
+    .cd-past    { background: rgba(90,98,120,.12);  color: var(--muted); }
+
+    .del-btn {
+      background: none;
+      border: none;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 0.8rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      transition: all 0.2s;
+    }
+    .del-btn:hover { color: var(--red); background: rgba(255,87,87,.1); }
+
+    /* Upcoming highlight */
+    .next-banner {
+      margin: 0 18px 14px;
+      background: linear-gradient(135deg, rgba(79,142,255,.1), rgba(61,214,140,.06));
+      border: 1px solid rgba(79,142,255,.25);
+      border-radius: 10px;
+      padding: 10px 14px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .next-banner .nb-label { font-size: 0.6rem; text-transform: uppercase; letter-spacing: 2px; color: var(--accent); }
+    .next-banner .nb-subject {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      font-weight: 800;
+      font-size: 0.85rem;
+    }
+    .next-banner .nb-time { font-size: 0.68rem; color: var(--muted); margin-top: 1px; }
+
+    @media (max-width: 620px) {
+      .layout { grid-template-columns: 1fr; }
+      .tt-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="header-top">
+    <div class="brand">
+      <h1>Exam<span>Table</span></h1>
+      <p>// timetable generator · countdown tracker</p>
+    </div>
+  </div>
+  <div class="stats">
+    <div class="stat s-total"><div class="val" id="sTotal">0</div><div class="lbl">Total</div></div>
+    <div class="stat s-pending"><div class="val" id="sPending">0</div><div class="lbl">Pending</div></div>
+    <div class="stat s-done"><div class="val" id="sDone">0</div><div class="lbl">Done</div></div>
+    <div class="stat s-urgent"><div class="val" id="sUrgent">0</div><div class="lbl">Urgent ≤3d</div></div>
+  </div>
+</header>
+
+<div class="layout">
+
+  <!-- Add Form -->
+  <div class="panel" style="position:sticky;top:18px">
+    <div class="panel-head">📝 Add Exam</div>
+    <div class="panel-body">
+      <label>Subject Name</label>
+      <input type="text" id="subject" placeholder="e.g. Mathematics, Physics…"/>
+
+      <label>Exam Date</label>
+      <input type="date" id="examDate"/>
+
+      <label>Exam Time</label>
+      <input type="time" id="examTime"/>
+
+      <label>Venue / Room</label>
+      <input type="text" id="venue" placeholder="e.g. Hall A, Room 201…"/>
+
+      <label>Subject Code (optional)</label>
+      <input type="text" id="code" placeholder="e.g. CS301, PHY102…"/>
+
+      <button class="add-btn" onclick="addExam()">+ ADD TO TIMETABLE</button>
+    </div>
+  </div>
+
+  <!-- Timetable -->
+  <div class="panel tt-panel">
+    <div class="panel-head">📅 My Timetable</div>
+
+    <div class="sort-row">
+      <span class="sort-label">Sort:</span>
+      <button class="sort-btn active" onclick="setSort('date')" id="sortDate">By Date</button>
+      <button class="sort-btn" onclick="setSort('name')" id="sortName">By Name</button>
+      <button class="sort-btn" onclick="setSort('status')" id="sortStatus">Pending First</button>
+    </div>
+
+    <div id="nextBanner"></div>
+    <div class="exam-scroll" id="examScroll"></div>
+  </div>
+
+</div>
+
+<script>
+  let exams = JSON.parse(localStorage.getItem('et_exams') || '[]');
+  let sortMode = 'date';
+
+  // Set default date to tomorrow
+  const tmr = new Date(); tmr.setDate(tmr.getDate() + 1);
+  document.getElementById('examDate').value = tmr.toISOString().split('T')[0];
+  document.getElementById('examTime').value = '09:00';
+
+  function setSort(m) {
+    sortMode = m;
+    ['date','name','status'].forEach(s => {
+      document.getElementById('sort' + s.charAt(0).toUpperCase() + s.slice(1))
+        .classList.toggle('active', s === m);
+    });
+    render();
+  }
+
+  function addExam() {
+    const subject  = document.getElementById('subject').value.trim();
+    const examDate = document.getElementById('examDate').value;
+    const examTime = document.getElementById('examTime').value;
+    const venue    = document.getElementById('venue').value.trim();
+    const code     = document.getElementById('code').value.trim();
+
+    if (!subject) return shake('subject');
+    if (!examDate) return shake('examDate');
+
+    exams.push({ id: Date.now(), subject, examDate, examTime, venue, code, done: false });
+    save(); render();
+    document.getElementById('subject').value = '';
+    document.getElementById('venue').value   = '';
+    document.getElementById('code').value    = '';
+  }
+
+  function toggleDone(id) {
+    const e = exams.find(x => x.id === id);
+    if (e) e.done = !e.done;
+    save(); render();
+  }
+
+  function deleteExam(id) {
+    exams = exams.filter(x => x.id !== id);
+    save(); render();
+  }
+
+  function save() { localStorage.setItem('et_exams', JSON.stringify(exams)); }
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = 'var(--red)';
+    el.style.boxShadow   = '0 0 0 3px rgba(255,87,87,.15)';
+    setTimeout(() => { el.style.borderColor = ''; el.style.boxShadow = ''; }, 700);
+  }
+
+  function daysLeft(dateStr, timeStr) {
+    const now  = new Date();
+    const exam = new Date(dateStr + 'T' + (timeStr || '00:00'));
+    return Math.ceil((exam - now) / (1000 * 60 * 60 * 24));
+  }
+
+  function countdownLabel(days, done) {
+    if (done)       return { text: '✓ Done',    cls: 'cd-done' };
+    if (days < 0)   return { text: 'Past',       cls: 'cd-past' };
+    if (days === 0) return { text: 'TODAY!',     cls: 'cd-urgent' };
+    if (days === 1) return { text: 'Tomorrow',   cls: 'cd-urgent' };
+    if (days <= 3)  return { text: days + 'd left', cls: 'cd-urgent' };
+    if (days <= 7)  return { text: days + 'd left', cls: 'cd-soon' };
+    return           { text: days + 'd left',    cls: 'cd-ok' };
+  }
+
+  function fmtDate(d, t) {
+    const dt = new Date(d + 'T' + (t || '00:00'));
+    return dt.toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' })
+      + (t ? ' · ' + dt.toLocaleTimeString('en-IN', { hour:'2-digit', minute:'2-digit' }) : '');
+  }
+
+  function getSorted() {
+    const list = [...exams];
+    if (sortMode === 'date')   return list.sort((a,b) => new Date(a.examDate+'T'+(a.examTime||'00:00')) - new Date(b.examDate+'T'+(b.examTime||'00:00')));
+    if (sortMode === 'name')   return list.sort((a,b) => a.subject.localeCompare(b.subject));
+    if (sortMode === 'status') return list.sort((a,b) => a.done - b.done);
+    return list;
+  }
+
+  function render() {
+    // Stats
+    const total   = exams.length;
+    const done    = exams.filter(e => e.done).length;
+    const pending = total - done;
+    const urgent  = exams.filter(e => !e.done && daysLeft(e.examDate, e.examTime) <= 3 && daysLeft(e.examDate, e.examTime) >= 0).length;
+    document.getElementById('sTotal').textContent   = total;
+    document.getElementById('sPending').textContent = pending;
+    document.getElementById('sDone').textContent    = done;
+    document.getElementById('sUrgent').textContent  = urgent;
+
+    // Next exam banner
+    const upcoming = exams.filter(e => !e.done && daysLeft(e.examDate, e.examTime) >= 0)
+      .sort((a,b) => new Date(a.examDate+'T'+(a.examTime||'00:00')) - new Date(b.examDate+'T'+(b.examTime||'00:00')));
+    const nb = document.getElementById('nextBanner');
+    if (upcoming.length) {
+      const n = upcoming[0];
+      const d = daysLeft(n.examDate, n.examTime);
+      nb.innerHTML = `<div class="next-banner">
+        <div>
+          <div class="nb-label">⚡ Next Exam</div>
+          <div class="nb-subject">${n.subject}${n.code ? ' <span style="color:var(--muted);font-weight:400;font-size:.7rem">(${n.code})</span>' : ''}</div>
+          <div class="nb-time">${fmtDate(n.examDate, n.examTime)}${n.venue ? ' · ' + n.venue : ''}</div>
+        </div>
+        <div style="margin-left:auto">
+          <div class="countdown ${d<=3?'cd-urgent':d<=7?'cd-soon':'cd-ok'}">${d===0?'TODAY':d===1?'Tomorrow':d+'d'}</div>
+        </div>
+      </div>`;
+    } else {
+      nb.innerHTML = '';
+    }
+
+    // List
+    const scroll = document.getElementById('examScroll');
+    const sorted = getSorted();
+    if (!sorted.length) {
+      scroll.innerHTML = `<div class="empty"><span class="icon">📖</span><p>No exams added yet.<br/>Start building your timetable!</p></div>`;
+      return;
+    }
+    scroll.innerHTML = sorted.map(e => {
+      const days = daysLeft(e.examDate, e.examTime);
+      const cd   = countdownLabel(days, e.done);
+      return `<div class="exam-item ${e.done ? 'done' : ''}">
+        <div class="check-box" onclick="toggleDone(${e.id})">${e.done ? '✓' : ''}</div>
+        <div class="exam-info">
+          <div class="exam-subject">${e.subject}${e.code ? ' <span style="color:var(--muted);font-size:.68rem;font-weight:400">(${e.code})</span>' : ''}</div>
+          <div class="exam-meta">${fmtDate(e.examDate, e.examTime)}${e.venue ? ' · 📍 ' + e.venue : ''}</div>
+        </div>
+        <span class="countdown ${cd.cls}">${cd.text}</span>
+        <button class="del-btn" onclick="deleteExam(${e.id})" title="Delete">✕</button>
+      </div>`;
+    }).join('');
+  }
+
+  // Live countdown refresh
+  setInterval(render, 60000);
+  render();
+</script>
+</body>
+</html>

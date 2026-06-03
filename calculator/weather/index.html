@@ -1,28 +1,45 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Weather — Student Notes App</title>
-  <link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="style.css">
+    <!-- Loading Phosphor Icons for the moon/sun toggle -->
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body>
-  <main class="container">
-    <h1>Weather</h1>
-    <form id="searchForm">
-      <input id="cityInput" type="text" placeholder="Enter city (e.g. London)" required />
-      <button type="submit">Get Weather</button>
-    </form>
+    <div class="aurora">
+        <div class="aurora__orb aurora__orb--1"></div>
+        <div class="aurora__orb aurora__orb--2"></div>
+        <div class="aurora__orb aurora__orb--3"></div>
+    </div>
 
-    <section id="result" class="card hidden">
-      <h2 id="location"></h2>
-      <p id="summary"></p>
-      <ul id="details"></ul>
-    </section>
-
-    <p id="error" class="error hidden"></p>
-  </main>
-
-  <script src="script.js"></script>
+    <div class="container">
+        <header>
+            <h1>Weather</h1>
+        </header>
+        
+        <form id="searchForm" class="search-box">
+            <input type="text" id="cityInput" placeholder="Search city..." required spellcheck="false">
+            <button type="submit">Search</button>
+            <button type="button" id="clearBtn" class="secondary-btn">Clear</button>
+            <button type="button" id="theme-toggle" aria-label="Toggle dark mode">
+                <i class="ph ph-moon"></i>
+            </button>
+        </form>
+        <div id="error" class="error hidden"></div>
+        <div id="result" class="hidden">
+            <div class="weather-main">
+                <h2 id="location"></h2>
+                <p id="summary"></p>
+            </div>
+            <div id="details" class="weather-grid"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
 </body>
 </html>

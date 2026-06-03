@@ -21,9 +21,25 @@
                 <p>Track and manage audit checkpoints</p>
             </div>
 
-            <button id="themeToggle">
-                🌙
-            </button>
+            <div class="header-actions">
+
+                <p id="userGreeting" class="user-greeting">
+                    Welcome
+                </p>
+
+                <span id="roleBadge" class="role-badge">
+                    User
+                </span>
+
+                <button id="logoutBtn" class="logout-btn">
+                    Logout
+                </button>
+
+                <button id="themeToggle">
+                    🌙
+                </button>
+
+            </div>
 
         </div>
 
@@ -36,6 +52,27 @@
                 id="auditInput"
                 placeholder="Enter audit checkpoint..."
             >
+
+            <select id="prioritySelect">
+
+                 <option value="Low">
+                 Low Priority
+                 </option>
+
+                <option value="Medium">
+                 Medium Priority
+                </option>
+
+                <option value="High">
+                 High Priority
+                </option>
+
+                </select>
+
+<input
+    type="date"
+    id="dueDateInput"
+>
 
             <button id="addAuditBtn">
                 Add Audit
@@ -52,6 +89,22 @@
         id="searchInput"
         placeholder="Search audits..."
     >
+
+    <select id="sortSelect">
+
+        <option value="default">
+            Default
+        </option>
+
+        <option value="high-low">
+            High → Medium → Low
+        </option>
+
+        <option value="low-high">
+            Low → Medium → High
+        </option>
+
+    </select>
 
     <div class="filter-buttons">
 
@@ -84,6 +137,11 @@
                 <p>Total</p>
             </div>
 
+            <div class="stat-card pending">
+                <h2 id="pendingAudits">0</h2>
+                <p>Pending Audits</p>
+            </div>
+
             <div class="stat-card pass">
                 <h2 id="passedAudits">0</h2>
                 <p>Passed</p>
@@ -92,6 +150,11 @@
             <div class="stat-card fail">
                 <h2 id="failedAudits">0</h2>
                 <p>Failed</p>
+            </div>
+
+            <div class="stat-card completion">
+                <h2 id="completionPercentage">0%</h2>
+                <p>Completion Percentage</p>
             </div>
 
         </div>

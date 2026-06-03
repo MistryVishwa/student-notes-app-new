@@ -2,10 +2,13 @@ const statusEl = document.getElementById("status");
 const boardEl = document.getElementById("board");
 const restartBtn = document.getElementById("restart");
 const cells = Array.from(document.querySelectorAll(".cell"));
+const scoreXEl = document.getElementById("score-x");
+const scoreOEl = document.getElementById("score-o");
 
 let currentPlayer = "X";
 let board = Array(9).fill("");
 let isGameOver = false;
+let scores = { X: 0, O: 0 };
 
 const winningCombos = [
   [0, 1, 2],
@@ -20,6 +23,20 @@ const winningCombos = [
 
 const updateStatus = (message) => {
   statusEl.textContent = message;
+};
+
+const triggerConfetti = () => {
+  const colors = ["#26ccff", "#a25afd", "#ff5e7e", "#88ff5a", "#fcff42", "#ffa62d", "#ff36ff"];
+  for (let i = 0; i < 100; i++) {
+    const confetti = document.createElement("div");
+    confetti.className = "confetti";
+    confetti.style.left = Math.random() * 100 + "vw";
+    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+    confetti.style.width = confetti.style.height = Math.random() * 8 + 6 + "px";
+    confetti.style.animation = `confetti-fall ${Math.random() * 3 + 2}s linear forwards`;
+    document.body.appendChild(confetti);
+    setTimeout(() => confetti.remove(), 5000);
+  }
 };
 
 const checkWinner = () => {
@@ -49,6 +66,10 @@ const handleCellClick = (event) => {
     updateStatus(`Player ${winner} wins!`);
     isGameOver = true;
     boardEl.querySelectorAll("button").forEach((btn) => (btn.disabled = true));
+    triggerConfetti();
+    scores[winner]++;
+    scoreXEl.textContent = scores.X;
+    scoreOEl.textContent = scores.O;
     return;
   }
 

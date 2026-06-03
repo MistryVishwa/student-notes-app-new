@@ -5,6 +5,7 @@ const locationEl = document.getElementById('location');
 const summaryEl = document.getElementById('summary');
 const detailsEl = document.getElementById('details');
 const errorEl = document.getElementById('error');
+const clearBtn = document.getElementById('clearBtn');
 
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -20,6 +21,13 @@ form.addEventListener('submit', async (e) => {
   } catch (err) {
     showError(err.message || 'Failed to fetch weather');
   }
+});
+
+clearBtn?.addEventListener('click', () => {
+  cityInput.value = '';
+  result.classList.add('hidden');
+  errorEl.classList.add('hidden');
+  cityInput.focus();
 });
 
 function showLoading(){
@@ -71,17 +79,41 @@ function render(geo, weather){
   result.classList.remove('hidden');
   locationEl.textContent = `${geo.name}, ${geo.country}`;
   summaryEl.textContent = `${weather.temperature}°C — ${weatherCodeToText(weather.weathercode)}`;
+  
   detailsEl.innerHTML = '';
   const items = [
-    [`Temperature`, `${weather.temperature} °C`],
-    [`Wind Speed`, `${weather.windspeed} km/h`],
-    [`Wind Direction`, `${weather.winddirection}°`],
-    [`Weather Code`, `${weather.weathercode}`],
-    [`Time (UTC)`, weather.time]
+    { label: 'Temp', value: `${weather.temperature}°C`, icon: 'ph-thermometer' },
+    { label: 'Wind', value: `${weather.windspeed} km/h`, icon: 'ph-wind' },
+    { label: 'Direction', value: `${weather.winddirection}°`, icon: 'ph-compass' },
+    { label: 'Updated', value: weather.time.split('T')[1], icon: 'ph-clock' }
   ];
-  items.forEach(([k,v]) => {
-    const li = document.createElement('li');
-    li.textContent = `${k}: ${v}`;
-    detailsEl.appendChild(li);
+
+  items.forEach((item, index) => {
+    const card = document.createElement('div');
+    card.className = 'metric-card';
+    card.style.animation = `slideUp 0.4s ease-out ${index * 0.1}s forwards`;
+    card.innerHTML = `
+      <i class="ph ${item.icon}"></i>
+      <span class="metric-label">${item.label}</span>
+      <span class="metric-value">${item.value}</span>
+    `;
+    detailsEl.appendChild(card);
   });
 }
+
+/* Theme Toggle Logic */
+const themeToggle = document.getElementById('theme-toggle');
+const themeIcon = themeToggle?.querySelector('i');
+
+if (localStorage.getItem('theme') === 'dark') {
+  document.body.classList.add('dark-mode');
+  if (themeIcon) themeIcon.className = 'ph ph-sun';
+}
+
+themeToggle?.addEventListener('click', () => {
+  const isDark = document.body.classList.toggle('dark-mode');
+  localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  if (themeIcon) {
+    themeIcon.className = isDark ? 'ph ph-sun' : 'ph ph-moon';
+  }
+});
