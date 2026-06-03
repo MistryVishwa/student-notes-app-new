@@ -277,6 +277,29 @@ body{
     outline:none;
 }
 
+.audit-form textarea{
+    flex:1;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:white;
+
+    box-shadow:
+        0px 4px 20px rgba(0,0,0,0.05);
+
+    font-size:16px;
+
+    outline:none;
+
+    resize:vertical;
+
+    min-height:100px;
+}
+
 #prioritySelect,
 #dueDateInput{
 
@@ -432,6 +455,18 @@ body{
     font-size:14px;
 }
 
+.audit-description{
+    color:#475569;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+    white-space:pre-line;
+
+    margin-bottom:10px;
+}
+
 /* Status Buttons */
 
 .audit-actions{
@@ -537,6 +572,12 @@ body{
     outline:none;
 }
 
+.edit-textarea{
+    min-height:100px;
+
+    resize:vertical;
+}
+
 /* Dark Mode */
 
 body.dark-mode{
@@ -550,11 +591,24 @@ body.dark-mode .audit-info p{
     color:#cbd5e1;
 }
 
+body.dark-mode .audit-description{
+    color:#e2e8f0;
+}
+
 body.dark-mode .audit-form input,
 body.dark-mode .stat-card,
 body.dark-mode .audit-card,
 body.dark-mode .auth-form,
 body.dark-mode #themeToggle{
+    background:rgba(15,23,42,0.75);
+
+    color:white;
+
+    box-shadow:
+        0px 4px 20px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .audit-form textarea{
     background:rgba(15,23,42,0.75);
 
     color:white;

@@ -4,6 +4,9 @@ let audits = JSON.parse(localStorage.getItem("audits")) || [];
 
 const auditInput = document.getElementById("auditInput");
 
+const descriptionInput =
+    document.getElementById("descriptionInput");
+
 const addAuditBtn = document.getElementById("addAuditBtn");
 
 const prioritySelect =
@@ -346,6 +349,10 @@ function addAudit(){
 
     const task = auditInput.value.trim();
 
+    const description = descriptionInput
+        ? descriptionInput.value.trim()
+        : "";
+
     if(task === ""){
 
         alert("Please enter an audit checkpoint");
@@ -358,6 +365,8 @@ const audit = {
     id:Date.now(),
 
     task:task,
+
+    description: description,
 
     status:"pending",
 
@@ -373,6 +382,11 @@ const audit = {
     saveAudits();
 
     auditInput.value = "";
+
+    if(descriptionInput){
+
+        descriptionInput.value = "";
+    }
 
     renderAudits();
 }
@@ -532,7 +546,10 @@ function renderAudits(){
 const filteredAudits = audits.filter((audit)=>{
 
     const matchesSearch =
-        audit.task.toLowerCase().includes(searchValue);
+        audit.task.toLowerCase().includes(searchValue) ||
+        (audit.description || "")
+            .toLowerCase()
+            .includes(searchValue);
 
     const matchesFilter =
         currentFilter === "all" ||
@@ -574,6 +591,14 @@ sortedAudits.forEach((audit)=>{
                     value="${escapeHTML(audit.task)}"
                     aria-label="Edit audit task name"
                 >
+
+                <textarea
+                    id="editDescription-${audit.id}"
+                    class="edit-input edit-textarea"
+                    rows="3"
+                    placeholder="Add description (optional)..."
+                    aria-label="Edit audit description"
+                >${escapeHTML(audit.description || "")}</textarea>
 
                 <select
                     id="editPriority-${audit.id}"
@@ -661,6 +686,14 @@ sortedAudits.forEach((audit)=>{
                 dueDateInfo.message
                 ? `<p class="due-message ${dueDateInfo.dueClass}">
                     ${dueDateInfo.message}
+                   </p>`
+                : ""
+            }
+
+            ${
+                audit.description && audit.description.trim()
+                ? `<p class="audit-description">
+                    ${escapeHTML(audit.description)}
                    </p>`
                 : ""
             }
@@ -766,6 +799,9 @@ function saveEditAudit(id){
     const editDueDateInput =
         document.getElementById(`editDueDate-${id}`);
 
+    const editDescriptionInput =
+        document.getElementById(`editDescription-${id}`);
+
     const updatedTask = editTaskInput.value.trim();
 
     if(updatedTask === ""){
@@ -782,6 +818,9 @@ function saveEditAudit(id){
             return {
                 ...audit,
                 task: updatedTask,
+                description: editDescriptionInput
+                    ? editDescriptionInput.value.trim()
+                    : "",
                 priority: editPrioritySelect.value,
                 dueDate: editDueDateInput.value
             };
