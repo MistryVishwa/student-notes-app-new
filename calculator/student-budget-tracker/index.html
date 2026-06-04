@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Student Budget Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0e0f13;
+      --surface: #16181f;
+      --surface2: #1e2029;
+      --border: #2a2d3a;
+      --accent: #7fff6e;
+      --accent2: #ff6b6b;
+      --accent3: #ffd166;
+      --accent4: #56cfff;
+      --text: #e8eaf0;
+      --muted: #6b7080;
+      --card-r: 14px;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      padding: 24px 16px 60px;
+    }
+
+    /* — Header — */
+    header {
+      max-width: 760px;
+      margin: 0 auto 32px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 12px;
+    }
+    .logo-area h1 {
+      font-family: 'Syne', sans-serif;
+      font-weight: 800;
+      font-size: clamp(1.6rem, 4vw, 2.4rem);
+      line-height: 1;
+      letter-spacing: -1px;
+      color: var(--text);
+    }
+    .logo-area h1 span { color: var(--accent); }
+    .logo-area p { color: var(--muted); font-size: 0.72rem; margin-top: 4px; }
+    .date-badge {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 6px 14px;
+      font-size: 0.72rem;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    /* — Balance Cards — */
+    .cards {
+      max-width: 760px;
+      margin: 0 auto 28px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 14px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      padding: 18px 20px;
+      position: relative;
+      overflow: hidden;
+    }
+    .card::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      opacity: 0.06;
+      pointer-events: none;
+    }
+    .card.balance::before { background: radial-gradient(circle at 10% 80%, var(--accent4), transparent 60%); }
+    .card.income-card::before { background: radial-gradient(circle at 10% 80%, var(--accent), transparent 60%); }
+    .card.expense-card::before { background: radial-gradient(circle at 10% 80%, var(--accent2), transparent 60%); }
+
+    .card .label {
+      font-size: 0.65rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+    .card .amount {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: clamp(1.3rem, 3vw, 1.9rem);
+      letter-spacing: -0.5px;
+    }
+    .card.balance .amount { color: var(--accent4); }
+    .card.income-card .amount { color: var(--accent); }
+    .card.expense-card .amount { color: var(--accent2); }
+    .card .pill {
+      display: inline-block;
+      margin-top: 6px;
+      font-size: 0.62rem;
+      padding: 2px 8px;
+      border-radius: 99px;
+    }
+    .card.balance .pill { background: rgba(86,207,255,.12); color: var(--accent4); }
+    .card.income-card .pill { background: rgba(127,255,110,.12); color: var(--accent); }
+    .card.expense-card .pill { background: rgba(255,107,107,.12); color: var(--accent2); }
+
+    /* — Main Layout — */
+    .main {
+      max-width: 760px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+
+    /* — Panel — */
+    .panel {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--card-r);
+      overflow: hidden;
+    }
+    .panel-header {
+      padding: 14px 20px;
+      border-bottom: 1px solid var(--border);
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .panel-header .icon { font-size: 1rem; }
+    .panel-body { padding: 18px 20px; }
+
+    /* — Form — */
+    label {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 5px;
+    }
+    input, select {
+      width: 100%;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.82rem;
+      padding: 9px 12px;
+      outline: none;
+      margin-bottom: 13px;
+      transition: border-color 0.2s;
+    }
+    input:focus, select:focus { border-color: var(--accent); }
+    select option { background: var(--surface2); }
+
+    .type-toggle {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 13px;
+    }
+    .type-btn {
+      flex: 1;
+      padding: 8px 0;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--surface2);
+      color: var(--muted);
+      font-family: 'DM Mono', monospace;
+      font-size: 0.78rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .type-btn.active-income { border-color: var(--accent); color: var(--accent); background: rgba(127,255,110,.08); }
+    .type-btn.active-expense { border-color: var(--accent2); color: var(--accent2); background: rgba(255,107,107,.08); }
+
+    .submit-btn {
+      width: 100%;
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      background: var(--accent);
+      color: #0e0f13;
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.1s;
+      letter-spacing: 0.5px;
+    }
+    .submit-btn:hover { opacity: 0.88; }
+    .submit-btn:active { transform: scale(0.98); }
+
+    /* — Category Chart — */
+    .cat-list { list-style: none; }
+    .cat-list li {
+      margin-bottom: 12px;
+    }
+    .cat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.72rem;
+      margin-bottom: 4px;
+    }
+    .cat-name { display: flex; align-items: center; gap: 6px; }
+    .cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .cat-bar-bg {
+      height: 5px;
+      background: var(--surface2);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+    .cat-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width 0.5s cubic-bezier(.4,0,.2,1);
+    }
+    .cat-amt { color: var(--muted); }
+
+    /* — Transaction List — */
+    .tx-list {
+      grid-column: 1 / -1;
+    }
+    .tx-scroll { max-height: 280px; overflow-y: auto; }
+    .tx-scroll::-webkit-scrollbar { width: 4px; }
+    .tx-scroll::-webkit-scrollbar-track { background: transparent; }
+    .tx-scroll::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+
+    .empty {
+      padding: 28px 0;
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.78rem;
+    }
+    .empty .icon { font-size: 2rem; display: block; margin-bottom: 6px; }
+
+    .tx-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+      animation: slideIn 0.3s ease;
+    }
+    .tx-item:last-child { border-bottom: none; }
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .tx-icon {
+      width: 34px; height: 34px;
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1rem;
+      flex-shrink: 0;
+    }
+    .tx-info { flex: 1; min-width: 0; }
+    .tx-desc {
+      font-size: 0.8rem;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .tx-meta { font-size: 0.62rem; color: var(--muted); margin-top: 2px; }
+    .tx-amount {
+      font-family: 'Syne', sans-serif;
+      font-weight: 700;
+      font-size: 0.9rem;
+    }
+    .tx-amount.pos { color: var(--accent); }
+    .tx-amount.neg { color: var(--accent2); }
+    .tx-del {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 4px 6px;
+      border-radius: 6px;
+      transition: color 0.2s, background 0.2s;
+    }
+    .tx-del:hover { color: var(--accent2); background: rgba(255,107,107,.1); }
+
+    /* — Responsive — */
+    @media (max-width: 600px) {
+      .cards { grid-template-columns: 1fr; }
+      .main { grid-template-columns: 1fr; }
+      .tx-list { grid-column: 1; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo-area">
+    <h1>Budget<span>.</span>Tracker</h1>
+    <p>// student finance manager</p>
+  </div>
+  <div class="date-badge" id="dateBadge"></div>
+</header>
+
+<!-- Balance Cards -->
+<div class="cards">
+  <div class="card balance">
+    <div class="label">Net Balance</div>
+    <div class="amount" id="balanceAmt">₹0.00</div>
+    <span class="pill" id="balancePill">—</span>
+  </div>
+  <div class="card income-card">
+    <div class="label">Total Income</div>
+    <div class="amount" id="incomeAmt">₹0.00</div>
+    <span class="pill" id="incomePill">0 entries</span>
+  </div>
+  <div class="card expense-card">
+    <div class="label">Total Expenses</div>
+    <div class="amount" id="expenseAmt">₹0.00</div>
+    <span class="pill" id="expensePill">0 entries</span>
+  </div>
+</div>
+
+<!-- Main Grid -->
+<div class="main">
+
+  <!-- Add Transaction Panel -->
+  <div class="panel">
+    <div class="panel-header"><span class="icon">＋</span> Add Transaction</div>
+    <div class="panel-body">
+      <div class="type-toggle">
+        <button class="type-btn active-income" id="btnIncome" onclick="setType('income')">▲ Income</button>
+        <button class="type-btn" id="btnExpense" onclick="setType('expense')">▼ Expense</button>
+      </div>
+      <label>Description</label>
+      <input type="text" id="desc" placeholder="e.g. Stipend, Canteen lunch…" />
+      <label>Amount (₹)</label>
+      <input type="number" id="amt" placeholder="0.00" min="0" step="0.01" />
+      <label>Category</label>
+      <select id="cat">
+        <option value="Food">🍛 Food</option>
+        <option value="Transport">🚌 Transport</option>
+        <option value="Books">📚 Books</option>
+        <option value="Entertainment">🎮 Entertainment</option>
+        <option value="Health">💊 Health</option>
+        <option value="Utilities">💡 Utilities</option>
+        <option value="Other">📦 Other</option>
+        <option value="Salary">💼 Salary / Stipend</option>
+      </select>
+      <label>Date</label>
+      <input type="date" id="txDate" />
+      <button class="submit-btn" onclick="addTransaction()">ADD TRANSACTION</button>
+    </div>
+  </div>
+
+  <!-- Category Breakdown -->
+  <div class="panel">
+    <div class="panel-header"><span class="icon">📊</span> Category Breakdown</div>
+    <div class="panel-body">
+      <ul class="cat-list" id="catList">
+        <li class="empty"><span class="icon">📂</span>No expenses yet</li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Transaction History -->
+  <div class="panel tx-list">
+    <div class="panel-header"><span class="icon">🧾</span> Transaction History</div>
+    <div class="tx-scroll" id="txScroll">
+      <div class="panel-body">
+        <div class="empty"><span class="icon">💸</span>No transactions yet. Start adding!</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  const CAT_COLORS = {
+    Food: '#ffd166', Transport: '#56cfff', Books: '#7fff6e',
+    Entertainment: '#c77dff', Health: '#ff6b6b', Utilities: '#ffa552',
+    Other: '#8ea0b0', Salary: '#7fff6e'
+  };
+  const CAT_EMOJI = {
+    Food: '🍛', Transport: '🚌', Books: '📚', Entertainment: '🎮',
+    Health: '💊', Utilities: '💡', Other: '📦', Salary: '💼'
+  };
+
+  let txType = 'income';
+  let transactions = JSON.parse(localStorage.getItem('sbt_txns') || '[]');
+
+  // Date setup
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('txDate').value = today;
+  document.getElementById('dateBadge').textContent =
+    new Date().toLocaleDateString('en-IN', { weekday:'short', day:'numeric', month:'short', year:'numeric' });
+
+  function setType(t) {
+    txType = t;
+    const bi = document.getElementById('btnIncome');
+    const be = document.getElementById('btnExpense');
+    bi.className = 'type-btn' + (t === 'income' ? ' active-income' : '');
+    be.className = 'type-btn' + (t === 'expense' ? ' active-expense' : '');
+  }
+
+  function fmt(n) {
+    return '₹' + Math.abs(n).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function addTransaction() {
+    const desc = document.getElementById('desc').value.trim();
+    const amt  = parseFloat(document.getElementById('amt').value);
+    const cat  = document.getElementById('cat').value;
+    const date = document.getElementById('txDate').value;
+    if (!desc) return shake('desc');
+    if (!amt || amt <= 0) return shake('amt');
+    transactions.unshift({ id: Date.now(), type: txType, desc, amt, cat, date });
+    save();
+    document.getElementById('desc').value = '';
+    document.getElementById('amt').value = '';
+    render();
+  }
+
+  function deleteTransaction(id) {
+    transactions = transactions.filter(t => t.id !== id);
+    save();
+    render();
+  }
+
+  function save() { localStorage.setItem('sbt_txns', JSON.stringify(transactions)); }
+
+  function shake(id) {
+    const el = document.getElementById(id);
+    el.style.borderColor = '#ff6b6b';
+    el.style.animation = 'none';
+    setTimeout(() => {
+      el.style.animation = '';
+      el.style.borderColor = '';
+    }, 600);
+  }
+
+  function render() {
+    const income   = transactions.filter(t => t.type === 'income').reduce((s,t) => s + t.amt, 0);
+    const expenses = transactions.filter(t => t.type === 'expense').reduce((s,t) => s + t.amt, 0);
+    const balance  = income - expenses;
+
+    const ic = transactions.filter(t => t.type === 'income').length;
+    const ec = transactions.filter(t => t.type === 'expense').length;
+
+    document.getElementById('balanceAmt').textContent = fmt(balance);
+    document.getElementById('incomeAmt').textContent  = fmt(income);
+    document.getElementById('expenseAmt').textContent = fmt(expenses);
+
+    document.getElementById('incomePill').textContent  = ic + ' entr' + (ic===1?'y':'ies');
+    document.getElementById('expensePill').textContent = ec + ' entr' + (ec===1?'y':'ies');
+
+    const bp = document.getElementById('balancePill');
+    if (balance > 0)       { bp.textContent = '▲ surplus';  bp.style.color='var(--accent4)'; }
+    else if (balance < 0)  { bp.textContent = '▼ deficit';  bp.style.color='var(--accent2)'; }
+    else                   { bp.textContent = '— balanced'; bp.style.color='var(--muted)'; }
+
+    renderCategories(expenses);
+    renderTransactions();
+  }
+
+  function renderCategories(total) {
+    const cats = {};
+    transactions.filter(t => t.type === 'expense').forEach(t => {
+      cats[t.cat] = (cats[t.cat] || 0) + t.amt;
+    });
+    const sorted = Object.entries(cats).sort((a,b) => b[1]-a[1]);
+    const ul = document.getElementById('catList');
+    if (!sorted.length) {
+      ul.innerHTML = '<li class="empty"><span class="icon">📂</span>No expenses yet</li>';
+      return;
+    }
+    ul.innerHTML = sorted.map(([cat, amt]) => {
+      const pct = total > 0 ? (amt / total * 100).toFixed(1) : 0;
+      const color = CAT_COLORS[cat] || '#8ea0b0';
+      return `<li>
+        <div class="cat-row">
+          <span class="cat-name">
+            <span class="cat-dot" style="background:${color}"></span>${CAT_EMOJI[cat]||'📦'} ${cat}
+          </span>
+          <span class="cat-amt">${fmt(amt)} <span style="color:var(--muted)">(${pct}%)</span></span>
+        </div>
+        <div class="cat-bar-bg">
+          <div class="cat-bar-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+      </li>`;
+    }).join('');
+  }
+
+  function renderTransactions() {
+    const wrap = document.getElementById('txScroll');
+    if (!transactions.length) {
+      wrap.innerHTML = '<div class="panel-body"><div class="empty"><span class="icon">💸</span>No transactions yet. Start adding!</div></div>';
+      return;
+    }
+    wrap.innerHTML = '<div style="padding:0 20px">' + transactions.map(t => {
+      const color = CAT_COLORS[t.cat] || '#8ea0b0';
+      const sign  = t.type === 'income' ? 'pos' : 'neg';
+      const prefix = t.type === 'income' ? '+' : '−';
+      const d = new Date(t.date).toLocaleDateString('en-IN', { day:'numeric', month:'short' });
+      return `<div class="tx-item">
+        <div class="tx-icon" style="background:${color}22;color:${color}">${CAT_EMOJI[t.cat]||'📦'}</div>
+        <div class="tx-info">
+          <div class="tx-desc">${t.desc}</div>
+          <div class="tx-meta">${t.cat} · ${d}</div>
+        </div>
+        <div class="tx-amount ${sign}">${prefix}${fmt(t.amt)}</div>
+        <button class="tx-del" onclick="deleteTransaction(${t.id})" title="Delete">✕</button>
+      </div>`;
+    }).join('') + '</div>';
+  }
+
+  render();
+</script>
+</body>
+</html>
