@@ -54,101 +54,107 @@ let lines = {};
 let claimedBoxes = {};
 
 function initializeBoard(){
+  try {
+    board.innerHTML = "";
 
-  board.innerHTML = "";
+    board.style.gridTemplateColumns =
+      `repeat(${GRID_SIZE * 2 - 1}, auto)`;
 
-  board.style.gridTemplateColumns =
-    `repeat(${GRID_SIZE * 2 - 1}, auto)`;
+    for(let row = 0; row < GRID_SIZE * 2 - 1; row++){
 
-  for(let row = 0; row < GRID_SIZE * 2 - 1; row++){
+      for(let col = 0; col < GRID_SIZE * 2 - 1; col++){
 
-    for(let col = 0; col < GRID_SIZE * 2 - 1; col++){
+        // DOT
+        if(row % 2 === 0 && col % 2 === 0){
 
-      // DOT
-      if(row % 2 === 0 && col % 2 === 0){
+          const dot = document.createElement("div");
+          dot.classList.add("dot");
 
-        const dot = document.createElement("div");
-        dot.classList.add("dot");
+          board.appendChild(dot);
 
-        board.appendChild(dot);
+        }
 
-      }
+        // HORIZONTAL LINE
+        else if(row % 2 === 0 && col % 2 === 1){
 
-      // HORIZONTAL LINE
-      else if(row % 2 === 0 && col % 2 === 1){
+          const line = document.createElement("div");
 
-        const line = document.createElement("div");
+          line.classList.add("line","horizontal");
 
-        line.classList.add("line","horizontal");
+          const id = `h-${row}-${col}`;
 
-        const id = `h-${row}-${col}`;
+          line.dataset.id = id;
 
-        line.dataset.id = id;
+          line.addEventListener("click", () => handleLineClick(line,id));
 
-        line.addEventListener("click", () => handleLineClick(line,id));
+          board.appendChild(line);
 
-        board.appendChild(line);
+        }
 
-      }
+        // VERTICAL LINE
+        else if(row % 2 === 1 && col % 2 === 0){
 
-      // VERTICAL LINE
-      else if(row % 2 === 1 && col % 2 === 0){
+          const line = document.createElement("div");
 
-        const line = document.createElement("div");
+          line.classList.add("line","vertical");
 
-        line.classList.add("line","vertical");
+          const id = `v-${row}-${col}`;
 
-        const id = `v-${row}-${col}`;
+          line.dataset.id = id;
 
-        line.dataset.id = id;
+          line.addEventListener("click", () => handleLineClick(line,id));
 
-        line.addEventListener("click", () => handleLineClick(line,id));
+          board.appendChild(line);
 
-        board.appendChild(line);
+        }
 
-      }
+        // BOX
+        else{
 
-      // BOX
-      else{
+          const box = document.createElement("div");
 
-        const box = document.createElement("div");
+          box.classList.add("box");
 
-        box.classList.add("box");
+          box.dataset.position = `${row}-${col}`;
 
-        box.dataset.position = `${row}-${col}`;
+          board.appendChild(box);
 
-        board.appendChild(box);
+        }
 
       }
 
     }
-
+  } catch (error) {
+    console.error("Error in initializeBoard:", error);
+    alert("An unexpected error occurred while setting up the board. Please refresh the game.");
   }
-
 }
 
 function handleLineClick(line,id){
+  try {
+    if(lines[id]) return;
 
-  if(lines[id]) return;
+    lines[id] = true;
 
-  lines[id] = true;
+    line.classList.add(
+      currentPlayer === 1 ? "player1" : "player2"
+    );
 
-  line.classList.add(
-    currentPlayer === 1 ? "player1" : "player2"
-  );
+    const scored = checkCompletedBoxes();
 
-  const scored = checkCompletedBoxes();
+    if(!scored){
 
-  if(!scored){
+      currentPlayer = currentPlayer === 1 ? 2 : 1;
 
-    currentPlayer = currentPlayer === 1 ? 2 : 1;
+    }
 
+    updateUI();
+
+    checkGameOver();
+  } catch (error) {
+    console.error("Error in handleLineClick:", error);
+    alert("An unexpected error occurred. Please refresh the game.");
   }
-
-  updateUI();
-
-  checkGameOver();
-
 }
 
 function checkCompletedBoxes(){
@@ -274,19 +280,22 @@ function checkGameOver(){
 
 }
 function restartGame(){
+  try {
+    currentPlayer = 1;
 
-  currentPlayer = 1;
+    player1Score = 0;
+    player2Score = 0;
 
-  player1Score = 0;
-  player2Score = 0;
+    lines = {};
+    claimedBoxes = {};
 
-  lines = {};
-  claimedBoxes = {};
+    updateUI();
 
-  updateUI();
-
-  initializeBoard();
-
+    initializeBoard();
+  } catch (error) {
+    console.error("Error in restartGame:", error);
+    alert("An unexpected error occurred while restarting the game.");
+  }
 }
 
 restartBtn.addEventListener("click", restartGame);
@@ -303,21 +312,24 @@ closeModalBtn.addEventListener("click", () => {
 });
 
 startGameBtn.addEventListener("click", () => {
+  try {
+    const player1Name =
+    player1NameInput.value.trim();
 
-  const player1Name =
-  player1NameInput.value.trim();
+    const player2Name =
+    player2NameInput.value.trim();
 
-  const player2Name =
-  player2NameInput.value.trim();
+    player1DisplayName.textContent =
+    player1Name || "Blue Player";
 
-  player1DisplayName.textContent =
-  player1Name || "Blue Player";
+    player2DisplayName.textContent =
+    player2Name || "Red Player";
 
-  player2DisplayName.textContent =
-  player2Name || "Red Player";
+    startScreen.style.display = "none";
 
-  startScreen.style.display = "none";
-
-  updateUI();
-
+    updateUI();
+  } catch (error) {
+    console.error("Error starting game:", error);
+    alert("An unexpected error occurred. Please refresh the game.");
+  }
 });
