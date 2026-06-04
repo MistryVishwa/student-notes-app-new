@@ -1177,11 +1177,11 @@ function exportJSON() {
  */
 function toggleTheme() {
     const html = document.documentElement;
-    const currentTheme = html.getAttribute('data-theme');
-    const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+    const isDark = document.body.classList.toggle('dark');
+    const newTheme = isDark ? 'dark' : 'light';
     
     html.setAttribute('data-theme', newTheme);
-    localStorage.setItem('aura_theme', newTheme);
+    localStorage.setItem('theme', newTheme);
 
     // Sync switch in footer
     const themeSwitch = document.getElementById('theme-switch');
@@ -1200,8 +1200,14 @@ function toggleTheme() {
 }
 
 function initTheme() {
-    const savedTheme = localStorage.getItem('aura_theme') || 'dark';
-    document.documentElement.setAttribute('data-theme', savedTheme);
+    const savedTheme = localStorage.getItem('theme') || 'dark';
+    if (savedTheme === 'dark') {
+        document.body.classList.add('dark');
+        document.documentElement.setAttribute('data-theme', 'dark');
+    } else {
+        document.body.classList.remove('dark');
+        document.documentElement.setAttribute('data-theme', 'light');
+    }
     
     const themeSwitch = document.getElementById('theme-switch');
     if (themeSwitch) {
