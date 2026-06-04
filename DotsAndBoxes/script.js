@@ -1,5 +1,11 @@
 const board = document.getElementById("board");
 
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
 const player1ScoreText = document.getElementById("player1Score");
 const player2ScoreText = document.getElementById("player2Score");
 
