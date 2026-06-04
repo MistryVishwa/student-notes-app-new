@@ -1,0 +1,561 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins',sans-serif;
+}
+
+body{
+    background:linear-gradient(
+        135deg,
+        #fff8fb,
+        #ffeef7,
+        #fff5fa
+    );
+    min-height:100vh;
+    color:#444;
+    overflow-x:hidden;
+}
+
+/* ==========================
+   FLOATING BACKGROUND
+========================== */
+
+.floating-bg{
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    z-index:-1;
+}
+
+.floating-bg span{
+    position:absolute;
+    font-size:2rem;
+    opacity:0.2;
+    animation:float 15s linear infinite;
+}
+
+.floating-bg span:nth-child(1){
+    left:10%;
+    animation-delay:0s;
+}
+
+.floating-bg span:nth-child(2){
+    left:30%;
+    animation-delay:4s;
+}
+
+.floating-bg span:nth-child(3){
+    left:50%;
+    animation-delay:8s;
+}
+
+.floating-bg span:nth-child(4){
+    left:70%;
+    animation-delay:12s;
+}
+
+.floating-bg span:nth-child(5){
+    left:90%;
+    animation-delay:16s;
+}
+
+@keyframes float{
+    from{
+        transform:translateY(100vh) rotate(0deg);
+    }
+
+    to{
+        transform:translateY(-100px) rotate(360deg);
+    }
+}
+
+/* ==========================
+   NAVBAR
+========================== */
+
+nav{
+    background:rgba(255,255,255,0.8);
+    backdrop-filter:blur(10px);
+    text-align:center;
+    padding:25px;
+    box-shadow:0 4px 15px rgba(255,182,193,.2);
+
+    animation:slideDown .8s ease;
+}
+
+nav h1{
+    color:#ff69b4;
+    font-size:2.5rem;
+    font-weight:700;
+}
+
+nav p{
+    color:#888;
+    margin-top:5px;
+}
+
+@keyframes slideDown{
+
+    from{
+        opacity:0;
+        transform:translateY(-40px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ==========================
+   SEARCH
+========================== */
+
+.search-section{
+    text-align:center;
+    margin-top:50px;
+}
+
+.search-section h2{
+    color:#ff69b4;
+    margin-bottom:20px;
+}
+
+.search-box{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:15px;
+    flex-wrap:wrap;
+}
+
+.search-box input{
+
+    width:350px;
+    padding:15px;
+
+    border:none;
+    outline:none;
+
+    border-radius:15px;
+
+    background:white;
+
+    box-shadow:
+    0 5px 15px rgba(0,0,0,.08);
+
+    transition:.3s;
+}
+
+.search-box input:focus{
+
+    transform:scale(1.02);
+
+    box-shadow:
+    0 0 0 4px rgba(255,182,193,.3);
+}
+
+.search-box button{
+
+    padding:15px 25px;
+
+    border:none;
+
+    border-radius:15px;
+
+    background:
+    linear-gradient(
+    135deg,
+    #ff8ec7,
+    #ff69b4
+    );
+
+    color:white;
+
+    font-weight:600;
+
+    cursor:pointer;
+
+    transition:.3s;
+}
+
+.search-box button:hover{
+
+    transform:
+    translateY(-3px);
+
+    box-shadow:
+    0 8px 20px rgba(255,105,180,.35);
+}
+
+/* ==========================
+   PROFILE CARD
+========================== */
+
+.profile-card{
+
+    width:90%;
+    max-width:900px;
+
+    margin:40px auto;
+
+    background:
+    rgba(255,255,255,.8);
+
+    backdrop-filter:
+    blur(15px);
+
+    border-radius:25px;
+
+    padding:30px;
+
+    display:flex;
+    align-items:center;
+    gap:25px;
+
+    box-shadow:
+    0 8px 25px rgba(255,182,193,.2);
+
+    animation:
+    fadeUp 1s ease;
+}
+
+.profile-card img{
+
+    width:140px;
+    height:140px;
+
+    border-radius:50%;
+
+    border:5px solid #ffd6ea;
+
+    animation:
+    pulse 3s infinite;
+}
+
+@keyframes pulse{
+
+    0%{
+        box-shadow:0 0 0 0 rgba(255,105,180,.5);
+    }
+
+    70%{
+        box-shadow:0 0 0 25px transparent;
+    }
+
+    100%{
+        box-shadow:0 0 0 0 transparent;
+    }
+}
+
+.profile-stats{
+
+    display:flex;
+    gap:20px;
+    flex-wrap:wrap;
+
+    margin-top:15px;
+}
+
+/* ==========================
+   DASHBOARD CARDS
+========================== */
+
+.cards-container{
+
+    width:90%;
+    margin:40px auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+}
+
+.card{
+
+    background:
+    rgba(255,255,255,.85);
+
+    backdrop-filter:
+    blur(10px);
+
+    border-radius:20px;
+
+    padding:25px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    box-shadow:
+    0 8px 20px rgba(255,182,193,.2);
+}
+
+.card:hover{
+
+    transform:
+    translateY(-10px);
+
+    box-shadow:
+    0 15px 30px rgba(255,105,180,.25);
+}
+
+.card h3{
+    color:#ff69b4;
+}
+
+.card p{
+
+    font-size:2rem;
+    font-weight:700;
+    margin-top:10px;
+}
+
+/* ==========================
+   HEADINGS
+========================== */
+
+section h2{
+
+    text-align:center;
+
+    color:#ff69b4;
+
+    margin-top:50px;
+    margin-bottom:20px;
+}
+
+/* ==========================
+   QUALITY CARDS
+========================== */
+
+.quality-grid{
+
+    width:90%;
+    margin:auto;
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(200px,1fr));
+
+    gap:20px;
+}
+
+.quality-card{
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    text-align:center;
+
+    transition:.3s;
+
+    box-shadow:
+    0 8px 20px rgba(255,182,193,.2);
+}
+
+.quality-card:hover{
+
+    transform:
+    translateY(-8px);
+}
+
+.quality-card h3{
+    color:#ff69b4;
+}
+
+.quality-card p{
+
+    font-size:1.8rem;
+    font-weight:bold;
+    margin-top:10px;
+}
+
+/* ==========================
+   REPOSITORIES
+========================== */
+
+#repoContainer{
+
+    width:90%;
+    margin:auto;
+}
+
+.repo-card{
+
+    background:white;
+
+    padding:20px;
+
+    margin-bottom:15px;
+
+    border-radius:20px;
+
+    transition:.3s;
+
+    box-shadow:
+    0 8px 20px rgba(255,182,193,.15);
+}
+
+.repo-card:hover{
+
+    transform:
+    scale(1.02);
+}
+
+.repo-card h3{
+    color:#ff69b4;
+    margin-bottom:10px;
+}
+
+.repo-card a{
+
+    text-decoration:none;
+    color:#ff69b4;
+    font-weight:600;
+}
+
+/* ==========================
+   SPAM CARD
+========================== */
+
+.spam-card{
+
+    width:90%;
+    max-width:900px;
+
+    margin:auto;
+
+    background:white;
+
+    padding:25px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 20px rgba(255,182,193,.2);
+}
+
+/* ==========================
+   CHART
+========================== */
+
+canvas{
+
+    max-width:700px;
+
+    margin:20px auto;
+
+    display:block;
+
+    background:white;
+
+    padding:20px;
+
+    border-radius:20px;
+
+    box-shadow:
+    0 8px 20px rgba(255,182,193,.15);
+}
+
+/* ==========================
+   LOADER
+========================== */
+
+#loader{
+
+    text-align:center;
+    margin:40px;
+}
+
+.spinner{
+
+    width:60px;
+    height:60px;
+
+    margin:auto;
+
+    border:6px solid #ffd6ea;
+    border-top:6px solid #ff69b4;
+
+    border-radius:50%;
+
+    animation:
+    spin 1s linear infinite;
+}
+
+@keyframes spin{
+
+    from{
+        transform:rotate(0deg);
+    }
+
+    to{
+        transform:rotate(360deg);
+    }
+}
+
+/* ==========================
+   ANIMATION
+========================== */
+
+.fade-in{
+    animation:fadeUp .8s ease;
+}
+
+@keyframes fadeUp{
+
+    from{
+        opacity:0;
+        transform:translateY(30px);
+    }
+
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+/* ==========================
+   UTILITIES
+========================== */
+
+.hidden{
+    display:none;
+}
+
+/* ==========================
+   MOBILE
+========================== */
+
+@media(max-width:768px){
+
+    .profile-card{
+
+        flex-direction:column;
+        text-align:center;
+    }
+
+    .search-box{
+
+        flex-direction:column;
+    }
+
+    .search-box input{
+        width:90%;
+    }
+
+    nav h1{
+        font-size:2rem;
+    }
+}

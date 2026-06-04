@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PRPulse - GitHub PR Analyzer</title>
+
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav>
+        <h1>PRPulse</h1>
+        <p>Analyze GitHub Pull Request Quality</p>
+    </nav>
+
+    <!-- Search Section -->
+    <section class="search-section">
+
+        <h2>GitHub Contribution Analyzer</h2>
+
+        <div class="search-box">
+            <input
+                type="text"
+                id="username"
+                placeholder="Enter GitHub Username"
+            >
+
+            <button id="analyzeBtn">
+                Analyze Profile
+            </button>
+        </div>
+
+    </section>
+
+    <!-- User Profile -->
+    <section id="profileSection" class="hidden">
+
+        <div class="profile-card">
+
+            <img
+                id="avatar"
+                src=""
+                alt="GitHub Avatar"
+            >
+
+            <div>
+
+                <h2 id="name"></h2>
+
+                <p id="bio"></p>
+
+                <div class="profile-stats">
+
+                    <span>
+                        Repos:
+                        <strong id="reposCount"></strong>
+                    </span>
+
+                    <span>
+                        Followers:
+                        <strong id="followers"></strong>
+                    </span>
+
+                    <span>
+                        Following:
+                        <strong id="following"></strong>
+                    </span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Analytics Cards -->
+    <section id="analyticsSection" class="hidden">
+
+        <div class="cards-container">
+
+            <div class="card">
+                <h3>Total PRs</h3>
+                <p id="totalPRs">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Merged PRs</h3>
+                <p id="mergedPRs">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Open PRs</h3>
+                <p id="openPRs">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Closed PRs</h3>
+                <p id="closedPRs">0</p>
+            </div>
+
+            <div class="card">
+                <h3>Merge Rate</h3>
+                <p id="mergeRate">0%</p>
+            </div>
+
+            <div class="card">
+                <h3>Impact Score</h3>
+                <p id="impactScore">0</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- PR Type Analysis -->
+    <section id="prTypesSection" class="hidden">
+
+        <h2>PR Type Breakdown</h2>
+
+        <canvas id="prTypeChart"></canvas>
+
+    </section>
+
+    <!-- Quality Metrics -->
+    <section id="qualitySection" class="hidden">
+
+        <h2>Contribution Quality Analysis</h2>
+
+        <div class="quality-grid">
+
+            <div class="quality-card">
+                <h3>Feature PRs</h3>
+                <p id="featureCount">0</p>
+            </div>
+
+            <div class="quality-card">
+                <h3>Bug Fix PRs</h3>
+                <p id="bugCount">0</p>
+            </div>
+
+            <div class="quality-card">
+                <h3>Documentation PRs</h3>
+                <p id="docsCount">0</p>
+            </div>
+
+            <div class="quality-card">
+                <h3>Refactor PRs</h3>
+                <p id="refactorCount">0</p>
+            </div>
+
+        </div>
+
+    </section>
+
+    <!-- Spam Detection -->
+    <section id="spamSection" class="hidden">
+
+        <h2>Spam & Low Value Detection</h2>
+
+        <div class="spam-card">
+
+            <h3>Potential Low-Impact PRs</h3>
+
+            <ul id="spamList">
+
+            </ul>
+
+        </div>
+
+    </section>
+
+    <!-- Repository Contributions -->
+    <section id="repoSection" class="hidden">
+
+        <h2>Repository Contributions</h2>
+
+        <div id="repoContainer">
+
+        </div>
+
+    </section>
+
+    <!-- Loading -->
+    <div id="loader" class="hidden">
+        <p>Analyzing Contributions...</p>
+    </div>
+    <div class="floating-bg">
+    <span>🌸</span>
+    <span>💖</span>
+    <span>🌷</span>
+    <span>✨</span>
+    <span>💗</span>
+</div>
+
+    <script src="script.js"></script>
+
+</body>
+</html>
