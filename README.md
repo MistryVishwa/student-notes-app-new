@@ -80,6 +80,10 @@ your-project/
 
 Push your changes and open a PR.
 
+### ⚠️ Crucial: Linking Your Project to the Main Grid
+To prevent severe Git merge conflicts, **DO NOT modify `index.html` directly!** As multiple contributors submit projects simultaneously, directly editing the main HTML file will cause your Pull Request to conflict and fail. 
+* **To add your project to the main showcase:** Please add a new entry to the `projects.json` file (or follow the repository's designated safe-linking process). 
+
 ---
 
 ## 📂 Project Structure
