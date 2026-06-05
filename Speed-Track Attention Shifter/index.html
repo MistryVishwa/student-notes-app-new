@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Speed-Track Attention Shifter</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Telemetry ─── -->
+  <header class="telemetry">
+    <div class="stat-block">
+      <span class="stat-label">Score</span>
+      <span class="stat-value" id="score">0</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">Multiplier</span>
+      <span class="stat-value accent" id="multiplier">×1</span>
+    </div>
+    <div class="stat-block">
+      <span class="stat-label">High Score</span>
+      <span class="stat-value" id="high-score">0</span>
+    </div>
+  </header>
+
+  <!-- ─── Rule Banner ─── -->
+  <div class="rule-banner" id="rule-banner">
+    <span class="rule-label">MATCH</span>
+    <span class="rule-value" id="rule-value">COLOR</span>
+  </div>
+
+  <!-- ─── Track ─── -->
+  <main class="track-wrap">
+    <div class="track" id="track">
+      <!-- falling items rendered by JS -->
+    </div>
+  </main>
+
+  <!-- ─── Baskets ─── -->
+  <div class="baskets" id="baskets">
+    <button class="basket" data-basket="0">
+      <span class="basket-icon" id="basket-icon-0"></span>
+      <span class="basket-label" id="basket-label-0">—</span>
+    </button>
+    <button class="basket" data-basket="1">
+      <span class="basket-icon" id="basket-icon-1"></span>
+      <span class="basket-label" id="basket-label-1">—</span>
+    </button>
+    <button class="basket" data-basket="2">
+      <span class="basket-icon" id="basket-icon-2"></span>
+      <span class="basket-label" id="basket-label-2">—</span>
+    </button>
+  </div>
+
+  <!-- ─── Feedback ─── -->
+  <div class="feedback" id="feedback"></div>
+
+  <!-- ─── Controls ─── -->
+  <div class="controls">
+    <button class="btn-control primary" id="btn-launch">▶ Launch Task</button>
+    <button class="btn-control" id="btn-reset">⟳ Reset Grid</button>
+  </div>
+
+  <!-- ─── Screen Flash ─── -->
+  <div class="screen-flash" id="screen-flash"></div>
+
+  <script src="script.js"></script>
+</body>
+</html>

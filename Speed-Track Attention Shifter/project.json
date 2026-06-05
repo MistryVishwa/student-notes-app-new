@@ -1,0 +1,17 @@
+{
+  "title": "Speed-Track Attention Shifter",
+  "description": "A cognitive cyberpunk game where shape-and-color items fall down a track. The sorting rule (Match Color or Match Shape) swaps every 4–6 seconds. Sort into the correct basket to score — wrong picks drop your multiplier.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "attention",
+    "cognitive",
+    "game",
+    "vanilla-js",
+    "cyberpunk"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}

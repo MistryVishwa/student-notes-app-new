@@ -1,0 +1,320 @@
+/* ═══════════════════════════════════════════════════════
+   Speed-Track Attention Shifter — Cyberpunk Lab Theme
+   ═══════════════════════════════════════════════════════ */
+
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-body: #090a0f;
+  --bg-surface: rgba(30, 41, 59, 0.35);
+  --bg-track: rgba(30, 41, 59, 0.2);
+  --border: rgba(51, 65, 85, 0.35);
+  --text-primary: #e2e8f0;
+  --text-secondary: #94a3b8;
+  --text-muted: #475569;
+  --blue: #38bdf8;
+  --blue-glow: rgba(56, 182, 248, 0.25);
+  --purple: #a855f7;
+  --purple-glow: rgba(168, 85, 247, 0.25);
+  --emerald: #10b981;
+  --crimson: #ef4444;
+  --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  --track-h: 55vmin;
+}
+
+html { font-size: 16px; }
+
+body {
+  font-family: var(--font);
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px;
+  background-image:
+    radial-gradient(ellipse at 50% 20%, rgba(56, 182, 248, 0.015) 0%, transparent 40%);
+}
+
+/* ─── Telemetry ─── */
+.telemetry {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 20px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  width: 100%;
+  max-width: 480px;
+  justify-content: center;
+}
+
+.stat-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  min-width: 50px;
+}
+
+.stat-label {
+  font-size: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+}
+
+.stat-value {
+  font-size: 1.15rem;
+  font-weight: 700;
+}
+
+.stat-value.accent {
+  color: var(--emerald);
+  text-shadow: 0 0 10px rgba(16, 185, 129, 0.3);
+}
+
+/* ─── Rule Banner ─── */
+.rule-banner {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 24px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 50px;
+  width: 100%;
+  max-width: 480px;
+  transition: border-color 0.4s ease, box-shadow 0.4s ease;
+}
+
+.rule-banner.flash-color {
+  border-color: var(--blue);
+  box-shadow: 0 0 24px var(--blue-glow);
+}
+
+.rule-banner.flash-shape {
+  border-color: var(--purple);
+  box-shadow: 0 0 24px var(--purple-glow);
+}
+
+.rule-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 3px;
+  color: var(--text-muted);
+}
+
+.rule-value {
+  font-size: 0.95rem;
+  font-weight: 700;
+  letter-spacing: 2px;
+  transition: color 0.4s ease;
+}
+
+.rule-value.color-rule {
+  color: var(--blue);
+  text-shadow: 0 0 12px var(--blue-glow);
+}
+
+.rule-value.shape-rule {
+  color: var(--purple);
+  text-shadow: 0 0 12px var(--purple-glow);
+}
+
+/* ─── Track ─── */
+.track-wrap {
+  margin-top: 10px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.track {
+  position: relative;
+  height: var(--track-h);
+  background: var(--bg-track);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+/* ─── Falling Item ─── */
+.item {
+  position: absolute;
+  top: -40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: top 0.05s linear;
+  pointer-events: none;
+  z-index: 10;
+}
+
+.item svg {
+  width: 100%;
+  height: 100%;
+  filter: drop-shadow(0 0 10px currentColor);
+}
+
+/* ─── Baskets ─── */
+.baskets {
+  margin-top: 6px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  max-width: 480px;
+}
+
+.basket {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  padding: 12px 8px;
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  font-family: var(--font);
+  min-height: 64px;
+}
+
+.basket:hover {
+  border-color: rgba(148, 163, 184, 0.3);
+  background: rgba(30, 41, 59, 0.5);
+}
+
+.basket:active {
+  transform: scale(0.96);
+}
+
+.basket-icon {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.basket-label {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--text-muted);
+}
+
+.basket.highlight {
+  border-color: var(--emerald);
+  box-shadow: 0 0 16px rgba(16, 185, 129, 0.2);
+}
+
+/* ─── Feedback ─── */
+.feedback {
+  margin-top: 8px;
+  height: 24px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-align: center;
+  transition: opacity 0.3s ease;
+}
+
+.feedback.correct {
+  color: var(--emerald);
+  text-shadow: 0 0 12px rgba(16, 185, 129, 0.2);
+}
+
+.feedback.wrong {
+  color: var(--crimson);
+}
+
+/* ─── Screen Flash ─── */
+.screen-flash {
+  position: fixed;
+  inset: 0;
+  background: rgba(239, 68, 68, 0.12);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  z-index: 100;
+}
+
+.screen-flash.active {
+  opacity: 1;
+}
+
+/* ─── Controls ─── */
+.controls {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.btn-control {
+  background: var(--bg-surface);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 20px;
+  color: var(--text-secondary);
+  font-size: 0.8rem;
+  font-family: var(--font);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  letter-spacing: 0.3px;
+}
+
+.btn-control:hover {
+  border-color: rgba(148, 163, 184, 0.3);
+  color: var(--text-primary);
+  transform: translateY(-1px);
+}
+
+.btn-control:active {
+  transform: scale(0.97);
+}
+
+.btn-control.primary {
+  background: var(--blue);
+  color: #fff;
+  border-color: var(--blue);
+}
+
+.btn-control.primary:hover {
+  box-shadow: 0 4px 16px var(--blue-glow);
+  filter: brightness(1.1);
+}
+
+.btn-control:disabled {
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 460px) {
+  body { padding: 10px; }
+  .telemetry { gap: 8px; padding: 8px 12px; }
+  .stat-value { font-size: 1rem; }
+  .basket { min-height: 54px; padding: 10px 6px; }
+  .item { width: 30px; height: 30px; }
+  .controls { flex-wrap: wrap; justify-content: center; }
+}
