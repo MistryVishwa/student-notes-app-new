@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chroma Quest — The Alchemist's Hue</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@700&display=swap');
+
+        :root {
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+            --accent: #8b5cf6;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            background: radial-gradient(circle at center, #1e1b4b 0%, #020617 100%);
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 600px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            font-weight: 700;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            font-size: 0.9rem;
+        }
+
+        .color-display {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            margin-bottom: 2.5rem;
+            gap: 20px;
+        }
+
+        .orb-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .color-orb {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid var(--glass-border);
+            box-shadow: 0 0 30px rgba(0,0,0,0.3);
+            transition: background 0.2s ease;
+        }
+
+        .orb-label {
+            font-size: 0.75rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+        }
+
+        .mixer-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .control-label {
+            width: 60px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            text-align: left;
+        }
+
+        input[type="range"] {
+            flex: 1;
+            appearance: none;
+            height: 8px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.1);
+            outline: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: var(--text);
+            cursor: pointer;
+            border: 2px solid var(--bg);
+            box-shadow: 0 0 10px rgba(0,0,0,0.5);
+        }
+
+        #red-slider { background: linear-gradient(to right, #000, #ff0000); }
+        #green-slider { background: linear-gradient(to right, #000, #00ff00); }
+        #blue-slider { background: linear-gradient(to right, #000, #0000ff); }
+
+        .btn-submit {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 1rem 3rem;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background: #fff;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            padding: 2rem;
+        }
+
+        .hidden { display: none !important; }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2.5rem;
+            margin: 0 0 1rem;
+            background: linear-gradient(to right, #f472b6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="start-screen" class="overlay">
+            <h1>CHROMA QUEST</h1>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Master the art of color mixing. Match the Alchemist's target hue.</p>
+            <button class="btn-submit" onclick="startGame()">Start Quest</button>
+        </div>
+
+        <div id="result-screen" class="overlay hidden">
+            <h2 id="result-title" style="font-size: 2rem; margin-bottom: 0.5rem;">PERFECT MATCH!</h2>
+            <p id="result-stats" style="color: var(--text-dim); margin-bottom: 2rem;"></p>
+            <button class="btn-submit" onclick="nextLevel()">Next Level</button>
+        </div>
+
+        <div class="stats">
+            <div>Level: <span id="level-val">1</span></div>
+            <div>Score: <span id="score-val">0</span></div>
+        </div>
+
+        <div class="color-display">
+            <div class="orb-wrapper">
+                <div class="orb-label">Target</div>
+                <div id="target-orb" class="color-orb"></div>
+            </div>
+            <div class="orb-wrapper">
+                <div class="orb-label">Your Mix</div>
+                <div id="user-orb" class="color-orb"></div>
+            </div>
+        </div>
+
+        <div class="mixer-controls">
+            <div class="control-group">
+                <div class="control-label" style="color: #ef4444;">RED</div>
+                <input type="range" id="red-slider" min="0" max="255" value="0" oninput="updateMix()">
+            </div>
+            <div class="control-group">
+                <div class="control-label" style="color: #22c55e;">GREEN</div>
+                <input type="range" id="green-slider" min="0" max="255" value="0" oninput="updateMix()">
+            </div>
+            <div class="control-group">
+                <div class="control-label" style="color: #3b82f6;">BLUE</div>
+                <input type="range" id="blue-slider" min="0" max="255" value="0" oninput="updateMix()">
+            </div>
+        </div>
+
+        <button class="btn-submit" onclick="submitMatch()">Submit Mix</button>
+    </div>
+
+    <script>
+        let state = { score: 0, level: 1, target: { r: 0, g: 0, b: 0 } };
+
+        function startGame() {
+            state.score = 0;
+            state.level = 1;
+            document.getElementById('start-screen').classList.add('hidden');
+            initLevel();
+        }
+
+        function initLevel() {
+            document.getElementById('result-screen').classList.add('hidden');
+            document.getElementById('level-val').innerText = state.level;
+            document.getElementById('score-val').innerText = state.score;
+
+            // Complexity increases with level
+            const complexity = Math.min(255, 50 + (state.level * 20));
+            state.target = {
+                r: Math.floor(Math.random() * complexity),
+                g: state.level > 1 ? Math.floor(Math.random() * complexity) : 0,
+                b: state.level > 2 ? Math.floor(Math.random() * complexity) : 0
+            };
+
+            document.getElementById('target-orb').style.backgroundColor = `rgb(${state.target.r}, ${state.target.g}, ${state.target.b})`;
+            resetMix();
+        }
+
+        function resetMix() {
+            ['red', 'green', 'blue'].forEach(c => document.getElementById(`${c}-slider`).value = 0);
+            updateMix();
+        }
+
+        function updateMix() {
+            const r = document.getElementById('red-slider').value;
+            const g = document.getElementById('green-slider').value;
+            const b = document.getElementById('blue-slider').value;
+            document.getElementById('user-orb').style.backgroundColor = `rgb(${r}, ${g}, ${b})`;
+        }
+
+        function submitMatch() {
+            const r = parseInt(document.getElementById('red-slider').value);
+            const g = parseInt(document.getElementById('green-slider').value);
+            const b = parseInt(document.getElementById('blue-slider').value);
+
+            const diff = Math.sqrt(
+                Math.pow(state.target.r - r, 2) +
+                Math.pow(state.target.g - g, 2) +
+                Math.pow(state.target.b - b, 2)
+            );
+
+            const accuracy = Math.max(0, 100 - (diff / 4.41)); // 4.41 is max possible distance / 100
+            const points = Math.floor(accuracy * state.level);
+
+            if (accuracy > 85) {
+                state.score += points;
+                showResult(accuracy, points);
+            } else {
+                alert(`Mix is only ${accuracy.toFixed(1)}% accurate. The Alchemist requires at least 85%!`);
+            }
+        }
+
+        function showResult(acc, points) {
+            const screen = document.getElementById('result-screen');
+            const title = document.getElementById('result-title');
+            const stats = document.getElementById('result-stats');
+
+            title.innerText = acc > 98 ? "ALCHEMICAL MASTERY!" : "GREAT MIX!";
+            stats.innerText = `Accuracy: ${acc.toFixed(1)}% | Earned: ${points} XP`;
+            screen.classList.remove('hidden');
+        }
+
+        function nextLevel() {
+            state.level++;
+            initLevel();
+        }
+    </script>
+</body>
+</html>
