@@ -1,0 +1,5 @@
+[
+  { "name": "Expense Tracker", "path": "expense-tracker-priyanshi/index.html", "icon": "fas fa-wallet", "tag": "Finance" },
+  { "name": "Dots And Boxes", "path": "DotsAndBoxes/index.html", "icon": "fas fa-gamepad", "tag": "Game" },
+  { "name": "Bit Converter", "path": "Bit Converter/index.html", "icon": "fas fa-calculator", "tag": "Utility" }
+]
