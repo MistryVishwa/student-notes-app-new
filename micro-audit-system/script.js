@@ -4,6 +4,9 @@ let audits = JSON.parse(localStorage.getItem("audits")) || [];
 
 const auditInput = document.getElementById("auditInput");
 
+const descriptionInput =
+    document.getElementById("descriptionInput");
+
 const addAuditBtn = document.getElementById("addAuditBtn");
 
 const prioritySelect =
@@ -11,6 +14,21 @@ const prioritySelect =
 
 const dueDateInput =
     document.getElementById("dueDateInput");
+
+const imageInput =
+    document.getElementById("imageInput");
+
+const imagePreview =
+    document.getElementById("imagePreview");
+
+const imagePreviewImg =
+    document.getElementById("imagePreviewImg");
+
+const imageValidationMessage =
+    document.getElementById("imageValidationMessage");
+
+const removeImageBtn =
+    document.getElementById("removeImageBtn");
 
 const auditList = document.getElementById("auditList");
 
@@ -24,6 +42,9 @@ const failedAudits = document.getElementById("failedAudits");
 
 const completionPercentage =
     document.getElementById("completionPercentage");
+
+const statsContainer =
+    document.querySelector(".stats-container");
 
 const themeToggle = document.getElementById("themeToggle");
 
@@ -41,12 +62,35 @@ const logoutBtn = document.getElementById("logoutBtn");
 
 const userGreeting = document.getElementById("userGreeting");
 
+const roleBadge = document.getElementById("roleBadge");
+
 let currentFilter = "all";
 
 let editingAuditId = null;
 
+let newAuditImageData = "";
+
+let editImageCache = {};
+
+const allowedImageTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+];
+
+const allowedImageExtensions = [
+    ".jpg",
+    ".jpeg",
+    ".png",
+    ".webp"
+];
+
 const currentUser =
     JSON.parse(localStorage.getItem("currentUser")) || null;
+
+const currentUserRole = currentUser
+    ? currentUser.role || "User"
+    : "";
 
 const isDashboardPage = Boolean(auditList);
 
@@ -81,6 +125,11 @@ function isValidEmail(email){
     return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
+function isAdmin(){
+
+    return currentUserRole === "Admin";
+}
+
 function redirectToDashboard(){
 
     window.location.href = "index.html";
@@ -113,6 +162,16 @@ if(addAuditBtn){
     addAuditBtn.addEventListener("click", addAudit);
 }
 
+if(imageInput){
+
+    imageInput.addEventListener("change", handleNewImageChange);
+}
+
+if(removeImageBtn){
+
+    removeImageBtn.addEventListener("click", clearNewImageState);
+}
+
 if(searchInput){
 
     searchInput.addEventListener("input", renderAudits);
@@ -126,6 +185,18 @@ if(sortSelect){
 if(userGreeting && currentUser){
 
     userGreeting.textContent = `Welcome, ${currentUser.username}`;
+}
+
+if(roleBadge && currentUser){
+
+    roleBadge.textContent = currentUserRole;
+
+    roleBadge.classList.add(currentUserRole.toLowerCase());
+}
+
+if(statsContainer && currentUser && !isAdmin()){
+
+    statsContainer.classList.add("hidden");
 }
 
 if(logoutBtn){
@@ -172,6 +243,9 @@ function registerUser(event){
 
     const confirmPassword =
         document.getElementById("confirmPassword").value;
+
+    const role =
+        document.getElementById("registerRole").value;
 
     const registerMessage =
         document.getElementById("registerMessage");
@@ -231,7 +305,8 @@ function registerUser(event){
         id: Date.now(),
         username: username,
         email: email,
-        password: password
+        password: password,
+        role: role
     });
 
     saveUsers(users);
@@ -297,7 +372,8 @@ function loginUser(event){
         JSON.stringify({
             id: user.id,
             username: user.username,
-            email: user.email
+            email: user.email,
+            role: user.role || "User"
         })
     );
 
@@ -315,6 +391,10 @@ function addAudit(){
 
     const task = auditInput.value.trim();
 
+    const description = descriptionInput
+        ? descriptionInput.value.trim()
+        : "";
+
     if(task === ""){
 
         alert("Please enter an audit checkpoint");
@@ -328,13 +408,17 @@ const audit = {
 
     task:task,
 
+    description: description,
+
     status:"pending",
 
     priority: prioritySelect.value,
 
     dueDate: dueDateInput.value,
 
-    createdAt:new Date().toLocaleString()
+    createdAt:new Date().toLocaleString(),
+
+    image: newAuditImageData
 };
 
     audits.push(audit);
@@ -343,7 +427,130 @@ const audit = {
 
     auditInput.value = "";
 
+    if(descriptionInput){
+
+        descriptionInput.value = "";
+    }
+
     renderAudits();
+
+    clearNewImageState();
+}
+
+function setImageMessage(element, message, type){
+
+    if(!element){
+
+        return;
+    }
+
+    element.textContent = message;
+
+    element.className = `image-message ${type || ""}`;
+}
+
+function isSupportedImageFile(file){
+
+    if(!file){
+
+        return false;
+    }
+
+    const typeIsValid =
+        allowedImageTypes.includes(file.type);
+
+    const name = file.name.toLowerCase();
+
+    const extensionIsValid =
+        allowedImageExtensions.some((ext)=> name.endsWith(ext));
+
+    return typeIsValid || extensionIsValid;
+}
+
+function readImageFileAsDataUrl(file, callback){
+
+    const reader = new FileReader();
+
+    reader.onload = () => {
+
+        callback(reader.result);
+    };
+
+    reader.readAsDataURL(file);
+}
+
+function updateNewImagePreview(imageData){
+
+    if(imagePreview && imagePreviewImg){
+
+        if(imageData){
+
+            imagePreviewImg.src = imageData;
+
+            imagePreview.classList.remove("hidden");
+        } else {
+
+            imagePreviewImg.removeAttribute("src");
+
+            imagePreview.classList.add("hidden");
+        }
+    }
+}
+
+function clearNewImageState(){
+
+    newAuditImageData = "";
+
+    if(imageInput){
+
+        imageInput.value = "";
+    }
+
+    updateNewImagePreview("");
+
+    setImageMessage(imageValidationMessage, "", "");
+}
+
+function handleNewImageChange(event){
+
+    const file = event.target.files[0];
+
+    if(!file){
+
+        clearNewImageState();
+
+        return;
+    }
+
+    if(!isSupportedImageFile(file)){
+
+        setImageMessage(
+            imageValidationMessage,
+            "Please upload a JPG, JPEG, PNG, or WEBP image.",
+            "error"
+        );
+
+        event.target.value = "";
+
+        updateNewImagePreview("");
+
+        newAuditImageData = "";
+
+        return;
+    }
+
+    readImageFileAsDataUrl(file, (imageData)=>{
+
+        newAuditImageData = imageData;
+
+        updateNewImagePreview(imageData);
+
+        setImageMessage(
+            imageValidationMessage,
+            "Image ready to save.",
+            "success"
+        );
+    });
 }
 
 /* Due Date Helpers */
@@ -501,7 +708,10 @@ function renderAudits(){
 const filteredAudits = audits.filter((audit)=>{
 
     const matchesSearch =
-        audit.task.toLowerCase().includes(searchValue);
+        audit.task.toLowerCase().includes(searchValue) ||
+        (audit.description || "")
+            .toLowerCase()
+            .includes(searchValue);
 
     const matchesFilter =
         currentFilter === "all" ||
@@ -517,6 +727,14 @@ sortedAudits.forEach((audit)=>{
         const dueDateInfo = getDueDateInfo(audit);
 
         const isEditing = editingAuditId === audit.id;
+
+        const cachedEditImage = editImageCache[audit.id];
+
+        const previewImageSource = cachedEditImage
+            ? cachedEditImage.dataUrl
+            : audit.image || "";
+
+        const hasPreviewImage = Boolean(previewImageSource);
 
         const card = document.createElement("div");
 
@@ -544,6 +762,14 @@ sortedAudits.forEach((audit)=>{
                     aria-label="Edit audit task name"
                 >
 
+                <textarea
+                    id="editDescription-${audit.id}"
+                    class="edit-input edit-textarea"
+                    rows="3"
+                    placeholder="Add description (optional)..."
+                    aria-label="Edit audit description"
+                >${escapeHTML(audit.description || "")}</textarea>
+
                 <select
                     id="editPriority-${audit.id}"
                     class="edit-input"
@@ -567,6 +793,47 @@ sortedAudits.forEach((audit)=>{
                     value="${audit.dueDate || ""}"
                     aria-label="Edit due date"
                 >
+
+                <div class="image-field">
+
+                    <label class="image-label" for="editImage-${audit.id}">
+                        Audit image (optional)
+                    </label>
+
+                    <input
+                        type="file"
+                        id="editImage-${audit.id}"
+                        class="edit-input image-input"
+                        accept="image/jpeg,image/png,image/webp"
+                        onchange="handleEditImageChange(${audit.id})"
+                    >
+
+                    <p
+                        id="editImageMessage-${audit.id}"
+                        class="image-message"
+                    ></p>
+
+                    <div
+                        id="editImagePreview-${audit.id}"
+                        class="image-preview ${hasPreviewImage ? "" : "hidden"}"
+                    >
+                        <img
+                            id="editImagePreviewImg-${audit.id}"
+                            src="${previewImageSource}"
+                            alt="Selected audit image preview"
+                        >
+                        <div class="image-actions">
+                            <button
+                                type="button"
+                                id="editImageRemove-${audit.id}"
+                                class="remove-image-btn ${hasPreviewImage ? "" : "hidden"}"
+                                onclick="removeEditImage(${audit.id})"
+                            >
+                                Remove Image
+                            </button>
+                        </div>
+                    </div>
+                </div>
 
             </div>
 
@@ -634,6 +901,26 @@ sortedAudits.forEach((audit)=>{
                 : ""
             }
 
+            ${
+                audit.description && audit.description.trim()
+                ? `<p class="audit-description">
+                    ${escapeHTML(audit.description)}
+                   </p>`
+                : ""
+            }
+
+            ${
+                audit.image
+                ? `<div class="audit-image">
+                    <img
+                        src="${audit.image}"
+                        alt="Audit attachment for ${escapeHTML(audit.task)}"
+                        loading="lazy"
+                    >
+                   </div>`
+                : ""
+            }
+
             <p>
             Status:
              ${audit.status.toUpperCase()}
@@ -647,33 +934,7 @@ sortedAudits.forEach((audit)=>{
 
             <div class="audit-actions">
 
-                <button 
-                    class="pass-btn"
-                    onclick="markPass(${audit.id})"
-                >
-                    Pass
-                </button>
-
-                <button 
-                    class="fail-btn"
-                    onclick="markFail(${audit.id})"
-                >
-                    Fail
-                </button>
-
-                <button 
-                    class="edit-btn"
-                    onclick="editAudit(${audit.id})"
-                >
-                    Edit
-                </button>
-
-                <button 
-                    class="delete-btn"
-                    onclick="deleteAudit(${audit.id})"
-                >
-                    Delete
-                </button>
+                ${getAuditActions(audit.id)}
 
             </div>
         `;
@@ -685,9 +946,58 @@ sortedAudits.forEach((audit)=>{
     updateStats();
 }
 
+function getAuditActions(id){
+
+    if(!isAdmin()){
+
+        return `
+            <span class="permission-note">
+                View Only
+            </span>
+        `;
+    }
+
+    return `
+        <button
+            class="pass-btn"
+            onclick="markPass(${id})"
+        >
+            Pass
+        </button>
+
+        <button
+            class="fail-btn"
+            onclick="markFail(${id})"
+        >
+            Fail
+        </button>
+
+        <button
+            class="edit-btn"
+            onclick="editAudit(${id})"
+        >
+            Edit
+        </button>
+
+        <button
+            class="delete-btn"
+            onclick="deleteAudit(${id})"
+        >
+            Delete
+        </button>
+    `;
+}
+
 /* Edit Audit */
 
 function editAudit(id){
+
+    if(!isAdmin()){
+
+        alert("Only admins can edit audits");
+
+        return;
+    }
 
     editingAuditId = id;
 
@@ -695,6 +1005,13 @@ function editAudit(id){
 }
 
 function saveEditAudit(id){
+
+    if(!isAdmin()){
+
+        alert("Only admins can edit audits");
+
+        return;
+    }
 
     const editTaskInput =
         document.getElementById(`editTask-${id}`);
@@ -704,6 +1021,9 @@ function saveEditAudit(id){
 
     const editDueDateInput =
         document.getElementById(`editDueDate-${id}`);
+
+    const editDescriptionInput =
+        document.getElementById(`editDescription-${id}`);
 
     const updatedTask = editTaskInput.value.trim();
 
@@ -718,11 +1038,21 @@ function saveEditAudit(id){
 
         if(audit.id === id){
 
+            const cachedImage = editImageCache[id];
+
+            const updatedImage = cachedImage
+                ? cachedImage.dataUrl
+                : audit.image || "";
+
             return {
                 ...audit,
                 task: updatedTask,
+                description: editDescriptionInput
+                    ? editDescriptionInput.value.trim()
+                    : "",
                 priority: editPrioritySelect.value,
-                dueDate: editDueDateInput.value
+                dueDate: editDueDateInput.value,
+                image: updatedImage
             };
         }
 
@@ -730,6 +1060,8 @@ function saveEditAudit(id){
     });
 
     editingAuditId = null;
+
+    delete editImageCache[id];
 
     saveAudits();
 
@@ -740,7 +1072,120 @@ function cancelEditAudit(){
 
     editingAuditId = null;
 
+    editImageCache = {};
+
     renderAudits();
+}
+
+function handleEditImageChange(id){
+
+    const editImageInput =
+        document.getElementById(`editImage-${id}`);
+
+    const editImagePreview =
+        document.getElementById(`editImagePreview-${id}`);
+
+    const editImagePreviewImg =
+        document.getElementById(`editImagePreviewImg-${id}`);
+
+    const editImageMessage =
+        document.getElementById(`editImageMessage-${id}`);
+
+    const editImageRemove =
+        document.getElementById(`editImageRemove-${id}`);
+
+    const file = editImageInput.files[0];
+
+    if(!file){
+
+        return;
+    }
+
+    if(!isSupportedImageFile(file)){
+
+        setImageMessage(
+            editImageMessage,
+            "Please upload a JPG, JPEG, PNG, or WEBP image.",
+            "error"
+        );
+
+        editImageInput.value = "";
+
+        return;
+    }
+
+    readImageFileAsDataUrl(file, (imageData)=>{
+
+        editImageCache[id] = {
+            dataUrl: imageData
+        };
+
+        if(editImagePreview && editImagePreviewImg){
+
+            editImagePreviewImg.src = imageData;
+
+            editImagePreview.classList.remove("hidden");
+        }
+
+        if(editImageRemove){
+
+            editImageRemove.classList.remove("hidden");
+        }
+
+        setImageMessage(
+            editImageMessage,
+            "Image ready to save.",
+            "success"
+        );
+    });
+}
+
+function removeEditImage(id){
+
+    const editImagePreview =
+        document.getElementById(`editImagePreview-${id}`);
+
+    const editImagePreviewImg =
+        document.getElementById(`editImagePreviewImg-${id}`);
+
+    const editImageMessage =
+        document.getElementById(`editImageMessage-${id}`);
+
+    const editImageInput =
+        document.getElementById(`editImage-${id}`);
+
+    const editImageRemove =
+        document.getElementById(`editImageRemove-${id}`);
+
+    editImageCache[id] = {
+        dataUrl: ""
+    };
+
+    if(editImageInput){
+
+        editImageInput.value = "";
+    }
+
+    if(editImagePreview){
+
+        editImagePreview.classList.add("hidden");
+    }
+
+    if(editImagePreviewImg){
+
+        editImagePreviewImg.removeAttribute("src");
+    }
+
+    if(editImageRemove){
+
+        editImageRemove.classList.add("hidden");
+    }
+
+    setImageMessage(
+        editImageMessage,
+        "Image will be removed after saving.",
+        "success"
+    );
 }
 
 function escapeHTML(value){
@@ -756,6 +1201,13 @@ function escapeHTML(value){
 /* Mark Pass */
 
 function markPass(id){
+
+    if(!isAdmin()){
+
+        alert("Only admins can update audit status");
+
+        return;
+    }
 
     audits = audits.map((audit)=>{
 
@@ -776,6 +1228,13 @@ function markPass(id){
 
 function markFail(id){
 
+    if(!isAdmin()){
+
+        alert("Only admins can update audit status");
+
+        return;
+    }
+
     audits = audits.map((audit)=>{
 
         if(audit.id === id){
@@ -794,6 +1253,13 @@ function markFail(id){
 /* Delete Audit */
 
 function deleteAudit(id){
+
+    if(!isAdmin()){
+
+        alert("Only admins can delete audits");
+
+        return;
+    }
 
     audits = audits.filter((audit)=> audit.id !== id);
 

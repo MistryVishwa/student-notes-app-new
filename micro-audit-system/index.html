@@ -27,6 +27,10 @@
                     Welcome
                 </p>
 
+                <span id="roleBadge" class="role-badge">
+                    User
+                </span>
+
                 <button id="logoutBtn" class="logout-btn">
                     Logout
                 </button>
@@ -49,6 +53,12 @@
                 placeholder="Enter audit checkpoint..."
             >
 
+            <textarea
+                id="descriptionInput"
+                placeholder="Add description (optional)..."
+                rows="3"
+            ></textarea>
+
             <select id="prioritySelect">
 
                  <option value="Low">
@@ -69,6 +79,38 @@
     type="date"
     id="dueDateInput"
 >
+
+            <div class="image-field">
+
+                <label class="image-label" for="imageInput">
+                    Audit image (optional)
+                </label>
+
+                <input
+                    type="file"
+                    id="imageInput"
+                    class="image-input"
+                    accept="image/jpeg,image/png,image/webp"
+                >
+
+                <p id="imageValidationMessage" class="image-message"></p>
+
+                <div id="imagePreview" class="image-preview hidden">
+                    <img
+                        id="imagePreviewImg"
+                        alt="Selected audit image preview"
+                    >
+                    <div class="image-actions">
+                        <button
+                            type="button"
+                            id="removeImageBtn"
+                            class="remove-image-btn"
+                        >
+                            Remove Image
+                        </button>
+                    </div>
+                </div>
+            </div>
 
             <button id="addAuditBtn">
                 Add Audit

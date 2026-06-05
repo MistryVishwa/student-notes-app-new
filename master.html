@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sequence Master — Recall the Rhythm</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Quicksand:wght@500;700&display=swap');
+
+        :root {
+            --primary: #d4a373; /* Creamy Tan */
+            --secondary: #ccd5ae; /* Sage Green */
+            --accent: #faedcd; /* Light Cream */
+            --text: #582f0e; /* Deep Brown */
+            --bg-gradient: linear-gradient(135deg, #fefae0 0%, #faedcd 100%);
+            --glass: rgba(255, 255, 255, 0.6);
+            --glass-border: rgba(255, 255, 255, 0.8);
+            --success: #606c38;
+            --error: #bc4749;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(12px);
+            border: 2px solid var(--glass-border);
+            padding: 40px 30px;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(90, 47, 14, 0.05);
+            position: relative;
+            z-index: 1;
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            color: var(--text);
+            margin: 0 0 10px;
+            font-size: 2.2rem;
+            letter-spacing: -1px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-around;
+            margin-bottom: 25px;
+            font-weight: 700;
+        }
+
+        .level-badge {
+            background: var(--secondary);
+            color: #283618;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .game-btn {
+            aspect-ratio: 1;
+            border: none;
+            border-radius: 24px;
+            font-size: 2.5rem;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 8px 15px rgba(0,0,0,0.05);
+            background: white;
+        }
+
+        .game-btn:active, .game-btn.active {
+            transform: scale(0.92);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            filter: brightness(0.9);
+        }
+
+        /* Button Types */
+        .btn-0 { color: #e76f51; }
+        .btn-1 { color: #264653; }
+        .btn-2 { color: #2a9d8f; }
+        .btn-3 { color: #e9c46a; }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: #fefae0;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 30px;
+        }
+
+        .mode-select {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+        }
+
+        .mode-btn {
+            padding: 10px 15px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+            background: transparent;
+            color: var(--text);
+            font-weight: 700;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+
+        .start-btn {
+            background: var(--text);
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .start-btn:hover { transform: translateY(-3px); }
+
+        .hidden { display: none !important; }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: 700;
+            height: 24px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="glass-card">
+        <div id="screen-overlay" class="overlay">
+            <h1 id="overlay-title">Sequence Master 🍦</h1>
+            <p style="margin-bottom: 20px; color: #bc6c25;">Watch the sequence, then repeat it!</p>
+            
+            <div class="mode-select">
+                <button class="mode-btn active" onclick="setMode('numbers', this)">123</button>
+                <button class="mode-btn" onclick="setMode('symbols', this)">⭐🎨</button>
+                <button class="mode-btn" onclick="setMode('colors', this)">🔴🔵</button>
+            </div>
+
+            <button class="start-btn" onclick="startGame()">Start Game</button>
+        </div>
+
+        <div class="stats">
+            <div class="level-badge">Round: <span id="round">1</span></div>
+            <div style="font-weight: 800;">Score: <span id="score">0</span></div>
+        </div>
+
+        <div class="game-grid">
+            <button class="game-btn btn-0" onclick="handleInput(0)" id="btn-0"></button>
+            <button class="game-btn btn-1" onclick="handleInput(1)" id="btn-1"></button>
+            <button class="game-btn btn-2" onclick="handleInput(2)" id="btn-2"></button>
+            <button class="game-btn btn-3" onclick="handleInput(3)" id="btn-3"></button>
+        </div>
+
+        <div id="feedback"></div>
+    </div>
+</div>
+
+<script>
+    const MODES = {
+        numbers: ["1", "2", "3", "4"],
+        symbols: ["⭐", "🌙", "☀️", "☁️"],
+        colors: ["🔴", "🔵", "🟡", "🟢"]
+    };
+
+    let state = {
+        mode: 'numbers',
+        sequence: [],
+        userIndex: 0,
+        isPlaying: false,
+        score: 0
+    };
+
+    function setMode(m, btn) {
+        state.mode = m;
+        document.querySelectorAll('.mode-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        updateButtons();
+    }
+
+    function updateButtons() {
+        const chars = MODES[state.mode];
+        for(let i=0; i<4; i++) {
+            document.getElementById(`btn-${i}`).innerText = chars[i];
+        }
+    }
+
+    function startGame() {
+        state.sequence = [];
+        state.score = 0;
+        document.getElementById('screen-overlay').classList.add('hidden');
+        document.getElementById('score').innerText = '0';
+        updateButtons();
+        nextRound();
+    }
+
+    async function nextRound() {
+        state.isPlaying = true;
+        state.userIndex = 0;
+        state.sequence.push(Math.floor(Math.random() * 4));
+        document.getElementById('round').innerText = state.sequence.length;
+        
+        document.getElementById('feedback').innerText = "Watch...";
+        await new Promise(r => setTimeout(r, 800));
+
+        for (let index of state.sequence) {
+            await flashButton(index);
+            await new Promise(r => setTimeout(r, 300));
+        }
+        
+        state.isPlaying = false;
+        document.getElementById('feedback').innerText = "Your turn!";
+    }
+
+    async function flashButton(index) {
+        const btn = document.getElementById(`btn-${index}`);
+        btn.classList.add('active');
+        await new Promise(r => setTimeout(r, 500));
+        btn.classList.remove('active');
+    }
+
+    function handleInput(index) {
+        if (state.isPlaying) return;
+
+        if (index === state.sequence[state.userIndex]) {
+            state.userIndex++;
+            if (state.userIndex === state.sequence.length) {
+                state.score += 10;
+                document.getElementById('score').innerText = state.score;
+                setTimeout(nextRound, 800);
+            }
+        } else {
+            gameOver();
+        }
+    }
+
+    function gameOver() {
+        document.getElementById('overlay-title').innerText = "Game Over! 🍂";
+        document.getElementById('screen-overlay').classList.remove('hidden');
+    }
+</script>
+</body>
+</html>

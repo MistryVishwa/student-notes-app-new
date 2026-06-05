@@ -57,6 +57,42 @@ body{
     font-weight:600;
 }
 
+.role-badge{
+    padding:6px 12px;
+
+    border-radius:999px;
+
+    background:#dbeafe;
+
+    color:#1d4ed8;
+
+    font-size:12px;
+
+    font-weight:700;
+
+    letter-spacing:0.4px;
+}
+
+.role-badge.admin{
+    background:#fee2e2;
+
+    color:#b91c1c;
+}
+
+.role-badge.user{
+    background:#dbeafe;
+
+    color:#1d4ed8;
+}
+
+.hidden{
+    display:none;
+}
+
+.stats-container.hidden{
+    display:none;
+}
+
 /* Theme Toggle */
 
 #themeToggle{
@@ -136,7 +172,8 @@ body{
         0px 4px 20px rgba(0,0,0,0.06);
 }
 
-.auth-form input{
+.auth-form input,
+.auth-form select{
     padding:16px;
 
     border:none;
@@ -240,6 +277,29 @@ body{
     outline:none;
 }
 
+.audit-form textarea{
+    flex:1;
+
+    padding:16px;
+
+    border:none;
+
+    border-radius:16px;
+
+    background:white;
+
+    box-shadow:
+        0px 4px 20px rgba(0,0,0,0.05);
+
+    font-size:16px;
+
+    outline:none;
+
+    resize:vertical;
+
+    min-height:100px;
+}
+
 #prioritySelect,
 #dueDateInput{
 
@@ -283,6 +343,99 @@ body{
 
 .audit-form button:hover{
     background:#1d4ed8;
+}
+
+.image-field{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+}
+
+.image-label{
+    font-size:14px;
+
+    font-weight:600;
+
+    color:#475569;
+}
+
+.image-input{
+    padding:12px 14px;
+}
+
+.image-message{
+    min-height:18px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+    color:#64748b;
+}
+
+.image-message.error{
+    color:#dc2626;
+}
+
+.image-message.success{
+    color:#16a34a;
+}
+
+.image-preview{
+    display:flex;
+
+    flex-direction:column;
+
+    gap:10px;
+
+    padding:12px;
+
+    border-radius:16px;
+
+    background:rgba(255,255,255,0.7);
+
+    box-shadow:
+        0px 4px 16px rgba(0,0,0,0.05);
+}
+
+.image-preview img{
+    width:100%;
+
+    max-height:220px;
+
+    object-fit:cover;
+
+    border-radius:12px;
+}
+
+.image-actions{
+    display:flex;
+
+    justify-content:flex-start;
+}
+
+.remove-image-btn{
+    border:none;
+
+    border-radius:12px;
+
+    padding:10px 14px;
+
+    background:#0f172a;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:14px;
+
+    transition:0.3s ease;
+}
+
+.remove-image-btn:hover{
+    background:#1e293b;
 }
 
 /* Stats */
@@ -395,6 +548,35 @@ body{
     font-size:14px;
 }
 
+.audit-description{
+    color:#475569;
+
+    font-size:14px;
+
+    line-height:1.5;
+
+    white-space:pre-line;
+
+    margin-bottom:10px;
+}
+
+.audit-image{
+    margin:12px 0;
+}
+
+.audit-image img{
+    width:100%;
+
+    max-height:240px;
+
+    object-fit:cover;
+
+    border-radius:14px;
+
+    box-shadow:
+        0px 4px 18px rgba(15,23,42,0.12);
+}
+
 /* Status Buttons */
 
 .audit-actions{
@@ -439,6 +621,14 @@ body{
 
 .cancel-btn{
     background:#64748b;
+}
+
+.permission-note{
+    color:#64748b;
+
+    font-size:14px;
+
+    font-weight:700;
 }
 
 .edit-audit-info{
@@ -492,6 +682,12 @@ body{
     outline:none;
 }
 
+.edit-textarea{
+    min-height:100px;
+
+    resize:vertical;
+}
+
 /* Dark Mode */
 
 body.dark-mode{
@@ -503,6 +699,10 @@ body.dark-mode{
 body.dark-mode .header p,
 body.dark-mode .audit-info p{
     color:#cbd5e1;
+}
+
+body.dark-mode .audit-description{
+    color:#e2e8f0;
 }
 
 body.dark-mode .audit-form input,
@@ -518,7 +718,36 @@ body.dark-mode #themeToggle{
         0px 4px 20px rgba(255,255,255,0.05);
 }
 
-body.dark-mode .auth-form input{
+body.dark-mode .audit-form textarea{
+    background:rgba(15,23,42,0.75);
+
+    color:white;
+
+    box-shadow:
+        0px 4px 20px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .image-label{
+    color:#cbd5e1;
+}
+
+body.dark-mode .image-preview{
+    background:rgba(2,6,23,0.75);
+
+    box-shadow:
+        0px 4px 18px rgba(255,255,255,0.05);
+}
+
+body.dark-mode .remove-image-btn{
+    background:#334155;
+}
+
+body.dark-mode .remove-image-btn:hover{
+    background:#475569;
+}
+
+body.dark-mode .auth-form input,
+body.dark-mode .auth-form select{
     background:rgba(2,6,23,0.75);
 
     color:white;
@@ -528,6 +757,22 @@ body.dark-mode .auth-form input{
 }
 
 body.dark-mode .auth-link{
+    color:#cbd5e1;
+}
+
+body.dark-mode .role-badge.user{
+    background:rgba(37,99,235,0.22);
+
+    color:#bfdbfe;
+}
+
+body.dark-mode .role-badge.admin{
+    background:rgba(220,38,38,0.22);
+
+    color:#fecaca;
+}
+
+body.dark-mode .permission-note{
     color:#cbd5e1;
 }
 

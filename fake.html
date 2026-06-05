@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake Finder — Juicy Trivia</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800&display=swap');
+
+        :root {
+            --bg: #0f172a;
+            --glass: rgba(255, 255, 255, 0.07);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --primary: #f472b6; /* Pink 400 */
+            --secondary: #8b5cf6; /* Violet 500 */
+            --accent: #22d3ee; /* Cyan 400 */
+            --success: #10b981;
+            --error: #f43f5e;
+            --text: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            background: radial-gradient(circle at top left, #1e1b4b 0%, #0f172a 100%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin: 0 0 10px;
+            background: linear-gradient(to bottom right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .prompt {
+            font-size: 1.2rem;
+            margin-bottom: 25px;
+            color: #94a3b8;
+        }
+
+        .fact-list {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+        }
+
+        .fact-btn {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 18px 20px;
+            color: white;
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            text-align: left;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            line-height: 1.4;
+        }
+
+        .fact-btn:hover:not(:disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            transform: scale(1.02) translateY(-2px);
+            border-color: var(--accent);
+            box-shadow: 0 10px 20px -5px rgba(34, 211, 238, 0.2);
+        }
+
+        .fact-btn:active {
+            transform: scale(0.98);
+        }
+
+        .fact-btn.correct {
+            background: var(--success) !important;
+            border-color: var(--success) !important;
+            color: #064e3b;
+            box-shadow: 0 0 30px rgba(16, 185, 129, 0.4);
+        }
+
+        .fact-btn.wrong {
+            background: var(--error) !important;
+            border-color: var(--error) !important;
+            box-shadow: 0 0 30px rgba(244, 63, 94, 0.4);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.9);
+            backdrop-filter: blur(20px);
+            z-index: 10;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .btn-main {
+            background: linear-gradient(135deg, var(--accent), var(--secondary));
+            color: white;
+            border: none;
+            padding: 16px 48px;
+            border-radius: 24px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 25px -5px rgba(139, 92, 246, 0.5);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-3px);
+            filter: brightness(1.1);
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <div id="game-overlay" class="overlay">
+                <h1>Fake Finder</h1>
+                <p style="margin-bottom: 30px; opacity: 0.7;">Identify the lie among the truths.</p>
+                <button class="btn-main" onclick="startGame()">Start Search</button>
+            </div>
+
+            <div class="stats">
+                <span>Round: <span id="round-val">1</span>/5</span>
+                <span>Score: <span id="score-val">0</span></span>
+            </div>
+
+            <div class="prompt">One of these is a total lie...</div>
+            
+            <div id="fact-container" class="fact-list"></div>
+        </div>
+    </div>
+
+    <script>
+        const DATA = [
+            { t: ["Honey never spoils; edible honey was found in 3,000-year-old tombs.", "A bolt of lightning is five times hotter than the surface of the sun.", "Wombat poop is cube-shaped to prevent it from rolling away."], f: "Humans share 50% of their DNA with bananas, but 90% with strawberries." },
+            { t: ["The Eiffel Tower can grow over 6 inches taller during the summer.", "Octopuses have three hearts and blue blood.", "Bananas are berries, but strawberries are not."], f: "The Great Wall of China is the only man-made structure visible from the Moon." },
+            { t: ["A day on Venus is longer than a year on Venus.", "Sharks have been on Earth longer than trees have.", "Cowboys didn't actually wear cowboy hats until the late 1800s."], f: "Goldfish have a three-second memory span." },
+            { t: ["Sloths can hold their breath longer than dolphins can.", "It rains diamonds on Saturn and Jupiter.", "There are more trees on Earth than stars in the Milky Way."], f: "Napoleon Bonaparte was extremely short, standing at only 5 feet tall." },
+            { t: ["An individual blood cell takes about 60 seconds to make a complete circuit of the body.", "Venus is the hottest planet in our solar system, not Mercury.", "Russia has more surface area than Pluto."], f: "Bulls become enraged specifically by the color red." }
+        ];
+
+        let state = { score: 0, round: 0, currentFacts: [] };
+
+        function startGame() {
+            state.score = 0;
+            state.round = 0;
+            document.getElementById('game-overlay').classList.add('hidden');
+            nextRound();
+        }
+
+        function nextRound() {
+            if (state.round >= 5) return endGame();
+            
+            document.getElementById('round-val').innerText = state.round + 1;
+            document.getElementById('score-val').innerText = state.score;
+            
+            const set = DATA[state.round];
+            const facts = [...set.t.map(text => ({ text, isFake: false })), { text: set.f, isFake: true }];
+            state.currentFacts = facts.sort(() => Math.random() - 0.5);
+
+            const container = document.getElementById('fact-container');
+            container.innerHTML = '';
+            
+            state.currentFacts.forEach((fact, i) => {
+                const btn = document.createElement('button');
+                btn.className = 'fact-btn';
+                btn.innerText = fact.text;
+                btn.onclick = () => check(fact.isFake, btn);
+                container.appendChild(btn);
+            });
+        }
+
+        function check(isFake, btn) {
+            const btns = document.querySelectorAll('.fact-btn');
+            btns.forEach(b => b.disabled = true);
+
+            if (isFake) {
+                btn.classList.add('correct');
+                state.score += 100;
+            } else {
+                btn.classList.add('wrong');
+                // Highlight the actual fake one
+                Array.from(btns).find((_, i) => state.currentFacts[i].isFake).classList.add('correct');
+            }
+
+            setTimeout(() => {
+                state.round++;
+                nextRound();
+            }, 2000);
+        }
+
+        function endGame() {
+            const overlay = document.getElementById('game-overlay');
+            overlay.classList.remove('hidden');
+            overlay.querySelector('h1').innerText = "Mission Complete";
+            overlay.querySelector('p').innerText = `You exposed the lies with a score of ${state.score}!`;
+            overlay.querySelector('button').innerText = "Play Again";
+        }
+    </script>
+</body>
+</html>

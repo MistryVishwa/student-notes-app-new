@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Map — Neural Recall</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --bg-deep: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #22d3ee; /* Cyan 400 */
+            --accent-glow: rgba(34, 211, 238, 0.5);
+            --success: #10b981;
+            --error: #f43f5e;
+            --text: #f8fafc;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg-deep);
+            background: radial-gradient(circle at center, #0f172a 0%, #020617 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text);
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(180%);
+            -webkit-backdrop-filter: blur(20px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 40px 30px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0 0 10px;
+            background: linear-gradient(to bottom right, #fff, #94a3b8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .grid-container {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+            margin-bottom: 30px;
+            perspective: 1000px;
+        }
+
+        .tile {
+            aspect-ratio: 1;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+        }
+
+        .tile:hover:not(.disabled) {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+
+        .tile.active {
+            background: var(--accent);
+            box-shadow: 0 0 20px var(--accent-glow);
+            border-color: var(--accent);
+        }
+
+        .tile.correct {
+            background: var(--success);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.4);
+            border-color: var(--success);
+        }
+
+        .tile.wrong {
+            background: var(--error);
+            box-shadow: 0 0 15px rgba(244, 63, 94, 0.4);
+            border-color: var(--error);
+        }
+
+        .tile.disabled {
+            cursor: default;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(2, 6, 23, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 30px;
+        }
+
+        .btn-main {
+            background: var(--accent);
+            color: var(--bg-deep);
+            border: none;
+            padding: 16px 40px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 10px 15px -3px var(--accent-glow);
+        }
+
+        .btn-main:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+
+        .message {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--accent);
+            height: 24px;
+            margin-bottom: 10px;
+        }
+
+        .hidden { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <div id="game-overlay" class="overlay">
+                <h1 id="overlay-title">Memory Map</h1>
+                <p id="overlay-desc" style="margin-bottom: 30px; opacity: 0.7;">Memorize the pattern. Reconstruct the map.</p>
+                <button class="btn-main" onclick="startGame()">Initialize Recall</button>
+            </div>
+
+            <div class="stats">
+                <span>Level: <span id="level-val">1</span></span>
+                <span>Score: <span id="score-val">0</span></span>
+            </div>
+
+            <div id="status-msg" class="message">Memorize!</div>
+            <div class="grid-container" id="grid"></div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            level: 1,
+            score: 0,
+            pattern: [],
+            userSelections: [],
+            isAcceptingInput: false
+        };
+
+        const gridEl = document.getElementById('grid');
+
+        function startGame() {
+            state.level = 1;
+            state.score = 0;
+            document.getElementById('game-overlay').classList.add('hidden');
+            nextRound();
+        }
+
+        function nextRound() {
+            state.userSelections = [];
+            state.isAcceptingInput = false;
+            state.pattern = [];
+            
+            document.getElementById('level-val').innerText = state.level;
+            document.getElementById('score-val').innerText = state.score;
+            document.getElementById('status-msg').innerText = "Memorize!";
+
+            // Create Grid
+            gridEl.innerHTML = '';
+            for(let i=0; i<16; i++) {
+                const tile = document.createElement('div');
+                tile.className = 'tile disabled';
+                tile.onclick = () => handleTileClick(i, tile);
+                gridEl.appendChild(tile);
+            }
+
+            // Generate Pattern
+            const numTiles = 2 + Math.floor(state.level / 2);
+            while(state.pattern.length < numTiles) {
+                let rand = Math.floor(Math.random() * 16);
+                if(!state.pattern.includes(rand)) state.pattern.push(rand);
+            }
+
+            // Show Pattern
+            setTimeout(() => {
+                state.pattern.forEach(idx => gridEl.children[idx].classList.add('active'));
+                setTimeout(() => {
+                    state.pattern.forEach(idx => gridEl.children[idx].classList.remove('active'));
+                    startInputPhase();
+                }, 2000);
+            }, 500);
+        }
+
+        function startInputPhase() {
+            state.isAcceptingInput = true;
+            document.getElementById('status-msg').innerText = "Recall!";
+            Array.from(gridEl.children).forEach(tile => tile.classList.remove('disabled'));
+        }
+
+        function handleTileClick(index, tile) {
+            if(!state.isAcceptingInput || state.userSelections.includes(index)) return;
+
+            state.userSelections.push(index);
+
+            if(state.pattern.includes(index)) {
+                tile.classList.add('correct');
+                if(state.userSelections.length === state.pattern.length) {
+                    state.score += (state.level * 100);
+                    state.level++;
+                    state.isAcceptingInput = false;
+                    setTimeout(nextRound, 1000);
+                }
+            } else {
+                tile.classList.add('wrong');
+                state.isAcceptingInput = false;
+                // Show correct pattern
+                state.pattern.forEach(idx => gridEl.children[idx].classList.add('correct'));
+                setTimeout(endGame, 1500);
+            }
+        }
+
+        function endGame() {
+            const overlay = document.getElementById('game-overlay');
+            overlay.classList.remove('hidden');
+            document.getElementById('overlay-title').innerText = "System Failure";
+            document.getElementById('overlay-desc').innerText = `Your memory reached Level ${state.level}. Final Score: ${state.score}`;
+        }
+    </script>
+</body>
+</html>

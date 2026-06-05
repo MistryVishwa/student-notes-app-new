@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FounderForge</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>🚀 FounderForge</h1>
+        <p>Turn your startup idea into a business plan, MVP roadmap, and investor pitch.</p>
+    </header>
+
+    <main>
+        <div class="card">
+            <h2>Startup Idea Generator</h2>
+
+            <label>Startup Idea</label>
+            <input
+                type="text"
+                id="idea"
+                placeholder="e.g. AI-powered farming assistant"
+            >
+
+            <label>Target Audience</label>
+            <input
+                type="text"
+                id="audience"
+                placeholder="Students, Farmers, Businesses"
+            >
+
+            <label>Problem Being Solved</label>
+            <textarea
+                id="problem"
+                rows="4"
+                placeholder="Describe the problem..."
+            ></textarea>
+
+            <label>Revenue Model</label>
+            <input
+                type="text"
+                id="revenue"
+                placeholder="Subscription, Ads, SaaS"
+            >
+
+            <button onclick="generatePlan()">
+                Generate Blueprint
+            </button>
+        </div>
+
+        <div class="card">
+            <h2>Generated Startup Blueprint</h2>
+            <div id="output">
+                Fill the form and click Generate Blueprint.
+            </div>
+        </div>
+    </main>
+
+    <script src="app.js"></script>
+
+</body>
+</html>

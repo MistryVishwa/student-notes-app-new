@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevCraft | Developer Portfolio Builder & Live Preview</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+  <!-- Lucide Icons (Loaded via CDN) -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    <!-- Top Utility Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <div class="logo-icon">
+          <i data-lucide="layers"></i>
+        </div>
+        <div class="logo-text">
+          <h1>DevCraft</h1>
+          <span>Portfolio Builder</span>
+        </div>
+      </div>
+      
+      <div class="header-actions">
+        <!-- Configuration JSON Upload/Download -->
+        <button id="import-btn" class="btn btn-secondary btn-icon-text" title="Import JSON Config">
+          <i data-lucide="upload"></i>
+          <span>Import Config</span>
+        </button>
+        <input type="file" id="import-file" accept=".json" style="display: none;">
+        
+        <button id="export-btn" class="btn btn-secondary btn-icon-text" title="Export JSON Config">
+          <i data-lucide="download"></i>
+          <span>Export Config</span>
+        </button>
+        
+        <div class="divider"></div>
+        
+        <!-- Light/Dark Mode for Editor Dashboard -->
+        <button id="theme-toggle" class="btn btn-icon" title="Toggle Dashboard Theme">
+          <i data-lucide="sun" class="sun-icon"></i>
+          <i data-lucide="moon" class="moon-icon"></i>
+        </button>
+        
+        <!-- PDF Download Button -->
+        <button id="download-pdf-btn" class="btn btn-secondary btn-icon-text" title="Download Portfolio as PDF">
+          <i data-lucide="file-text"></i>
+          <span>Download PDF</span>
+        </button>
+        
+        <!-- Main Download Button -->
+        <button id="download-portfolio-btn" class="btn btn-primary btn-icon-text">
+          <i data-lucide="code-2"></i>
+          <span>Download Portfolio</span>
+        </button>
+      </div>
+    </header>
+    
+    <!-- Main Workspace Split Screen -->
+    <main class="app-workspace">
+      <!-- Editor Sidebar (Left Panel) -->
+      <section class="editor-panel">
+        <!-- Tabs Selection -->
+        <div class="editor-tabs">
+          <button class="tab-btn active" data-tab="profile" title="Profile Details">
+            <i data-lucide="user"></i>
+            <span>Profile</span>
+          </button>
+          <button class="tab-btn" data-tab="customization" title="Themes & Styling">
+            <i data-lucide="palette"></i>
+            <span>Themes</span>
+          </button>
+          <button class="tab-btn" data-tab="skills" title="Technical Skills">
+            <i data-lucide="cpu"></i>
+            <span>Skills</span>
+          </button>
+          <button class="tab-btn" data-tab="projects" title="Projects Showcase">
+            <i data-lucide="folder-git-2"></i>
+            <span>Projects</span>
+          </button>
+          <button class="tab-btn" data-tab="experience" title="Work History">
+            <i data-lucide="briefcase"></i>
+            <span>Experience</span>
+          </button>
+          <button class="tab-btn" data-tab="education" title="Education & Certifications">
+            <i data-lucide="graduation-cap"></i>
+            <span>Education</span>
+          </button>
+        </div>
+        
+        <!-- Forms Content Panel -->
+        <div class="editor-content">
+          <!-- Profile Section -->
+          <div class="tab-content active" id="tab-profile">
+            <div class="section-header">
+              <h2>Developer Profile</h2>
+              <p>Configure your basic details, bio, and social media handles.</p>
+            </div>
+            
+            <div class="form-grid">
+              <!-- Avatar Upload -->
+              <div class="form-group col-full avatar-upload-container">
+                <label>Profile Picture</label>
+                <div class="avatar-row">
+                  <div class="avatar-preview" id="avatar-preview-box">
+                    <i data-lucide="user" class="placeholder-icon"></i>
+                  </div>
+                  <div class="avatar-controls">
+                    <label for="avatar-input" class="btn btn-secondary">Upload Photo</label>
+                    <input type="file" id="avatar-input" accept="image/*" style="display: none;">
+                    <button type="button" id="remove-avatar-btn" class="btn btn-danger-outline btn-icon" title="Remove Photo">
+                      <i data-lucide="trash-2"></i>
+                    </button>
+                    <p class="file-help">JPG, PNG, or WebP. Max 2MB.</p>
+                  </div>
+                </div>
+              </div>
+              
+              <!-- Full Name -->
+              <div class="form-group col-half">
+                <label for="prof-name">Full Name</label>
+                <input type="text" id="prof-name" placeholder="John Doe" value="Vishwa Mistry">
+              </div>
+              
+              <!-- Job Title -->
+              <div class="form-group col-half">
+                <label for="prof-title">Professional Title</label>
+                <input type="text" id="prof-title" placeholder="Full Stack Developer" value="Frontend Architect & UI Designer">
+              </div>
+              
+              <!-- About Bio -->
+              <div class="form-group col-full">
+                <label for="prof-bio">Short Biography</label>
+                <textarea id="prof-bio" rows="4" placeholder="Brief pitch about yourself...">Passionate software developer focusing on modern web interfaces, beautiful designs, and solid systems architecture. Building premium web apps with clean code and high performance.</textarea>
+              </div>
+              
+              <!-- Email -->
+              <div class="form-group col-half">
+                <label for="prof-email">Email Address</label>
+                <input type="email" id="prof-email" placeholder="example@domain.com" value="vishwa@example.com">
+              </div>
+              
+              <!-- Location -->
+              <div class="form-group col-half">
+                <label for="prof-location">Location</label>
+                <input type="text" id="prof-location" placeholder="San Francisco, CA" value="Mumbai, India">
+              </div>
+              
+              <!-- Contact Page Link or Phone -->
+              <div class="form-group col-half">
+                <label for="prof-phone">Phone / Optional Contact</label>
+                <input type="text" id="prof-phone" placeholder="+1 (555) 123-4567" value="+91 9876543210">
+              </div>
+              
+              <!-- Resume Download Link -->
+              <div class="form-group col-half">
+                <label for="prof-resume">Resume URL (Optional)</label>
+                <input type="url" id="prof-resume" placeholder="https://drive.google.com/.../resume.pdf" value="#">
+              </div>
+              
+              <!-- Social Media Header -->
+              <div class="col-full sub-header">
+                <h3>Social Profiles</h3>
+              </div>
+              
+              <!-- GitHub -->
+              <div class="form-group col-half">
+                <label for="soc-github">GitHub Profile URL</label>
+                <div class="input-with-icon">
+                  <i data-lucide="github"></i>
+                  <input type="url" id="soc-github" placeholder="https://github.com/username" value="https://github.com/vishwa-mistry">
+                </div>
+              </div>
+              
+              <!-- LinkedIn -->
+              <div class="form-group col-half">
+                <label for="soc-linkedin">LinkedIn Profile URL</label>
+                <div class="input-with-icon">
+                  <i data-lucide="linkedin"></i>
+                  <input type="url" id="soc-linkedin" placeholder="https://linkedin.com/in/username" value="https://linkedin.com/in/vishwa-mistry">
+                </div>
+              </div>
+              
+              <!-- Twitter / X -->
+              <div class="form-group col-half">
+                <label for="soc-twitter">Twitter / X URL</label>
+                <div class="input-with-icon">
+                  <i data-lucide="twitter"></i>
+                  <input type="url" id="soc-twitter" placeholder="https://twitter.com/username" value="https://x.com/vishwa_mistry">
+                </div>
+              </div>
+              
+              <!-- Personal Website -->
+              <div class="form-group col-half">
+                <label for="soc-website">Personal Website / Blog</label>
+                <div class="input-with-icon">
+                  <i data-lucide="globe"></i>
+                  <input type="url" id="soc-website" placeholder="https://mywebsite.dev" value="https://vishwamistry.dev">
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Customization Section -->
+          <div class="tab-content" id="tab-customization">
+            <div class="section-header">
+              <h2>Themes & Styling</h2>
+              <p>Pick a template style, set color themes, custom fonts, and layouts.</p>
+            </div>
+            
+            <div class="form-grid">
+              <!-- Select Theme -->
+              <div class="form-group col-full">
+                <label>Portfolio Base Theme</label>
+                <div class="theme-cards-grid">
+                  <label class="theme-card-option">
+                    <input type="radio" name="portfolio-theme" value="minimalist" checked>
+                    <div class="theme-card-body minimalist">
+                      <div class="color-preview"></div>
+                      <span>Minimalist Slate</span>
+                    </div>
+                  </label>
+                  
+                  <label class="theme-card-option">
+                    <input type="radio" name="portfolio-theme" value="glassmorphism">
+                    <div class="theme-card-body glassmorphism">
+                      <div class="color-preview"></div>
+                      <span>Aurora Glass</span>
+                    </div>
+                  </label>
+                  
+                  <label class="theme-card-option">
+                    <input type="radio" name="portfolio-theme" value="neon">
+                    <div class="theme-card-body neon">
+                      <div class="color-preview"></div>
+                      <span>Cyberpunk Neon</span>
+                    </div>
+                  </label>
+                  
+                  <label class="theme-card-option">
+                    <input type="radio" name="portfolio-theme" value="retro">
+                    <div class="theme-card-body retro">
+                      <div class="color-preview"></div>
+                      <span>Warm Retro</span>
+                    </div>
+                  </label>
+                </div>
+              </div>
+              
+              <!-- Font Family -->
+              <div class="form-group col-half">
+                <label for="style-font">Font Family</label>
+                <select id="style-font">
+                  <option value="Outfit" selected>Outfit (Modern / Friendly)</option>
+                  <option value="Inter">Inter (Clean / Tech)</option>
+                  <option value="Fira Code">Fira Code (Developer / Monospace)</option>
+                  <option value="Playfair Display">Playfair Display (Elegant / Serif)</option>
+                </select>
+              </div>
+              
+              <!-- Layout choice -->
+              <div class="form-group col-half">
+                <label for="style-layout">Project Card Layout</label>
+                <select id="style-layout">
+                  <option value="grid" selected>Grid View (2-3 columns)</option>
+                  <option value="list">List View (Timeline / Stacked)</option>
+                </select>
+              </div>
+              
+              <!-- Accent Color Picker -->
+              <div class="form-group col-half">
+                <label for="style-color">Theme Accent Color</label>
+                <div class="color-picker-row">
+                  <input type="color" id="style-color" value="#6366f1">
+                  <input type="text" id="style-color-hex" value="#6366f1" placeholder="#6366f1">
+                </div>
+              </div>
+              
+              <!-- Card Border Radius -->
+              <div class="form-group col-half">
+                <label for="style-radius">Card Rounded Corners</label>
+                <select id="style-radius">
+                  <option value="0px">Sharp (0px)</option>
+                  <option value="8px">Subtle (8px)</option>
+                  <option value="16px" selected>Rounded (16px)</option>
+                  <option value="30px">Pill / Very Smooth (30px)</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Skills Section -->
+          <div class="tab-content" id="tab-skills">
+            <div class="section-header">
+              <h2>Skills Management</h2>
+              <p>List your technical skills, group them, and display proficiency ratings.</p>
+            </div>
+            
+            <div class="skills-manager">
+              <div class="add-skill-form form-grid inline-editor-box">
+                <div class="form-group col-half">
+                  <label for="new-skill-name">Skill Name</label>
+                  <input type="text" id="new-skill-name" placeholder="React, Python, Figma...">
+                </div>
+                <div class="form-group col-half">
+                  <label for="new-skill-category">Category</label>
+                  <select id="new-skill-category">
+                    <option value="Frontend">Frontend / Design</option>
+                    <option value="Backend">Backend / Cloud</option>
+                    <option value="Tools">Tools / Methodologies</option>
+                    <option value="Languages">Programming Languages</option>
+                  </select>
+                </div>
+                <div class="form-group col-half">
+                  <label for="new-skill-proficiency">Proficiency Level (%)</label>
+                  <div class="slider-group">
+                    <input type="range" id="new-skill-proficiency" min="10" max="100" value="85">
+                    <span id="skill-proficiency-val">85%</span>
+                  </div>
+                </div>
+                <div class="form-group col-half">
+                  <label for="new-skill-tags">Skill Tag / Keyword</label>
+                  <input type="text" id="new-skill-tags" placeholder="e.g., CSS3, ES6 (optional)">
+                </div>
+                <div class="form-group col-full flex-end">
+                  <button type="button" id="add-skill-btn" class="btn btn-primary btn-icon-text">
+                    <i data-lucide="plus"></i>
+                    <span>Add Skill</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="skills-list-container">
+                <h3>Current Skills</h3>
+                <div id="skills-list" class="dynamic-items-list">
+                  <!-- Dynamic JS skills items go here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Projects Section -->
+          <div class="tab-content" id="tab-projects">
+            <div class="section-header">
+              <h2>Projects Showcase</h2>
+              <p>Add rich project cards showing off your coding work, images, and links.</p>
+            </div>
+            
+            <div class="projects-manager">
+              <div class="add-project-form form-grid inline-editor-box">
+                <!-- Project Image Upload -->
+                <div class="form-group col-full">
+                  <label>Project Cover Image</label>
+                  <div class="project-image-row">
+                    <div class="project-image-preview" id="proj-img-preview-box">
+                      <i data-lucide="image" class="placeholder-icon"></i>
+                    </div>
+                    <div class="project-image-controls">
+                      <label for="proj-img-input" class="btn btn-secondary">Upload Cover</label>
+                      <input type="file" id="proj-img-input" accept="image/*" style="display: none;">
+                      <button type="button" id="remove-proj-img-btn" class="btn btn-danger-outline btn-icon" title="Remove Image">
+                        <i data-lucide="trash-2"></i>
+                      </button>
+                      <p class="file-help">JPG, PNG, or WebP. Max 2MB.</p>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Project Title -->
+                <div class="form-group col-half">
+                  <label for="new-proj-title">Project Title</label>
+                  <input type="text" id="new-proj-title" placeholder="My SaaS Platform">
+                </div>
+                
+                <!-- Project Demo Link -->
+                <div class="form-group col-half">
+                  <label for="new-proj-demo">Live Demo URL</label>
+                  <input type="url" id="new-proj-demo" placeholder="https://example.com">
+                </div>
+                
+                <!-- Github Repo Link -->
+                <div class="form-group col-half">
+                  <label for="new-proj-repo">GitHub Repository Link</label>
+                  <input type="url" id="new-proj-repo" placeholder="https://github.com/user/repo">
+                </div>
+                
+                <!-- Tech Tags -->
+                <div class="form-group col-half">
+                  <label for="new-proj-tags">Technologies (comma-separated)</label>
+                  <input type="text" id="new-proj-tags" placeholder="React, Node.js, WebSockets">
+                </div>
+                
+                <!-- Project Description -->
+                <div class="form-group col-full">
+                  <label for="new-proj-desc">Project Description</label>
+                  <textarea id="new-proj-desc" rows="3" placeholder="Explain what the project does, key technical challenges, etc."></textarea>
+                </div>
+                
+                <div class="form-group col-full flex-end">
+                  <button type="button" id="add-project-btn" class="btn btn-primary btn-icon-text">
+                    <i data-lucide="plus"></i>
+                    <span>Add Project</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="projects-list-container">
+                <h3>Current Projects</h3>
+                <div id="projects-list" class="dynamic-items-list grid-layout">
+                  <!-- Dynamic JS project items go here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Experience Section -->
+          <div class="tab-content" id="tab-experience">
+            <div class="section-header">
+              <h2>Work Experience</h2>
+              <p>Add your employment history, job titles, and main achievements.</p>
+            </div>
+            
+            <div class="experience-manager">
+              <div class="add-experience-form form-grid inline-editor-box">
+                <!-- Job Title -->
+                <div class="form-group col-half">
+                  <label for="new-exp-title">Job Title</label>
+                  <input type="text" id="new-exp-title" placeholder="Lead Software Engineer">
+                </div>
+                
+                <!-- Company Name -->
+                <div class="form-group col-half">
+                  <label for="new-exp-company">Company</label>
+                  <input type="text" id="new-exp-company" placeholder="Acme Corporation">
+                </div>
+                
+                <!-- Dates Duration -->
+                <div class="form-group col-half">
+                  <label for="new-exp-dates">Duration / Dates</label>
+                  <input type="text" id="new-exp-dates" placeholder="Jan 2024 - Present">
+                </div>
+                
+                <!-- Achievements description -->
+                <div class="form-group col-full">
+                  <label for="new-exp-desc">Responsibilities & Achievements</label>
+                  <textarea id="new-exp-desc" rows="4" placeholder="Describe your impact, team scale, technologies used, metrics achieved..."></textarea>
+                </div>
+                
+                <div class="form-group col-full flex-end">
+                  <button type="button" id="add-experience-btn" class="btn btn-primary btn-icon-text">
+                    <i data-lucide="plus"></i>
+                    <span>Add Experience</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="experience-list-container">
+                <h3>Work History</h3>
+                <div id="experience-list" class="dynamic-items-list">
+                  <!-- Dynamic JS experience items go here -->
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Education Section -->
+          <div class="tab-content" id="tab-education">
+            <div class="section-header">
+              <h2>Education & Certifications</h2>
+              <p>Document your academic degrees, certifications, online courses, and awards.</p>
+            </div>
+            
+            <div class="education-manager">
+              <div class="add-education-form form-grid inline-editor-box">
+                <!-- Degree Title / Cert -->
+                <div class="form-group col-half">
+                  <label for="new-edu-degree">Degree / Certification</label>
+                  <input type="text" id="new-edu-degree" placeholder="B.S. in Computer Science">
+                </div>
+                
+                <!-- Institution -->
+                <div class="form-group col-half">
+                  <label for="new-edu-institution">Institution / Provider</label>
+                  <input type="text" id="new-edu-institution" placeholder="Stanford University">
+                </div>
+                
+                <!-- Dates Duration -->
+                <div class="form-group col-half">
+                  <label for="new-edu-dates">Date / Duration</label>
+                  <input type="text" id="new-edu-dates" placeholder="2020 - 2024">
+                </div>
+                
+                <!-- Description -->
+                <div class="form-group col-full">
+                  <label for="new-edu-desc">Relevant Detail (GPA, Honors, Key courses...)</label>
+                  <textarea id="new-edu-desc" rows="3" placeholder="Details about course content or accomplishments..."></textarea>
+                </div>
+                
+                <div class="form-group col-full flex-end">
+                  <button type="button" id="add-education-btn" class="btn btn-primary btn-icon-text">
+                    <i data-lucide="plus"></i>
+                    <span>Add Education</span>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="education-list-container">
+                <h3>Education & Certification History</h3>
+                <div id="education-list" class="dynamic-items-list">
+                  <!-- Dynamic JS education items go here -->
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+      
+      <!-- Live Preview Screen (Right Panel) -->
+      <section class="preview-panel">
+        <!-- Preview Control Header -->
+        <div class="preview-controls">
+          <div class="preview-status">
+            <span class="pulse-indicator"></span>
+            <span>Live Preview</span>
+          </div>
+          
+          <!-- Viewport Resizer Buttons -->
+          <div class="viewport-buttons">
+            <button class="btn btn-viewport active" data-viewport="desktop" title="Desktop view">
+              <i data-lucide="monitor"></i>
+              <span>Desktop</span>
+            </button>
+            <button class="btn btn-viewport" data-viewport="tablet" title="Tablet view">
+              <i data-lucide="tablet"></i>
+              <span>Tablet</span>
+            </button>
+            <button class="btn btn-viewport" data-viewport="mobile" title="Mobile view">
+              <i data-lucide="smartphone"></i>
+              <span>Mobile</span>
+            </button>
+          </div>
+          
+          <button id="refresh-preview-btn" class="btn btn-icon btn-secondary" title="Force Sync Preview">
+            <i data-lucide="rotate-cw"></i>
+          </button>
+        </div>
+        
+        <!-- Interactive Preview Frame Wrapper -->
+        <div class="preview-frame-wrapper desktop-width">
+          <iframe id="portfolio-preview-frame" sandbox="allow-scripts allow-same-origin allow-popups allow-modals"></iframe>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- Main Script -->
+  <script src="app.js"></script>
+</body>
+</html>

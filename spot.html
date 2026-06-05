@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spot the Pattern — Neural Logic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap');
+
+        :root {
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.15);
+            --accent-glow: #00f2fe;
+            --accent-pink: #764ba2;
+            --text-primary: #ffffff;
+            --success: #00ff88;
+            --fail: #ff4b2b;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background: #0f0c29;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+
+        .main-container {
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+        }
+
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(25px) saturate(180%);
+            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 40px 30px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.8);
+            text-align: center;
+            overflow: hidden;
+        }
+
+        .header {
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            font-weight: 800;
+            margin: 0;
+            background: linear-gradient(to right, #00f2fe, #4facfe);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .score-box {
+            display: flex;
+            justify-content: space-between;
+            margin: 20px 0;
+            font-weight: 600;
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .sequence-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid var(--glass-border);
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .num-tile {
+            width: 50px;
+            height: 50px;
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            font-weight: 600;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .num-tile.next {
+            border: 2px dashed var(--accent-glow);
+            color: var(--accent-glow);
+            background: rgba(0, 242, 254, 0.05);
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .opt-btn {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 18px;
+            padding: 15px;
+            color: white;
+            font-family: inherit;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .opt-btn:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+            border-color: var(--accent-glow);
+        }
+
+        .opt-btn.correct {
+            background: var(--success) !important;
+            color: #000;
+            border-color: var(--success);
+        }
+
+        .opt-btn.wrong {
+            background: var(--fail) !important;
+            border-color: var(--fail);
+        }
+
+        .explanation {
+            margin-top: 20px;
+            font-size: 0.9rem;
+            color: var(--accent-glow);
+            font-style: italic;
+            min-height: 1.2em;
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(15, 12, 41, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 100;
+            border-radius: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: opacity 0.5s;
+        }
+
+        .btn-start {
+            background: linear-gradient(45deg, #00f2fe, #4facfe);
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 10px 20px rgba(0, 242, 254, 0.3);
+            transition: transform 0.3s;
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        .animate-pop {
+            animation: pop 0.4s ease forwards;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main-container">
+        <div id="game-overlay" class="overlay">
+            <h1 id="overlay-title">Pattern Master</h1>
+            <p id="overlay-desc" style="margin: 15px 0 30px; opacity: 0.7;">Find the rule. Solve the sequence.</p>
+            <button class="btn-start" onclick="initGame()">Start Game</button>
+        </div>
+
+        <div class="glass-panel">
+            <div class="header">
+                <h1>SPOT THE PATTERN</h1>
+                <div class="score-box">
+                    <span>LEVEL <span id="level-num">1</span></span>
+                    <span>SCORE: <span id="score-num">0</span></span>
+                </div>
+            </div>
+
+            <div class="sequence-container" id="seq-box"></div>
+            <div class="options-grid" id="opt-box"></div>
+            <div id="rule-explain" class="explanation"></div>
+        </div>
+    </div>
+
+    <script>
+        const PATTERNS = [
+            { s: [2, 4, 6, 8], a: 10, o: [10, 12, 9, 11], r: "Arithmetic: +2 each step." },
+            { s: [5, 10, 20, 40], a: 80, o: [60, 80, 50, 100], r: "Geometric: ×2 each step." },
+            { s: [1, 4, 9, 16], a: 25, o: [20, 25, 30, 21], r: "Squares: 1², 2², 3², 4², 5²." },
+            { s: [1, 1, 2, 3, 5], a: 8, o: [7, 8, 9, 10], r: "Fibonacci: Sum of two previous numbers." },
+            { s: [100, 90, 81, 73], a: 66, o: [65, 66, 64, 63], r: "Decreasing difference: -10, -9, -8, -7." },
+            { s: [2, 6, 12, 20], a: 30, o: [28, 30, 32, 26], r: "Pattern: n * (n + 1)." },
+            { s: [3, 9, 27, 81], a: 243, o: [162, 243, 324, 253], r: "Powers of 3: 3¹, 3², 3³, 3⁴, 3⁵." },
+            { s: [1, 2, 6, 24], a: 120, o: [48, 120, 96, 72], r: "Factorials: 1!, 2!, 3!, 4!, 5!." }
+        ];
+
+        let state = { level: 0, score: 0 };
+
+        function initGame() {
+            state.level = 0; state.score = 0;
+            document.getElementById('game-overlay').classList.add('hidden');
+            loadLevel();
+        }
+
+        function loadLevel() {
+            if (state.level >= PATTERNS.length) return endGame();
+            const current = PATTERNS[state.level];
+            document.getElementById('level-num').innerText = state.level + 1;
+            document.getElementById('score-num').innerText = state.score;
+            document.getElementById('rule-explain').innerText = "";
+
+            const seqBox = document.getElementById('seq-box');
+            seqBox.innerHTML = current.s.map(n => `<div class="num-tile animate-pop">${n}</div>`).join('') + `<div class="num-tile next animate-pop">?</div>`;
+
+            const optBox = document.getElementById('opt-box');
+            optBox.innerHTML = '';
+            current.o.forEach(val => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn animate-pop';
+                btn.innerText = val;
+                btn.onclick = () => checkAnswer(val, btn);
+                optBox.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(guess, btn) {
+            const current = PATTERNS[state.level];
+            const isCorrect = guess === current.a;
+            document.querySelectorAll('.opt-btn').forEach(b => b.disabled = true);
+            document.getElementById('rule-explain').innerText = current.r;
+
+            if (isCorrect) { btn.classList.add('correct'); state.score += 100; }
+            else { btn.classList.add('wrong'); Array.from(document.querySelectorAll('.opt-btn')).find(b => parseInt(b.innerText) === current.a).classList.add('correct'); }
+
+            setTimeout(() => { state.level++; loadLevel(); }, 3000);
+        }
+
+        function endGame() {
+            const overlay = document.getElementById('game-overlay');
+            overlay.classList.remove('hidden');
+            document.getElementById('overlay-title').innerText = "Pattern Master!";
+            document.getElementById('overlay-desc').innerText = `Final Score: ${state.score}`;
+        }
+    </script>
+</body>
+</html>

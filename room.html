@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room Recall — Memory Reconstruction</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@300;500;700&display=swap');
+
+        :root {
+            --bg: #020617;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #22d3ee;
+            --accent-glow: rgba(34, 211, 238, 0.3);
+            --secondary: #818cf8;
+            --success: #10b981;
+            --error: #f43f5e;
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #020617 100%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 650px;
+            position: relative;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(20px) saturate(160%);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 40px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.8rem;
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0 0 10px;
+            color: var(--accent);
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .phase-indicator {
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .image-viewport {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            background: #000;
+            border-radius: 20px;
+            margin-bottom: 30px;
+            overflow: hidden;
+            position: relative;
+            border: 1px solid var(--glass-border);
+        }
+
+        .image-viewport img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: filter 0.5s ease;
+        }
+
+        .redacted {
+            filter: blur(50px) brightness(0.2) grayscale(1);
+        }
+
+        .timer-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 4px;
+            background: var(--accent);
+            width: 100%;
+            transition: width linear;
+            box-shadow: 0 0 10px var(--accent);
+        }
+
+        .scan-line {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--accent);
+            box-shadow: 0 0 15px var(--accent);
+            z-index: 5;
+            animation: scan 2s ease-in-out infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0; }
+            50% { top: 100%; }
+            100% { top: 0; }
+        }
+
+        .question-area {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 25px;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 16px;
+            color: var(--text);
+            font-family: inherit;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .option-btn:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            padding: 40px;
+        }
+
+        .primary-btn {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 16px 48px;
+            border-radius: 16px;
+            font-weight: 800;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .primary-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 20px var(--accent-glow);
+        }
+
+        .hidden { display: none !important; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="glass-card">
+            <div id="start-screen" class="overlay">
+                <h1>Room Recall</h1>
+                <p style="color: var(--text-dim); margin-bottom: 30px;">Observe the environment. Reconstruct the details.</p>
+                <button class="primary-btn" onclick="startObservation()">Initialize Scan</button>
+            </div>
+
+            <div id="result-screen" class="overlay hidden">
+                <h1 id="result-title">Scan Complete</h1>
+                <p id="result-text" style="color: var(--text-dim); margin-bottom: 30px;"></p>
+                <button class="primary-btn" onclick="location.reload()">Re-Initialize</button>
+            </div>
+
+            <div class="phase-indicator" id="phase-label">Standby</div>
+            
+            <div class="image-viewport">
+                <div id="scan-line" class="hidden"></div>
+                <!-- Image shows a yellow chair and 2 books on a desk -->
+                <img id="room-img" src="https://images.unsplash.com/photo-1594026112284-02bb6f3352fe?w=800&q=80" alt="Observation Room">
+                <div id="timer-bar" class="timer-bar" style="width: 0%;"></div>
+            </div>
+
+            <div id="question-area" class="question-area hidden">
+                <div class="question-text" id="q-text">Loading Interrogation...</div>
+                <div class="options-grid" id="options"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const QUESTIONS = [
+            { q: "What color was the chair in the room?", o: ["Blue", "Yellow", "Red", "Grey"], a: "Yellow" },
+            { q: "How many books were visible on the table?", o: ["1", "2", "3", "5"], a: "2" }
+        ];
+
+        let state = { currentQ: 0, score: 0 };
+
+        function startObservation() {
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('phase-label').innerText = "Observation Phase";
+            document.getElementById('scan-line').classList.remove('hidden');
+            
+            const bar = document.getElementById('timer-bar');
+            bar.style.transition = 'width 10s linear';
+            bar.style.width = '100%';
+
+            setTimeout(startInterrogation, 10000);
+        }
+
+        function startInterrogation() {
+            document.getElementById('phase-label').innerText = "Interrogation Phase";
+            document.getElementById('room-img').classList.add('redacted');
+            document.getElementById('scan-line').classList.add('hidden');
+            document.getElementById('timer-bar').classList.add('hidden');
+            document.getElementById('question-area').classList.remove('hidden');
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            const data = QUESTIONS[state.currentQ];
+            document.getElementById('q-text').innerText = data.q;
+            const optContainer = document.getElementById('options');
+            optContainer.innerHTML = '';
+
+            data.o.forEach(opt => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.innerText = opt;
+                btn.onclick = () => handleAnswer(opt);
+                optContainer.appendChild(btn);
+            });
+        }
+
+        function handleAnswer(choice) {
+            if (choice === QUESTIONS[state.currentQ].a) state.score++;
+            
+            state.currentQ++;
+            if (state.currentQ < QUESTIONS.length) {
+                loadQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function showResults() {
+            document.getElementById('question-area').classList.add('hidden');
+            document.getElementById('result-screen').classList.remove('hidden');
+            document.getElementById('result-title').innerText = state.score === QUESTIONS.length ? "Perfect Recall" : "Recall Fragmented";
+            document.getElementById('result-text').innerText = `You correctly reconstructed ${state.score} of ${QUESTIONS.length} environmental details.`;
+        }
+    </script>
+</body>
+</html>

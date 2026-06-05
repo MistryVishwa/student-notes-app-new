@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Logic Detective — Solve the Mystery</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Quicksand:wght@500;700&display=swap');
+
+        :root {
+            --primary: #6366f1; /* Indigo */
+            --secondary: #818cf8;
+            --accent: #fbbf24; /* Amber */
+            --bg: #0f172a; /* Slate 900 */
+            --text: #f8fafc;
+            --text-muted: #94a3b8;
+            --glass: rgba(30, 41, 59, 0.7);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --success: #22c55e;
+            --error: #ef4444;
+        }
+
+        body {
+            font-family: 'Quicksand', sans-serif;
+            background: radial-gradient(circle at top right, #1e1b4b, #0f172a);
+            color: var(--text);
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 500px;
+            text-align: center;
+        }
+
+        .glass-card {
+            background: var(--glass);
+            backdrop-filter: blur(16px);
+            border: 1px solid var(--glass-border);
+            padding: 30px;
+            border-radius: 32px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Inter', sans-serif;
+            font-weight: 800;
+            color: var(--accent);
+            margin: 0 0 10px;
+            font-size: 2rem;
+            letter-spacing: -1px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            font-weight: 700;
+            color: var(--secondary);
+        }
+
+        .mystery-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--glass-border);
+        }
+
+        .clues-container {
+            text-align: left;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 20px;
+            border-radius: 20px;
+            margin-bottom: 25px;
+        }
+
+        .clue-item {
+            font-size: 0.95rem;
+            margin-bottom: 10px;
+            line-height: 1.5;
+            display: flex;
+            gap: 10px;
+        }
+
+        .clue-item::before {
+            content: "🔍";
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+        }
+
+        .option-btn {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            padding: 15px;
+            border-radius: 16px;
+            font-family: inherit;
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: left;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            background: var(--primary);
+            transform: translateX(5px);
+        }
+
+        .option-btn.correct { background: var(--success); border-color: var(--success); }
+        .option-btn.wrong { background: var(--error); border-color: var(--error); }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg);
+            border-radius: 32px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            padding: 30px;
+        }
+
+        .btn-main {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+            margin-top: 20px;
+        }
+
+        .btn-main:hover { transform: scale(1.05); }
+        .hidden { display: none !important; }
+        .explanation { margin-top: 15px; font-size: 0.9rem; font-style: italic; color: var(--accent); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="glass-card">
+        <div id="screen-overlay" class="overlay">
+            <h1 id="overlay-title">Logic Detective 🕵️‍♂️</h1>
+            <p id="overlay-desc" style="margin-bottom: 20px;">Examine the clues. Find the truth.</p>
+            <button class="btn-main" onclick="startGame()">Start Investigation</button>
+        </div>
+
+        <div class="stats">
+            <div>Case #<span id="case-num">1</span></div>
+            <div>Score: <span id="score">0</span></div>
+        </div>
+
+        <div class="mystery-title" id="mystery-title">Loading case...</div>
+        
+        <div class="clues-container" id="clues-container"></div>
+
+        <div class="options-grid" id="options-container"></div>
+        <div id="feedback" class="explanation hidden"></div>
+    </div>
+</div>
+
+<script>
+    const CASES = [
+        {
+            t: "The Case of the Broken Vase",
+            c: ["The vase was near the window.", "Alice was in the garden all afternoon.", "Bob has a fresh glass cut on his hand.", "Charlie was asleep in the soundproof basement."],
+            o: ["Alice", "Bob", "Charlie"],
+            a: "Bob",
+            e: "Bob's hand injury suggests he was the one in contact with the breaking glass."
+        },
+        {
+            t: "The Stolen Midnight Snack",
+            c: ["A cake disappeared from the top shelf.", "Step-stools are usually kept in the pantry.", "The pantry door was found open.", "Short Sarah was seen near the pantry.", "Tall Tom was reading in the library."],
+            o: ["Short Sarah", "Tall Tom"],
+            a: "Short Sarah",
+            e: "Sarah needed the step-stool to reach the top shelf, explaining why the pantry was open."
+        },
+        {
+            t: "The Wet Carpet Mystery",
+            c: ["A patch of carpet by the door is soaking wet.", "It just stopped raining five minutes ago.", "Mr. Green came in with a dry coat.", "Detective Blue entered with a dripping umbrella."],
+            o: ["Mr. Green", "Detective Blue", "A leaky roof"],
+            a: "Detective Blue",
+            e: "The dripping umbrella is the obvious source of the localized wet spot."
+        }
+    ];
+
+    let state = { score: 0, index: 0 };
+
+    function startGame() {
+        state.score = 0; state.index = 0;
+        document.getElementById('screen-overlay').classList.add('hidden');
+        loadCase();
+    }
+
+    function loadCase() {
+        if (state.index >= CASES.length) return end("Investigation Complete! 🏆");
+        const current = CASES[state.index];
+        document.getElementById('case-num').innerText = state.index + 1;
+        document.getElementById('score').innerText = state.score;
+        document.getElementById('mystery-title').innerText = current.t;
+        document.getElementById('feedback').classList.add('hidden');
+        
+        const cluesBox = document.getElementById('clues-container');
+        cluesBox.innerHTML = current.c.map(clue => `<div class="clue-item">${clue}</div>`).join('');
+
+        const optBox = document.getElementById('options-container');
+        optBox.innerHTML = '';
+        current.o.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => check(opt, btn);
+            optBox.appendChild(btn);
+        });
+    }
+
+    function check(val, btn) {
+        const current = CASES[state.index];
+        const isCorrect = val === current.a;
+        const btns = document.querySelectorAll('.option-btn');
+        btns.forEach(b => b.disabled = true);
+
+        const feedback = document.getElementById('feedback');
+        feedback.innerText = (isCorrect ? "Correct! " : "Incorrect. ") + current.e;
+        feedback.classList.remove('hidden');
+
+        if (isCorrect) {
+            btn.classList.add('correct');
+            state.score += 20;
+        } else {
+            btn.classList.add('wrong');
+            Array.from(btns).find(b => b.innerText === current.a).classList.add('correct');
+        }
+
+        setTimeout(() => {
+            state.index++;
+            loadCase();
+        }, 3500);
+    }
+
+    function end(msg) {
+        const overlay = document.getElementById('screen-overlay');
+        document.getElementById('overlay-title').innerText = msg;
+        document.getElementById('overlay-desc').innerText = `Final Score: ${state.score}`;
+        overlay.classList.remove('hidden');
+    }
+</script>
+
+</body>
+</html>

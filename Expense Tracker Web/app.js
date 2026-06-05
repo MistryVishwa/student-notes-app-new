@@ -4,6 +4,12 @@
  * ==========================================================================
  */
 
+function sanitizeInput(input) {
+    const div = document.createElement('div');
+    div.textContent = input;
+    return div.innerHTML;
+}
+
 // Category Configurations with boxicons & colors
 const CATEGORIES = {
     expense: {
@@ -119,7 +125,7 @@ function showToast(message, type = 'info') {
     
     toast.innerHTML = `
         <i class='bx ${icon}'></i>
-        <span>${message}</span>
+        <span>${sanitizeInput(message)}</span>
     `;
     
     container.appendChild(toast);
@@ -420,8 +426,8 @@ function renderDashboard() {
                             <i class='bx ${catInfo.icon}'></i>
                         </div>
                         <div class="t-meta">
-                            <h4>${t.note || t.category}</h4>
-                            <span class="category">${t.category}</span>
+                            <h4>${sanitizeInput(t.note || t.category)}</h4>
+                            <span class="category">${sanitizeInput(t.category)}</span>
                             <span class="date">${displayDate}</span>
                         </div>
                     </div>
@@ -677,12 +683,12 @@ function renderTransactionsTable() {
                 <tr>
                     <td>${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                     <td>
-                        <div style="font-weight: 500;">${t.note || 'No description'}</div>
+                        <div style="font-weight: 500;">${sanitizeInput(t.note || 'No description')}</div>
                     </td>
                     <td>
                         <span style="display: inline-flex; align-items: center; gap: 8px;">
                             <i class='bx ${catInfo.icon}' style="color: ${catInfo.color}; font-size: 18px;"></i>
-                            ${t.category}
+                            ${sanitizeInput(t.category)}
                         </span>
                     </td>
                     <td>
@@ -929,7 +935,7 @@ function renderBudgetsBoard() {
                         <div class="t-icon-box" style="background-color: ${catInfo.color}15; color: ${catInfo.color};">
                             <i class='bx ${catInfo.icon}'></i>
                         </div>
-                        <h4>${b.category}</h4>
+                        <h4>${sanitizeInput(b.category)}</h4>
                     </div>
                     <button class="btn-delete-budget" data-cat="${b.category}" title="Remove Goal">
                         <i class='bx bx-trash'></i>
@@ -1108,9 +1114,9 @@ function renderReportsTab() {
             return `
                 <tr>
                     <td>${new Date(t.date).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                    <td>${t.category}</td>
+                    <td>${sanitizeInput(t.category)}</td>
                     <td><span class="budget-alert-badge ${t.type === 'income' ? 'safe' : 'danger'}">${t.type}</span></td>
-                    <td>${t.note || '—'}</td>
+                    <td>${sanitizeInput(t.note || '—')}</td>
                     <td class="text-right amount ${colorClass}">${sign}${formatMoney(t.amount)}</td>
                 </tr>
             `;
