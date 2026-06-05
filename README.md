@@ -258,6 +258,12 @@ Before submitting a PR:
 * Test your project before submission.
 * Keep pull requests small and focused.
 
+### 🎨 Centralized Theme Management
+To maintain a consistent UI/UX across all projects, **do not write custom dark mode toggles**. Instead, link the global theme files in your project's `index.html`:
+1. Add `<link rel="stylesheet" href="../global-theme.css">` inside your `<head>`.
+2. Add `<script src="../global-theme.js"></script>` before the closing `</body>` tag.
+3. Use the CSS variables (`var(--bg-color)`, `var(--text-color)`, etc.) in your local CSS files instead of hardcoding colors.
+
 ---
 
 ## 🎯 Repository Goals
