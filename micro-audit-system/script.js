@@ -52,6 +52,9 @@ const searchInput = document.getElementById("searchInput");
 
 const sortSelect = document.getElementById("sortSelect");
 
+const exportAuditsBtn =
+    document.getElementById("exportAuditsBtn");
+
 const filterButtons = document.querySelectorAll(".filter-btn");
 
 const registerForm = document.getElementById("registerForm");
@@ -180,6 +183,11 @@ if(searchInput){
 if(sortSelect){
 
     sortSelect.addEventListener("change", renderAudits);
+}
+
+if(exportAuditsBtn){
+
+    exportAuditsBtn.addEventListener("click", exportAudits);
 }
 
 if(userGreeting && currentUser){
@@ -1309,6 +1317,65 @@ function saveAudits(){
         "audits",
         JSON.stringify(audits)
     );
+}
+
+function getAuditsForExport(){
+
+    const storedAuditsRaw = localStorage.getItem("audits");
+
+    if(!storedAuditsRaw){
+
+        return Array.isArray(audits) ? audits.slice() : [];
+    }
+
+    try {
+
+        const parsed = JSON.parse(storedAuditsRaw);
+
+        return Array.isArray(parsed) ? parsed : [];
+
+    } catch (error) {
+
+        return Array.isArray(audits) ? audits.slice() : [];
+    }
+}
+
+function getExportDateStamp(){
+
+    return new Date().toISOString().split("T")[0];
+}
+
+function exportAudits(){
+
+    const auditsToExport = getAuditsForExport();
+
+    const exportPayload = {
+        exportDate: new Date().toISOString(),
+        auditCount: auditsToExport.length,
+        audits: auditsToExport
+    };
+
+    const exportJson = JSON.stringify(exportPayload, null, 2);
+
+    const exportBlob = new Blob([exportJson], {
+        type: "application/json"
+    });
+
+    const exportUrl = URL.createObjectURL(exportBlob);
+
+    const downloadLink = document.createElement("a");
+
+    downloadLink.href = exportUrl;
+    downloadLink.download =
+        `audit-backup-${getExportDateStamp()}.json`;
+
+    document.body.appendChild(downloadLink);
+
+    downloadLink.click();
+
+    downloadLink.remove();
+
+    URL.revokeObjectURL(exportUrl);
 }
 
 /* Theme Toggle */

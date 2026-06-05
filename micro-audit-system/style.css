@@ -868,6 +868,37 @@ body.dark-mode .edit-input{
     font-size:16px;
 }
 
+.control-actions{
+    display:flex;
+
+    justify-content:flex-end;
+}
+
+.export-btn{
+    border:none;
+
+    padding:14px 18px;
+
+    border-radius:14px;
+
+    background:#0f172a;
+
+    color:white;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+    transition:0.3s ease;
+
+    box-shadow:
+        0px 4px 20px rgba(0,0,0,0.08);
+}
+
+.export-btn:hover{
+    background:#1e293b;
+}
+
 .filter-buttons{
     display:flex;
 
@@ -905,6 +936,14 @@ body.dark-mode .filter-btn{
     background:rgba(15,23,42,0.75);
 
     color:white;
+}
+
+body.dark-mode .export-btn{
+    background:#334155;
+}
+
+body.dark-mode .export-btn:hover{
+    background:#475569;
 }
 
 .audit-meta{
