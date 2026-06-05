@@ -4,7 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Note Taking App</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,600;0,9..144,700;1,9..144,400&family=IBM+Plex+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet"/>  
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -469,10 +470,14 @@
           <option value="Other">📦 Other</option>
         </select>
       </div>
-      <div class="field">
-        <label>Content</label>
-        <textarea id="mContent" placeholder="Write your note here…"></textarea>
+     <div class="field">
+      <label>Content</label>
+      <div style="border:1.5px solid var(--border);border-radius:8px;overflow:hidden;">
+        <div id="quillEditor"></div>
       </div>
+      <label class="img-upload-btn" for="imgInput" style="display:inline-flex;align-items:center;gap:6px;margin-top:8px;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:0.7rem;color:var(--muted);cursor:pointer;">📎 Attach Image</label>
+      <input type="file" id="imgInput" accept="image/*" style="display:none" onchange="insertImage(event)"/>
+    </div>
     </div>
     <div class="modal-footer">
       <button class="btn-cancel" onclick="closeModal()">Cancel</button>
@@ -491,7 +496,29 @@
     General:'📝', Mathematics:'📐', Physics:'⚛️', Chemistry:'🧪',
     'Computer Science':'💻', Biology:'🌱', History:'📜', English:'✍️', Other:'📦'
   };
+  const quill = new Quill('#quillEditor', {
+  theme: 'snow',
+  placeholder: 'Write your note here…',
+  modules: { toolbar: [
+    [{ header: [1,2,3,false] }],
+    ['bold','italic','underline','strike'],
+    [{ list:'ordered' },{ list:'bullet' }],
+    ['blockquote','code-block','link'],
+    ['clean']
+  ]}
+});
 
+function insertImage(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const range = quill.getSelection(true);
+    quill.insertEmbed(range ? range.index : 0, 'image', ev.target.result);
+  };
+  reader.readAsDataURL(file);
+  e.target.value = '';
+}
   let notes = JSON.parse(localStorage.getItem('nta_notes') || '[]');
   let activeCategory = 'All';
   let editingId = null;
@@ -585,11 +612,11 @@
       const n = notes.find(x => x.id === id);
       document.getElementById('mTitle').value   = n.title;
       document.getElementById('mCat').value     = n.category;
-      document.getElementById('mContent').value = n.content;
+      quill.root.innerHTML = n.content || '';
     } else {
       document.getElementById('mTitle').value   = '';
       document.getElementById('mCat').value     = 'General';
-      document.getElementById('mContent').value = '';
+      quill.setText('');
     }
 
     overlay.classList.add('show');
@@ -608,8 +635,7 @@
   function saveNote() {
     const title    = document.getElementById('mTitle').value.trim();
     const category = document.getElementById('mCat').value;
-    const content  = document.getElementById('mContent').value.trim();
-
+    const content = quill.root.innerHTML.trim();
     if (!title) {
       const el = document.getElementById('mTitle');
       el.style.borderColor = '#e03030';
