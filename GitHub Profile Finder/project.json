@@ -1,0 +1,17 @@
+{
+  "title": "GitHub Profile Finder",
+  "description": "A premium neon-glassmorphic GitHub profile explorer with live API lookups, top 5 recent repos, search history caching, light/dark theme toggle, and one-click profile link copying.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "github",
+    "profile",
+    "api",
+    "vanilla-js",
+    "glassmorphism"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}

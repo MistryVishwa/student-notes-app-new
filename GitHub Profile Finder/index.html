@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GitHub Profile Finder</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Header ─── -->
+  <header class="header">
+    <div class="header-inner">
+      <h1 class="logo">⟁ DevFinder</h1>
+      <button class="theme-toggle" id="theme-toggle" aria-label="Toggle theme">
+        <span class="icon-sun">☀︎</span>
+        <span class="icon-moon">☽</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- ─── Search ─── -->
+  <section class="search-section">
+    <div class="search-bar">
+      <span class="search-icon">🔍</span>
+      <input
+        type="text"
+        id="search-input"
+        placeholder="Enter a GitHub username..."
+        autofocus
+        spellcheck="false"
+      />
+      <button class="btn-clear" id="btn-clear" aria-label="Clear input">✕</button>
+      <button class="btn-search" id="btn-search">Search</button>
+    </div>
+    <div class="history-pills" id="history-pills"></div>
+  </section>
+
+  <!-- ─── Main Content ─── -->
+  <main class="content" id="content">
+
+    <!-- Skeleton -->
+    <div class="skeleton" id="skeleton">
+      <div class="sk-profile">
+        <div class="sk-avatar"></div>
+        <div class="sk-lines">
+          <div class="sk-line w-60"></div>
+          <div class="sk-line w-40"></div>
+          <div class="sk-line w-80"></div>
+        </div>
+      </div>
+      <div class="sk-stats">
+        <div class="sk-stat"></div>
+        <div class="sk-stat"></div>
+        <div class="sk-stat"></div>
+        <div class="sk-stat"></div>
+      </div>
+      <div class="sk-repos">
+        <div class="sk-repo"></div>
+        <div class="sk-repo"></div>
+        <div class="sk-repo"></div>
+      </div>
+    </div>
+
+    <!-- Error -->
+    <div class="error-state" id="error-state">
+      <div class="error-icon">⚠</div>
+      <h2 class="error-title" id="error-title">User not found</h2>
+      <p class="error-desc" id="error-desc">No GitHub profile matches that username.</p>
+    </div>
+
+    <!-- Empty / Welcome -->
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">⟁</div>
+      <h2>Search any GitHub username</h2>
+      <p>View profile details, stats, and recent repositories.</p>
+    </div>
+
+    <!-- Profile -->
+    <div class="profile" id="profile" hidden>
+      <div class="profile-card">
+        <div class="profile-top">
+          <img class="profile-avatar" id="profile-avatar" src="" alt="Avatar" />
+          <div class="profile-info">
+            <div class="profile-name-row">
+              <h2 class="profile-name" id="profile-name"></h2>
+              <span class="profile-login" id="profile-login"></span>
+            </div>
+            <p class="profile-bio" id="profile-bio"></p>
+            <div class="profile-meta">
+              <span id="profile-company"></span>
+              <span id="profile-location"></span>
+              <span id="profile-joined"></span>
+            </div>
+          </div>
+          <div class="profile-actions">
+            <button class="btn-action" id="btn-copy-link" title="Copy profile link">🔗</button>
+          </div>
+        </div>
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-num" id="stat-repos">0</span>
+            <span class="stat-label">Repos</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="stat-gists">0</span>
+            <span class="stat-label">Gists</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="stat-followers">0</span>
+            <span class="stat-label">Followers</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num" id="stat-following">0</span>
+            <span class="stat-label">Following</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Repos -->
+      <div class="repos-section">
+        <h3 class="repos-heading">Top Repositories</h3>
+        <div class="repos-grid" id="repos-grid"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ─── Toast ─── -->
+  <div class="toast" id="toast">Link copied to clipboard!</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
