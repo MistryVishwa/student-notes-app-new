@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Sticky Notes Board</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── Toolbar ─── -->
+  <header class="toolbar">
+    <div class="toolbar-inner">
+      <h1 class="logo">📌 Notes</h1>
+      <div class="toolbar-controls">
+        <div class="search-wrap">
+          <span class="search-icon">🔍</span>
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Search notes..."
+            spellcheck="false"
+          />
+        </div>
+        <button class="btn-add" id="btn-add">+ Add Note</button>
+        <button class="theme-btn" id="theme-toggle" aria-label="Toggle theme">
+          <span class="icon-sun">☀︎</span>
+          <span class="icon-moon">☽</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ─── Corkboard ─── -->
+  <main class="corkboard" id="corkboard">
+    <!-- notes rendered by JS -->
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>

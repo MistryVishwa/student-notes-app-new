@@ -1,0 +1,413 @@
+/* ═══════════════════════════════════════════════════════
+   Sticky Notes Board — Theme & Layout
+   ═══════════════════════════════════════════════════════ */
+
+/* ─── Theme Variables ─── */
+:root,
+[data-theme="dark"] {
+  --bg-body: #0f172a;
+  --bg-surface: rgba(30, 41, 59, 0.45);
+  --bg-surface-solid: #1e293b;
+  --border: rgba(51, 65, 85, 0.5);
+  --text-primary: #f1f5f9;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --scrollbar-bg: #1e293b;
+  --scrollbar-thumb: #334155;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.4);
+  --note-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  --note-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.45);
+  --accent: #38bdf8;
+  --danger: #ef4444;
+}
+
+[data-theme="light"] {
+  --bg-body: #f1f5f9;
+  --bg-surface: rgba(255, 255, 255, 0.7);
+  --bg-surface-solid: #ffffff;
+  --border: rgba(203, 213, 225, 0.6);
+  --text-primary: #1e293b;
+  --text-secondary: #64748b;
+  --text-muted: #94a3b8;
+  --scrollbar-bg: #e2e8f0;
+  --scrollbar-thumb: #cbd5e1;
+  --shadow: 0 4px 24px rgba(0, 0, 0, 0.06);
+  --note-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+  --note-shadow-hover: 0 12px 40px rgba(0, 0, 0, 0.12);
+  --accent: #0284c7;
+  --danger: #dc2626;
+}
+
+/* ─── Reset & Base ─── */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background: var(--bg-body);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  transition: background 0.35s ease, color 0.35s ease;
+}
+
+/* ─── Custom Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-bg);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+/* ─── Toolbar ─── */
+.toolbar {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  background: var(--bg-surface);
+  border-bottom: 1px solid var(--border);
+}
+
+.toolbar-inner {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 12px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.logo {
+  font-size: 1.15rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  flex-shrink: 0;
+}
+
+.toolbar-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.search-wrap {
+  position: relative;
+  min-width: 180px;
+}
+
+.search-icon {
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 0.85rem;
+  opacity: 0.4;
+  pointer-events: none;
+}
+
+#search-input {
+  width: 100%;
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 9px 12px 9px 32px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  font-family: inherit;
+  outline: none;
+  transition: border 0.25s ease;
+}
+
+#search-input::placeholder {
+  color: var(--text-muted);
+}
+
+#search-input:focus {
+  border-color: var(--accent);
+}
+
+.btn-add {
+  background: var(--accent);
+  border: none;
+  border-radius: 10px;
+  padding: 9px 18px;
+  color: #fff;
+  font-weight: 600;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: filter 0.25s ease, transform 0.2s ease;
+  white-space: nowrap;
+}
+
+.btn-add:hover {
+  filter: brightness(1.15);
+  transform: translateY(-1px);
+}
+
+.btn-add:active {
+  transform: scale(0.97);
+}
+
+.theme-btn {
+  background: var(--bg-surface-solid);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 1rem;
+  color: var(--text-secondary);
+  transition: border 0.25s ease, color 0.25s ease;
+  line-height: 1;
+}
+
+.theme-btn:hover {
+  border-color: var(--accent);
+  color: var(--text-primary);
+}
+
+[data-theme="dark"] .icon-sun { display: inline; }
+[data-theme="dark"] .icon-moon { display: none; }
+[data-theme="light"] .icon-sun { display: none; }
+[data-theme="light"] .icon-moon { display: inline; }
+
+/* ─── Corkboard Grid ─── */
+.corkboard {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 20px 40px;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 20px;
+  align-content: start;
+  width: 100%;
+}
+
+/* ─── Note Card ─── */
+.note {
+  background: #fef08a;
+  border-radius: 12px;
+  padding: 14px 16px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  box-shadow: var(--note-shadow);
+  transition: transform 0.3s ease, box-shadow 0.3s ease, opacity 0.35s ease;
+  position: relative;
+  animation: noteIn 0.35s ease;
+  min-height: 120px;
+}
+
+@keyframes noteIn {
+  from { opacity: 0; transform: scale(0.85) translateY(12px); }
+  to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* rotation variants */
+.note[data-rotate="1"] { transform: rotate(0.8deg); }
+.note[data-rotate="2"] { transform: rotate(-0.6deg); }
+.note[data-rotate="3"] { transform: rotate(1.2deg); }
+.note[data-rotate="4"] { transform: rotate(-0.9deg); }
+.note[data-rotate="0"] { transform: rotate(0deg); }
+
+.note:hover {
+  transform: scale(1.03) translateY(-4px) rotate(0deg) !important;
+  box-shadow: var(--note-shadow-hover);
+  z-index: 2;
+}
+
+/* ─── Note header (palette + char count + delete) ─── */
+.note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+}
+
+.note-tools {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.color-swatches {
+  display: flex;
+  gap: 3px;
+}
+
+.color-swatch {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  border: 1.5px solid rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.color-swatch:hover {
+  transform: scale(1.25);
+  border-color: rgba(0, 0, 0, 0.25);
+}
+
+.color-swatch.active {
+  border-color: rgba(0, 0, 0, 0.4);
+  box-shadow: 0 0 0 1.5px rgba(0, 0, 0, 0.15);
+}
+
+.char-count {
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.3px;
+  min-width: 28px;
+  text-align: right;
+}
+
+.char-count.warn {
+  color: #d97706;
+}
+
+.char-count.danger {
+  color: #dc2626;
+}
+
+.btn-delete {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 0.9rem;
+  opacity: 0.3;
+  padding: 2px;
+  transition: opacity 0.2s ease;
+  line-height: 1;
+  color: inherit;
+  font-family: inherit;
+}
+
+.btn-delete:hover {
+  opacity: 0.8;
+}
+
+/* ─── Note body (contenteditable) ─── */
+.note-body {
+  flex: 1;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  color: rgba(0, 0, 0, 0.75);
+  outline: none;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  min-height: 60px;
+  padding: 2px 0;
+  cursor: text;
+}
+
+.note-body:focus {
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+  margin: 0 -4px;
+  padding: 2px 4px;
+}
+
+.note-body:empty::before {
+  content: attr(data-placeholder);
+  color: rgba(0, 0, 0, 0.2);
+  pointer-events: none;
+}
+
+/* ─── Note timestamp ─── */
+.note-footer {
+  font-size: 0.6rem;
+  color: rgba(0, 0, 0, 0.25);
+  text-align: right;
+}
+
+/* ─── Empty state ─── */
+.empty-state {
+  grid-column: 1 / -1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+  color: var(--text-muted);
+  gap: 6px;
+}
+
+.empty-icon {
+  font-size: 2.5rem;
+  opacity: 0.25;
+  margin-bottom: 4px;
+}
+
+.empty-state p {
+  font-size: 0.9rem;
+}
+
+/* ─── Filter fade-out ─── */
+.note.matched {
+  animation: fadeIn 0.35s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: scale(0.9); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.note.hidden {
+  opacity: 0;
+  transform: scale(0.85);
+  pointer-events: none;
+  position: absolute;
+  visibility: hidden;
+}
+
+/* ─── Responsive ─── */
+@media (max-width: 640px) {
+  .toolbar-inner {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .toolbar-controls {
+    width: 100%;
+  }
+
+  .search-wrap {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .btn-add {
+    flex-shrink: 0;
+  }
+
+  .corkboard {
+    grid-template-columns: 1fr;
+    padding: 16px 14px 32px;
+  }
+}

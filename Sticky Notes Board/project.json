@@ -1,0 +1,17 @@
+{
+  "title": "Sticky Notes Board",
+  "description": "A premium creative-studio sticky notes board with inline contenteditable editing, 6-color palette swatches, real-time search filtering, character limit enforcement, and dark/light theme toggle.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "notes",
+    "sticky-notes",
+    "vanilla-js",
+    "glassmorphism",
+    "productivity"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}
