@@ -1,0 +1,52 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="16" fill="#040712"/>
+  <!-- Radar grid -->
+  <g opacity="0.03">
+    <line x1="0" y1="20" x2="128" y2="20" stroke="#fff" stroke-width="0.3"/>
+    <line x1="0" y1="40" x2="128" y2="40" stroke="#fff" stroke-width="0.3"/>
+    <line x1="0" y1="60" x2="128" y2="60" stroke="#fff" stroke-width="0.3"/>
+    <line x1="0" y1="80" x2="128" y2="80" stroke="#fff" stroke-width="0.3"/>
+    <line x1="0" y1="100" x2="128" y2="100" stroke="#fff" stroke-width="0.3"/>
+    <line x1="20" y1="0" x2="20" y2="128" stroke="#fff" stroke-width="0.3"/>
+    <line x1="40" y1="0" x2="40" y2="128" stroke="#fff" stroke-width="0.3"/>
+    <line x1="60" y1="0" x2="60" y2="128" stroke="#fff" stroke-width="0.3"/>
+    <line x1="80" y1="0" x2="80" y2="128" stroke="#fff" stroke-width="0.3"/>
+    <line x1="100" y1="0" x2="100" y2="128" stroke="#fff" stroke-width="0.3"/>
+  </g>
+  <!-- Dashboard -->
+  <g transform="translate(4,4)">
+    <rect x="0" y="0" width="120" height="16" rx="7" fill="rgba(255,255,255,0.02)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <text x="10" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">SCORE</text>
+    <text x="8" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">60</text>
+    <text x="36" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">ACC</text>
+    <text x="36" y="13" font-size="6" fill="#fbbf24" font-family="monospace" font-weight="700">55%</text>
+    <text x="62" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">TIME</text>
+    <text x="62" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">21</text>
+    <text x="88" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">BEST</text>
+    <text x="88" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">110</text>
+  </g>
+  <!-- Arena -->
+  <g transform="translate(4,24)">
+    <rect x="0" y="0" width="120" height="84" rx="8" fill="rgba(8,12,24,0.6)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <!-- Target center -->
+    <circle cx="38" cy="30" r="14" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.3)" stroke-width="1.2"/>
+    <circle cx="38" cy="30" r="9" fill="none" stroke="rgba(251,191,36,0.5)" stroke-width="1.2"/>
+    <circle cx="38" cy="30" r="5" fill="none" stroke="rgba(251,191,36,0.7)" stroke-width="1.5"/>
+    <circle cx="38" cy="30" r="3" fill="#fbbf24"/>
+    <!-- Crosshair -->
+    <line x1="32" y1="30" x2="44" y2="30" stroke="rgba(251,191,36,0.25)" stroke-width="0.8"/>
+    <line x1="38" y1="24" x2="38" y2="36" stroke="rgba(251,191,36,0.25)" stroke-width="0.8"/>
+    <!-- Second target upper-right -->
+    <circle cx="88" cy="18" r="14" fill="rgba(251,191,36,0.06)" stroke="rgba(251,191,36,0.3)" stroke-width="1.2"/>
+    <circle cx="88" cy="18" r="9" fill="none" stroke="rgba(251,191,36,0.5)" stroke-width="1.2"/>
+    <circle cx="88" cy="18" r="5" fill="none" stroke="rgba(251,191,36,0.7)" stroke-width="1.5"/>
+    <circle cx="88" cy="18" r="3" fill="#fbbf24"/>
+    <!-- Crosshair -->
+    <line x1="82" y1="18" x2="94" y2="18" stroke="rgba(251,191,36,0.25)" stroke-width="0.8"/>
+    <line x1="88" y1="12" x2="88" y2="24" stroke="rgba(251,191,36,0.25)" stroke-width="0.8"/>
+    <!-- Hit trail -->
+    <circle cx="65" cy="58" r="4" fill="rgba(251,191,36,0.3)" opacity="0.5"/>
+    <circle cx="63" cy="56" r="2.5" fill="rgba(251,191,36,0.2)" opacity="0.3"/>
+  </g>
+  <text x="64" y="116" font-size="3.5" fill="#475569" text-anchor="middle" font-family="monospace">► Start Hunt</text>
+</svg>

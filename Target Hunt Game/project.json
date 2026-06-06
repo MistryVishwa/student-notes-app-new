@@ -1,0 +1,17 @@
+{
+  "title": "Target Hunt Game",
+  "description": "A tactical firing-range arcade game with procedurally spawning bullseye targets, real-time accuracy tracking, 30-second countdown rounds, and localStorage high-score persistence. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "target-hunt",
+    "game",
+    "vanilla-js",
+    "reflex",
+    "tactical"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}
