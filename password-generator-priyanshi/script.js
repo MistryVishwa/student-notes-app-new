@@ -8,20 +8,46 @@ function generatePassword() {
   const nums = '0123456789';
   const syms = '!@#$%^&*()_+-=[]{}|;:,.<>?';
 
-  let chars = '';
-  if (document.getElementById('upper').checked) chars += upper;
-  if (document.getElementById('lower').checked) chars += lower;
-  if (document.getElementById('numbers').checked) chars += nums;
-  if (document.getElementById('symbols').checked) chars += syms;
+  const selectedSets = [];
+  if (document.getElementById('upper').checked) selectedSets.push(upper);
+  if (document.getElementById('lower').checked) selectedSets.push(lower);
+  if (document.getElementById('numbers').checked) selectedSets.push(nums);
+  if (document.getElementById('symbols').checked) selectedSets.push(syms);
 
-  if (!chars) { alert('Select at least one option!'); return; }
-
-  const length = parseInt(document.getElementById('length').value);
-  let password = '';
-  for (let i = 0; i < length; i++) {
-    password += chars[Math.floor(Math.random() * chars.length)];
+  if (selectedSets.length === 0) {
+    alert('Select at least one option!');
+    return;
   }
 
+  const length = parseInt(document.getElementById('length').value);
+  let passwordArr = [];
+  let allChars = '';
+
+  const getSecureRandomIndex = (max) => {
+    const randomValues = new Uint32Array(1);
+    window.crypto.getRandomValues(randomValues);
+    return randomValues[0] % max;
+  };
+
+  // Guarantee at least one character from each selected set
+  selectedSets.forEach(set => {
+    passwordArr.push(set[getSecureRandomIndex(set.length)]);
+    allChars += set;
+  });
+
+  // Fill the remaining length from the combined pool
+  const remainingLength = length - passwordArr.length;
+  for (let i = 0; i < remainingLength; i++) {
+    passwordArr.push(allChars[getSecureRandomIndex(allChars.length)]);
+  }
+
+  // Fisher-Yates Shuffle using Secure Randomness
+  for (let i = passwordArr.length - 1; i > 0; i--) {
+    const j = getSecureRandomIndex(i + 1);
+    [passwordArr[i], passwordArr[j]] = [passwordArr[j], passwordArr[i]];
+  }
+
+  const password = passwordArr.join('');
   document.getElementById('password').textContent = password;
   updateStrength(password);
 }
