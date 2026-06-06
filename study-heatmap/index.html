@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Study Time Heatmap | Japan-style Discipline UI | NSOC Contribution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #0f0f1a 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1300px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0,150,255,0.5);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .stat-card {
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 15px 25px;
+            text-align: center;
+            min-width: 140px;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            color: #4d96ff;
+        }
+
+        .stat-label {
+            color: rgba(255,255,255,0.7);
+            font-size: 11px;
+            margin-top: 5px;
+        }
+
+        /* Intensity Legend */
+        .legend {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            background: rgba(0,0,0,0.3);
+            padding: 12px 20px;
+            border-radius: 50px;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: white;
+            font-size: 12px;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 25px;
+            border-radius: 6px;
+        }
+
+        /* Heatmap Grid */
+        .heatmap-container {
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            overflow-x: auto;
+        }
+
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(24, 1fr);
+            min-width: 900px;
+        }
+
+        /* Header Row */
+        .heatmap-header {
+            display: contents;
+        }
+
+        .time-label {
+            padding: 12px 8px;
+            font-size: 11px;
+            color: rgba(255,255,255,0.6);
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .hour-label {
+            padding: 12px 5px;
+            font-size: 10px;
+            color: #4d96ff;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+
+        /* Day Row */
+        .day-row {
+            display: contents;
+        }
+
+        .day-label {
+            padding: 12px 8px;
+            font-size: 13px;
+            font-weight: 600;
+            color: white;
+            background: rgba(0,0,0,0.2);
+            border-right: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* Heatmap Cell */
+        .heat-cell {
+            aspect-ratio: 1;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .heat-cell:hover {
+            transform: scale(1.05);
+            z-index: 2;
+            box-shadow: 0 0 8px rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Intensity colors - Dark blue to Light blue */
+        .intensity-0 { background-color: #0a1628; }
+        .intensity-1 { background-color: #1a3a5c; }
+        .intensity-2 { background-color: #2a5a8c; }
+        .intensity-3 { background-color: #3a7abc; }
+        .intensity-4 { background-color: #5a9adc; }
+        .intensity-5 { background-color: #8ac4ff; }
+
+        /* Tooltip */
+        .heat-cell::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0,0,0,0.9);
+            color: white;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 6px;
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: 0.2s;
+            z-index: 10;
+        }
+
+        .heat-cell:hover::after {
+            opacity: 1;
+        }
+
+        /* Control Buttons */
+        .controls {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .intensity-selector {
+            display: flex;
+            gap: 10px;
+            background: rgba(0,0,0,0.3);
+            padding: 8px 15px;
+            border-radius: 40px;
+        }
+
+        .intensity-option {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.2s;
+            border: 2px solid transparent;
+        }
+
+        .intensity-option:hover {
+            transform: scale(1.1);
+        }
+
+        .intensity-option.selected {
+            border-color: white;
+            box-shadow: 0 0 10px rgba(255,255,255,0.5);
+        }
+
+        .action-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 30px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .reset-btn {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .info-btn {
+            background: linear-gradient(135deg, #4d96ff, #2a5a8c);
+        }
+
+        /* Highlight for most productive */
+        .most-productive {
+            position: relative;
+        }
+
+        .most-productive::before {
+            content: "⭐";
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 12px;
+            z-index: 3;
+        }
+
+        /* Footer */
+        .footer-note {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255,255,255,0.4);
+            font-size: 11px;
+        }
+
+        @media (max-width: 768px) {
+            .heatmap-grid {
+                font-size: 10px;
+            }
+            .day-label {
+                font-size: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📊 Study Time Heatmap</h1>
+            <div class="subtitle">Japan-style Discipline UI | Dark Blue → Light Blue Intensity Mapping</div>
+        </div>
+
+        <div class="stats-container">
+            <div class="stat-card">
+                <div class="stat-value" id="totalHours">0</div>
+                <div class="stat-label">Total Study Hours</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="avgDaily">0</div>
+                <div class="stat-label">Avg Hours/Day</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bestDay">-</div>
+                <div class="stat-label">Best Day</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="bestHour">-</div>
+                <div class="stat-label">Best Hour</div>
+            </div>
+        </div>
+
+        <div class="legend">
+            <div class="legend-item"><div class="legend-color intensity-0"></div><span>0 hrs</span></div>
+            <div class="legend-item"><div class="legend-color intensity-1"></div><span>1 hr</span></div>
+            <div class="legend-item"><div class="legend-color intensity-2"></div><span>2 hrs</span></div>
+            <div class="legend-item"><div class="legend-color intensity-3"></div><span>3 hrs</span></div>
+            <div class="legend-item"><div class="legend-color intensity-4"></div><span>4 hrs</span></div>
+            <div class="legend-item"><div class="legend-color intensity-5"></div><span>5+ hrs</span></div>
+        </div>
+
+        <div class="heatmap-container">
+            <div class="heatmap-grid" id="heatmapGrid">
+                <!-- Will be generated by JS -->
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="intensity-selector" id="intensitySelector">
+                <div class="intensity-option intensity-1" data-intensity="1" title="1 hour"></div>
+                <div class="intensity-option intensity-2" data-intensity="2" title="2 hours"></div>
+                <div class="intensity-option intensity-3" data-intensity="3" title="3 hours"></div>
+                <div class="intensity-option intensity-4" data-intensity="4" title="4 hours"></div>
+                <div class="intensity-option intensity-5" data-intensity="5" title="5+ hours"></div>
+            </div>
+            <button class="action-btn info-btn" id="showInsightsBtn">📈 Show Insights</button>
+            <button class="action-btn reset-btn" id="resetHeatmapBtn">🗑️ Reset Heatmap</button>
+        </div>
+        <div class="footer-note">
+            💡 Click on any cell to add study intensity | Intensity 1-5 (Dark Blue → Light Blue)
+        </div>
+    </div>
+
+    <script>
+        // 7 days x 24 hours grid
+        const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        const hours = Array.from({length: 24}, (_, i) => i);
+        
+        let heatmapData = {};
+        let selectedIntensity = 3;
+        
+        // Initialize heatmap data
+        function initHeatmapData() {
+            for(let day of days) {
+                heatmapData[day] = {};
+                for(let hour of hours) {
+                    heatmapData[day][hour] = 0;
+                }
+            }
+        }
+        
+        // Load from localStorage
+        function loadHeatmap() {
+            const saved = localStorage.getItem('studyHeatmap');
+            if(saved) {
+                heatmapData = JSON.parse(saved);
+            } else {
+                initHeatmapData();
+                // Add some sample data for demonstration
+                heatmapData['Monday'][9] = 3;
+                heatmapData['Monday'][10] = 2;
+                heatmapData['Tuesday'][14] = 4;
+                heatmapData['Tuesday'][15] = 3;
+                heatmapData['Wednesday'][10] = 2;
+                heatmapData['Thursday'][19] = 5;
+                heatmapData['Thursday'][20] = 4;
+                heatmapData['Friday'][16] = 3;
+                heatmapData['Saturday'][10] = 4;
+                heatmapData['Saturday'][11] = 3;
+                heatmapData['Saturday'][14] = 2;
+                heatmapData['Sunday'][15] = 3;
+            }
+            renderHeatmap();
+            updateStats();
+        }
+        
+        // Save to localStorage
+        function saveHeatmap() {
+            localStorage.setItem('studyHeatmap', JSON.stringify(heatmapData));
+        }
+        
+        // Update cell intensity
+        function updateIntensity(day, hour) {
+            let currentIntensity = heatmapData[day][hour];
+            let newIntensity = selectedIntensity;
+            
+            // If same intensity, set to 0 (toggle off)
+            if(currentIntensity === newIntensity) {
+                newIntensity = 0;
+            }
+            
+            heatmapData[day][hour] = newIntensity;
+            saveHeatmap();
+            renderHeatmap();
+            updateStats();
+        }
+        
+        // Get intensity class
+        function getIntensityClass(intensity) {
+            if(intensity === 0) return 'intensity-0';
+            if(intensity === 1) return 'intensity-1';
+            if(intensity === 2) return 'intensity-2';
+            if(intensity === 3) return 'intensity-3';
+            if(intensity === 4) return 'intensity-4';
+            return 'intensity-5';
+        }
+        
+        // Get tooltip text
+        function getTooltip(day, hour, intensity) {
+            const hourDisplay = hour === 0 ? '12 AM' : hour < 12 ? `${hour} AM` : hour === 12 ? '12 PM' : `${hour-12} PM`;
+            const intensityText = intensity === 0 ? 'No study' : `${intensity} hour${intensity > 1 ? 's' : ''} of study`;
+            return `${day}, ${hourDisplay}: ${intensityText}`;
+        }
+        
+        // Render heatmap grid
+        function renderHeatmap() {
+            const gridContainer = document.getElementById('heatmapGrid');
+            
+            // Create header row with hours
+            let html = `<div class="heatmap-header">
+                <div class="time-label"></div>`;
+            for(let hour of hours) {
+                const hourDisplay = hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour-12}p`;
+                html += `<div class="hour-label">${hourDisplay}</div>`;
+            }
+            html += `</div>`;
+            
+            // Create rows for each day
+            for(let day of days) {
+                html += `<div class="day-row">
+                    <div class="day-label">${day}</div>`;
+                
+                for(let hour of hours) {
+                    const intensity = heatmapData[day][hour];
+                    const intensityClass = getIntensityClass(intensity);
+                    const tooltip = getTooltip(day, hour, intensity);
+                    
+                    html += `<div class="heat-cell ${intensityClass}" 
+                        data-day="${day}" 
+                        data-hour="${hour}"
+                        data-tooltip="${tooltip}"
+                        onclick="updateIntensity('${day}', ${hour})">
+                    </div>`;
+                }
+                html += `</div>`;
+            }
+            
+            gridContainer.innerHTML = html;
+            
+            // Highlight most productive day and hour
+            highlightMostProductive();
+        }
+        
+        // Calculate total study hours
+        function calculateTotalHours() {
+            let total = 0;
+            for(let day of days) {
+                for(let hour of hours) {
+                    total += heatmapData[day][hour];
+                }
+            }
+            return total;
+        }
+        
+        // Calculate average per day
+        function calculateAvgDaily() {
+            const total = calculateTotalHours();
+            return (total / 7).toFixed(1);
+        }
+        
+        // Find most productive day
+        function findBestDay() {
+            let bestDay = '';
+            let maxHours = -1;
+            
+            for(let day of days) {
+                let dayTotal = 0;
+                for(let hour of hours) {
+                    dayTotal += heatmapData[day][hour];
+                }
+                if(dayTotal > maxHours) {
+                    maxHours = dayTotal;
+                    bestDay = day;
+                }
+            }
+            return { day: bestDay, hours: maxHours };
+        }
+        
+        // Find most productive hour
+        function findBestHour() {
+            let bestHour = -1;
+            let maxIntensity = -1;
+            
+            for(let hour of hours) {
+                let hourTotal = 0;
+                for(let day of days) {
+                    hourTotal += heatmapData[day][hour];
+                }
+                if(hourTotal > maxIntensity) {
+                    maxIntensity = hourTotal;
+                    bestHour = hour;
+                }
+            }
+            
+            const hourDisplay = bestHour === 0 ? '12 AM' : bestHour < 12 ? `${bestHour} AM` : bestHour === 12 ? '12 PM' : `${bestHour-12} PM`;
+            return { hour: hourDisplay, intensity: maxIntensity };
+        }
+        
+        // Highlight most productive cells
+        function highlightMostProductive() {
+            const bestDayData = findBestDay();
+            const bestHourData = findBestHour();
+            
+            // Add star to best day row
+            const dayLabels = document.querySelectorAll('.day-label');
+            for(let i = 0; i < dayLabels.length; i++) {
+                if(dayLabels[i].textContent === bestDayData.day) {
+                    dayLabels[i].innerHTML = `${bestDayData.day} ⭐`;
+                } else {
+                    dayLabels[i].innerHTML = dayLabels[i].textContent.replace(' ⭐', '');
+                }
+            }
+            
+            // Add star to best hour column
+            const hourLabels = document.querySelectorAll('.hour-label');
+            let targetHourIndex = -1;
+            for(let hour of hours) {
+                const hourDisplay = hour === 0 ? '12a' : hour < 12 ? `${hour}a` : hour === 12 ? '12p' : `${hour-12}p`;
+                if(hourDisplay === bestHourData.hour.toLowerCase().replace(' ', '')) {
+                    targetHourIndex = hour;
+                    break;
+                }
+            }
+            
+            if(targetHourIndex !== -1 && hourLabels[targetHourIndex]) {
+                hourLabels[targetHourIndex].innerHTML = `${bestHourData.hour} ⭐`;
+            }
+        }
+        
+        // Update statistics display
+        function updateStats() {
+            const totalHours = calculateTotalHours();
+            const avgDaily = calculateAvgDaily();
+            const bestDay = findBestDay();
+            const bestHour = findBestHour();
+            
+            document.getElementById('totalHours').textContent = totalHours;
+            document.getElementById('avgDaily').textContent = avgDaily;
+            document.getElementById('bestDay').textContent = `${bestDay.day} (${bestDay.hours} hrs)`;
+            document.getElementById('bestHour').textContent = `${bestHour.hour} (${bestHour.intensity} hrs total)`;
+        }
+        
+        // Reset heatmap
+        function resetHeatmap() {
+            if(confirm('⚠️ Reset ALL study data? This cannot be undone!')) {
+                initHeatmapData();
+                saveHeatmap();
+                renderHeatmap();
+                updateStats();
+            }
+        }
+        
+        // Show insights
+        function showInsights() {
+            const totalHours = calculateTotalHours();
+            const avgDaily = calculateAvgDaily();
+            const bestDay = findBestDay();
+            const bestHour = findBestHour();
+            
+            let message = `📊 STUDY INSIGHTS 📊\n\n`;
+            message += `📚 Total Study Hours: ${totalHours} hours\n`;
+            message += `📅 Average per Day: ${avgDaily} hours\n`;
+            message += `🏆 Most Productive Day: ${bestDay.day} (${bestDay.hours} hours)\n`;
+            message += `⏰ Most Productive Hour: ${bestHour.hour} (${bestHour.intensity} total hours across all days)\n\n`;
+            
+            if(totalHours === 0) {
+                message += `💡 Start tracking your study time by clicking on the heatmap cells!`;
+            } else if(totalHours < 20) {
+                message += `💪 Keep going! Small daily efforts lead to big results!`;
+            } else if(totalHours < 50) {
+                message += `🎯 Great consistency! You're building strong study habits!`;
+            } else {
+                message += `🏅 Outstanding discipline! You're a study champion! 🔥`;
+            }
+            
+            alert(message);
+        }
+        
+        // Set selected intensity
+        function setSelectedIntensity(intensity) {
+            selectedIntensity = intensity;
+            
+            // Update UI
+            document.querySelectorAll('.intensity-option').forEach(opt => {
+                opt.classList.remove('selected');
+                if(parseInt(opt.dataset.intensity) === intensity) {
+                    opt.classList.add('selected');
+                }
+            });
+        }
+        
+        // Event listeners
+        document.querySelectorAll('.intensity-option').forEach(opt => {
+            opt.addEventListener('click', () => {
+                setSelectedIntensity(parseInt(opt.dataset.intensity));
+            });
+        });
+        
+        document.getElementById('resetHeatmapBtn').addEventListener('click', resetHeatmap);
+        document.getElementById('showInsightsBtn').addEventListener('click', showInsights);
+        
+        // Make updateIntensity globally accessible
+        window.updateIntensity = updateIntensity;
+        
+        // Initialize
+        setSelectedIntensity(3);
+        loadHeatmap();
+    </script>
+</body>
+</html>
