@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rotate & Fix — Prism Logic</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@500;700&display=swap');
+
+        :root {
+            --bg: #030712;
+            --glass: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.1);
+            --accent: #22d3ee;
+            --accent-glow: rgba(34, 211, 238, 0.3);
+            --text: #f8fafc;
+            --text-dim: #94a3b8;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            background: radial-gradient(circle at top right, #1e1b4b 0%, #020617 100%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 550px;
+            background: var(--glass);
+            backdrop-filter: blur(25px);
+            border: 1px solid var(--glass-border);
+            border-radius: 40px;
+            padding: 2.5rem;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            text-align: center;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 2rem;
+            margin: 0 0 1.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            background: linear-gradient(to bottom right, #fff, var(--accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 2rem;
+            padding: 1rem 1.5rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 20px;
+            border: 1px solid var(--glass-border);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .stat-label { font-size: 0.7rem; color: var(--text-dim); text-transform: uppercase; }
+        .stat-val { font-size: 1.2rem; color: var(--accent); }
+
+        .board {
+            display: grid;
+            gap: 8px;
+            margin: 0 auto 2rem;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            border-radius: 24px;
+            border: 1px solid var(--glass-border);
+            width: fit-content;
+        }
+
+        .tile {
+            width: 80px;
+            height: 80px;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.3s;
+            background-size: 400px 400px; /* Base size for image */
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: inset 0 0 15px rgba(0,0,0,0.5);
+        }
+
+        .tile:hover {
+            border-color: var(--accent);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: var(--bg);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border-radius: 40px;
+            padding: 2rem;
+        }
+
+        .hidden { display: none !important; }
+
+        .btn {
+            background: var(--text);
+            color: var(--bg);
+            border: none;
+            padding: 1rem 2.5rem;
+            border-radius: 18px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 5px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            background: #fff;
+        }
+
+        .btn-diff {
+            background: transparent;
+            border: 1px solid var(--glass-border);
+            color: var(--text-dim);
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .btn-diff.active {
+            border-color: var(--accent);
+            color: var(--accent);
+            background: var(--glass);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div id="start-screen" class="overlay">
+            <h1>Rotate & Fix</h1>
+            <p style="color: var(--text-dim); margin-bottom: 2rem;">Restore the prism by rotating the segments.</p>
+            <div style="margin-bottom: 2rem;">
+                <button class="btn btn-diff active" onclick="setDifficulty(3, this)">Easy</button>
+                <button class="btn btn-diff" onclick="setDifficulty(4, this)">Medium</button>
+                <button class="btn btn-diff" onclick="setDifficulty(5, this)">Hard</button>
+            </div>
+            <button class="btn" onclick="startGame()">Initiate</button>
+        </div>
+
+        <div id="win-screen" class="overlay hidden">
+            <h1 style="color: var(--accent);">Prism Restored</h1>
+            <p id="final-stats" style="color: var(--text-dim); margin-bottom: 2rem;"></p>
+            <button class="btn" onclick="location.reload()">Reset Map</button>
+        </div>
+
+        <div class="stats">
+            <div class="stat-item">
+                <span class="stat-label">Time</span>
+                <span id="timer-val" class="stat-val">00:00</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-label">Moves</span>
+                <span id="moves-val" class="stat-val">0</span>
+            </div>
+        </div>
+
+        <div id="game-board" class="board"></div>
+
+        <button class="btn btn-diff" onclick="location.reload()" style="opacity: 0.5;">Abandon Mission</button>
+    </div>
+
+    <script>
+        let state = {
+            gridSize: 3,
+            moves: 0,
+            seconds: 0,
+            timer: null,
+            tiles: [],
+            imageUrl: 'https://images.unsplash.com/photo-1550684848-fac1c5b4e853?q=80&w=800&auto=format&fit=crop'
+        };
+
+        function setDifficulty(size, btn) {
+            state.gridSize = size;
+            document.querySelectorAll('.btn-diff').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        function startGame() {
+            document.getElementById('start-screen').classList.add('hidden');
+            initBoard();
+            startTimer();
+        }
+
+        function initBoard() {
+            const board = document.getElementById('game-board');
+            board.style.gridTemplateColumns = `repeat(${state.gridSize}, 1fr)`;
+            board.innerHTML = '';
+            state.tiles = [];
+            state.moves = 0;
+            document.getElementById('moves-val').innerText = '0';
+
+            const tileSize = 400 / state.gridSize;
+
+            for (let r = 0; r < state.gridSize; r++) {
+                for (let c = 0; c < state.gridSize; c++) {
+                    const tile = document.createElement('div');
+                    tile.className = 'tile';
+                    tile.style.width = `${80 * (3 / state.gridSize) * 1.2}px`;
+                    tile.style.height = `${80 * (3 / state.gridSize) * 1.2}px`;
+                    tile.style.backgroundImage = `url(${state.imageUrl})`;
+                    tile.style.backgroundPosition = `-${c * tileSize}px -${r * tileSize}px`;
+                    tile.style.backgroundSize = `400px 400px`;
+                    
+                    // Random initial rotation (90, 180, 270)
+                    const rot = (Math.floor(Math.random() * 3) + 1) * 90;
+                    tile.style.transform = `rotate(${rot}deg)`;
+                    tile.dataset.rotation = rot;
+
+                    tile.onclick = () => rotateTile(tile);
+                    board.appendChild(tile);
+                    state.tiles.push(tile);
+                }
+            }
+        }
+
+        function rotateTile(tile) {
+            let rot = parseInt(tile.dataset.rotation) + 90;
+            tile.style.transform = `rotate(${rot}deg)`;
+            tile.dataset.rotation = rot;
+            
+            state.moves++;
+            document.getElementById('moves-val').innerText = state.moves;
+            
+            checkWin();
+        }
+
+        function checkWin() {
+            const isWon = state.tiles.every(tile => (parseInt(tile.dataset.rotation) % 360) === 0);
+            if (isWon) {
+                clearInterval(state.timer);
+                setTimeout(showWinScreen, 500);
+            }
+        }
+
+        function startTimer() {
+            state.seconds = 0;
+            state.timer = setInterval(() => {
+                state.seconds++;
+                const m = Math.floor(state.seconds / 60).toString().padStart(2, '0');
+                const s = (state.seconds % 60).toString().padStart(2, '0');
+                document.getElementById('timer-val').innerText = `${m}:${s}`;
+            }, 1000);
+        }
+
+        function showWinScreen() {
+            const screen = document.getElementById('win-screen');
+            const time = document.getElementById('timer-val').innerText;
+            document.getElementById('final-stats').innerText = `Completed in ${time} with ${state.moves} maneuvers.`;
+            screen.classList.remove('hidden');
+        }
+    </script>
+</body>
+</html>
