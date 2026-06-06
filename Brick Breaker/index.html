@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Brick Breaker</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="wrapper">
+
+    <!-- ─── Scorebar ─── -->
+    <header class="scorebar">
+      <div class="score-group">
+        <span class="sb-label">Score</span>
+        <span class="sb-value" id="score">0</span>
+      </div>
+      <div class="score-group">
+        <span class="sb-label">Best</span>
+        <span class="sb-value accent" id="best">0</span>
+      </div>
+      <div class="score-group">
+        <span class="sb-label">Lives</span>
+        <span class="sb-value" id="lives">3</span>
+      </div>
+    </header>
+
+    <!-- ─── Canvas ─── -->
+    <div class="canvas-wrap">
+      <canvas id="game" width="480" height="640"></canvas>
+    </div>
+
+    <!-- ─── Game Over Overlay ─── -->
+    <div class="modal" id="modal">
+      <div class="modal-card">
+        <h2 class="modal-title" id="modal-title">GAME OVER</h2>
+        <div class="modal-stats">
+          <div class="modal-row"><span>Score</span><span id="modal-score">0</span></div>
+          <div class="modal-row"><span>Best</span><span id="modal-best">0</span></div>
+        </div>
+        <button class="btn-restart" id="btn-restart">⟳ Play Again</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

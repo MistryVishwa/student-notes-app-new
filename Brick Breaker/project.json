@@ -1,0 +1,18 @@
+{
+  "title": "Brick Breaker",
+  "description": "A cyberpunk arcade brick-breaker game with Canvas 2D rendering, multi-tiered durability bricks, angle-steering paddle physics, and localStorage high-score persistence. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "arcade",
+    "game",
+    "canvas",
+    "vanilla-js",
+    "brick-breaker",
+    "cyberpunk"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}
