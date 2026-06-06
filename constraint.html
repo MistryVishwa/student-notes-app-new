@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Constraint Builder — Efficiency Protocol</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@700&family=Outfit:wght@400;900&display=swap');
+
+        :root {
+            --bg: #050505;
+            --primary: #ff0055; /* Neon Pink */
+            --secondary: #00ff99; /* Neon Mint */
+            --accent: #5500ff; /* Deep Purple */
+            --surface: #111;
+            --text: #fff;
+            --grid-line: rgba(255, 255, 255, 0.05);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Outfit', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .glitch-container {
+            position: relative;
+            width: 95%;
+            max-width: 500px;
+            padding: 20px;
+            border: 4px solid var(--primary);
+            background: var(--surface);
+            box-shadow: 10px 10px 0 var(--accent);
+            transform: skew(-2deg);
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid var(--primary);
+            padding-bottom: 10px;
+        }
+
+        h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--secondary);
+        }
+
+        .stats {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            text-align: right;
+        }
+
+        .move-budget {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            display: block;
+        }
+
+        .game-grid {
+            display: grid;
+            gap: 4px;
+            background: var(--grid-line);
+            padding: 4px;
+            border-radius: 4px;
+            margin: 20px 0;
+            transform: skew(2deg);
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: #1a1a1a;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            border-radius: 2px;
+            transition: 0.1s;
+        }
+
+        .cell.player {
+            background: var(--primary);
+            box-shadow: 0 0 15px var(--primary);
+            z-index: 2;
+        }
+
+        .cell.goal {
+            background: var(--secondary);
+            box-shadow: 0 0 15px var(--secondary);
+            animation: pulse 1s infinite;
+        }
+
+        .cell.wall {
+            background: #333;
+            background-image: repeating-linear-gradient(45deg, transparent, transparent 5px, rgba(255,0,0,0.1) 5px, rgba(255,0,0,0.1) 10px);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.8; }
+            50% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(0.9); opacity: 0.8; }
+        }
+
+        .controls {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            max-width: 200px;
+            margin: 20px auto 0;
+        }
+
+        .ctrl-btn {
+            background: var(--accent);
+            border: none;
+            color: white;
+            padding: 15px;
+            font-weight: 900;
+            cursor: pointer;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+        }
+
+        .ctrl-btn:active { background: var(--primary); transform: scale(0.95); }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .btn-action {
+            background: var(--secondary);
+            color: var(--bg);
+            border: none;
+            padding: 15px 40px;
+            font-weight: 900;
+            font-size: 1.2rem;
+            cursor: pointer;
+            margin-top: 20px;
+            text-transform: uppercase;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .hidden { display: none !important; }
+
+        .level-tag {
+            position: absolute;
+            top: -15px;
+            left: 20px;
+            background: var(--secondary);
+            color: var(--bg);
+            padding: 2px 10px;
+            font-weight: 900;
+            font-size: 0.8rem;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="glitch-container">
+        <div class="level-tag">PROTOCOL: <span id="level-num">1</span></div>
+        
+        <div id="start-overlay" class="overlay">
+            <h1 style="font-size: 2.5rem; color: var(--primary);">CONSTRAINT BUILDER</h1>
+            <p>Reach the green core. Every move costs energy. <br>Exceed the budget = SYSTEM REBOOT.</p>
+            <button class="btn-action" onclick="initLevel()">Initiate</button>
+        </div>
+
+        <div id="status-overlay" class="overlay hidden">
+            <h1 id="status-title">OPTIMIZED!</h1>
+            <p id="status-msg"></p>
+            <button class="btn-action" id="status-btn" onclick="initLevel()">Next Sector</button>
+        </div>
+
+        <div class="header">
+            <h1>GRID_ESCAPE</h1>
+            <div class="stats">
+                <span>MOVE BUDGET</span>
+                <span class="move-budget" id="budget-val">00</span>
+            </div>
+        </div>
+
+        <div class="game-grid" id="grid"></div>
+
+        <div class="controls">
+            <div></div>
+            <button class="ctrl-btn" onclick="move(0, -1)">▲</button>
+            <div></div>
+            <button class="ctrl-btn" onclick="move(-1, 0)">◀</button>
+            <button class="ctrl-btn" onclick="move(0, 1)">▼</button>
+            <button class="ctrl-btn" onclick="move(1, 0)">▶</button>
+        </div>
+    </div>
+
+    <script>
+        const LEVELS = [
+            { size: 5, budget: 10, walls: [[1,1], [1,2], [1,3], [3,1], [3,2]], start: [0,0], goal: [4,4] },
+            { size: 6, budget: 12, walls: [[2,0], [2,1], [2,2], [2,3], [4,2], [4,3], [4,4], [4,5]], start: [0,0], goal: [5,5] },
+            { size: 7, budget: 15, walls: [[1,1], [1,2], [1,3], [1,4], [1,5], [3,1], [5,1], [3,3], [5,3], [3,5], [5,5]], start: [0,0], goal: [6,6] },
+            { size: 8, budget: 20, walls: [[0,2], [1,2], [2,2], [3,2], [4,2], [5,2], [7,5], [6,5], [5,5], [4,5], [3,5], [2,5]], start: [0,0], goal: [7,7] },
+            { size: 5, budget: 6, walls: [[1,0], [1,1], [1,2], [3,2], [3,3], [3,4]], start: [0,4], goal: [4,0] }
+        ];
+
+        let state = {
+            levelIdx: 0,
+            movesTaken: 0,
+            playerPos: [0,0],
+            active: false
+        };
+
+        function initLevel() {
+            const lvl = LEVELS[state.levelIdx];
+            state.movesTaken = 0;
+            state.playerPos = [...lvl.start];
+            state.active = true;
+
+            document.getElementById('start-overlay').classList.add('hidden');
+            document.getElementById('status-overlay').classList.add('hidden');
+            document.getElementById('level-num').innerText = state.levelIdx + 1;
+            updateStats();
+            renderGrid();
+        }
+
+        function renderGrid() {
+            const lvl = LEVELS[state.levelIdx];
+            const grid = document.getElementById('grid');
+            grid.style.gridTemplateColumns = `repeat(${lvl.size}, 1fr)`;
+            grid.innerHTML = '';
+
+            for (let y = 0; y < lvl.size; y++) {
+                for (let x = 0; x < lvl.size; x++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    
+                    if (x === state.playerPos[0] && y === state.playerPos[1]) {
+                        cell.classList.add('player');
+                        cell.innerText = '👤';
+                    } else if (x === lvl.goal[0] && y === lvl.goal[1]) {
+                        cell.classList.add('goal');
+                        cell.innerText = '🔋';
+                    } else if (lvl.walls.some(w => w[0] === x && w[1] === y)) {
+                        cell.classList.add('wall');
+                    }
+                    
+                    grid.appendChild(cell);
+                }
+            }
+        }
+
+        function move(dx, dy) {
+            if (!state.active) return;
+            const lvl = LEVELS[state.levelIdx];
+            const nx = state.playerPos[0] + dx;
+            const ny = state.playerPos[1] + dy;
+
+            // Bounds check
+            if (nx < 0 || nx >= lvl.size || ny < 0 || ny >= lvl.size) return;
+            
+            // Wall check
+            if (lvl.walls.some(w => w[0] === nx && w[1] === ny)) return;
+
+            state.playerPos = [nx, ny];
+            state.movesTaken++;
+            updateStats();
+            renderGrid();
+            checkCondition();
+        }
+
+        function updateStats() {
+            const lvl = LEVELS[state.levelIdx];
+            const remaining = lvl.budget - state.movesTaken;
+            const display = document.getElementById('budget-val');
+            display.innerText = remaining < 10 ? '0' + remaining : remaining;
+            
+            if (remaining <= 2) display.style.color = "var(--primary)";
+            else display.style.color = "var(--secondary)";
+        }
+
+        function checkCondition() {
+            const lvl = LEVELS[state.levelIdx];
+            const remaining = lvl.budget - state.movesTaken;
+
+            if (state.playerPos[0] === lvl.goal[0] && state.playerPos[1] === lvl.goal[1]) {
+                state.active = false;
+                showStatus("SECTOR CLEAR", `Optimization Score: ${remaining * 100}`, true);
+            } else if (remaining <= 0) {
+                state.active = false;
+                showStatus("BUDGET EXCEEDED", "Energy depleted. Protocol failed.", false);
+            }
+        }
+
+        function showStatus(title, msg, success) {
+            const overlay = document.getElementById('status-overlay');
+            const btn = document.getElementById('status-btn');
+            
+            document.getElementById('status-title').innerText = title;
+            document.getElementById('status-title').style.color = success ? "var(--secondary)" : "var(--primary)";
+            document.getElementById('status-msg').innerText = msg;
+            
+            if (success) {
+                state.levelIdx = (state.levelIdx + 1) % LEVELS.length;
+                btn.innerText = "Proceed to Next";
+            } else {
+                btn.innerText = "Retry Protocol";
+            }
+            
+            overlay.classList.remove('hidden');
+        }
+
+        window.addEventListener('keydown', e => {
+            switch(e.key) {
+                case 'ArrowUp': move(0, -1); break;
+                case 'ArrowDown': move(0, 1); break;
+                case 'ArrowLeft': move(-1, 0); break;
+                case 'ArrowRight': move(1, 0); break;
+            }
+        });
+    </script>
+</body>
+</html>
