@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Strict Teacher Mode | WOW Factor | NSOC Contribution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a0a0a 0%, #0d0505 100%);
+            padding: 40px 20px;
+            position: relative;
+        }
+
+        /* Animated warning background */
+        body::before {
+            content: "";
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: repeating-linear-gradient(
+                45deg,
+                rgba(255,0,0,0.05) 0px,
+                rgba(255,0,0,0.05) 3px,
+                transparent 3px,
+                transparent 12px
+            );
+            pointer-events: none;
+            animation: slideBg 20s linear infinite;
+        }
+
+        @keyframes slideBg {
+            from { background-position: 0 0; }
+            to { background-position: 100px 100px; }
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: #ff4444;
+            font-size: 34px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 15px rgba(255,68,68,0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .badge {
+            background: #ff4444;
+            color: white;
+            font-size: 12px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            animation: blink 1s infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+        }
+
+        /* Teacher Dashboard Card */
+        .teacher-card {
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 25px;
+            margin-bottom: 25px;
+            border: 2px solid #ff4444;
+            box-shadow: 0 0 20px rgba(255,68,68,0.2);
+            animation: borderGlow 2s infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { border-color: #ff4444; box-shadow: 0 0 10px rgba(255,68,68,0.2); }
+            50% { border-color: #ff8888; box-shadow: 0 0 25px rgba(255,68,68,0.5); }
+        }
+
+        .teacher-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255,68,68,0.3);
+        }
+
+        .teacher-name {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .teacher-avatar {
+            font-size: 48px;
+        }
+
+        .teacher-info h3 {
+            color: #ff4444;
+            font-size: 20px;
+        }
+
+        .teacher-info p {
+            color: rgba(255,255,255,0.5);
+            font-size: 12px;
+        }
+
+        .warning-icon {
+            font-size: 40px;
+            animation: shake 2s infinite;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: rotate(0deg); }
+            25% { transform: rotate(10deg); }
+            75% { transform: rotate(-10deg); }
+        }
+
+        /* Strict Message */
+        .strict-message {
+            background: rgba(255,68,68,0.15);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: center;
+            animation: messagePop 0.5s ease;
+        }
+
+        @keyframes messagePop {
+            from {
+                transform: scale(0.9);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .message-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .message-text {
+            color: #ff8888;
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .message-subtext {
+            color: rgba(255,255,255,0.6);
+            font-size: 13px;
+        }
+
+        /* Warning Cards */
+        .warning-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+
+        .warning-card {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 15px;
+            text-align: center;
+            border-left: 3px solid #ff4444;
+            transition: 0.3s;
+        }
+
+        .warning-card:hover {
+            transform: translateX(5px);
+            background: rgba(255,68,68,0.1);
+        }
+
+        .warning-card-icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .warning-card-title {
+            color: #ff8888;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+        }
+
+        .warning-card-text {
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Performance Gauge */
+        .performance-section {
+            background: rgba(0,0,0,0.5);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .section-title {
+            color: #ff4444;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .gauge-container {
+            text-align: center;
+        }
+
+        .gauge {
+            position: relative;
+            width: 150px;
+            height: 150px;
+            margin: 0 auto 20px;
+        }
+
+        .gauge svg {
+            transform: rotate(-90deg);
+        }
+
+        .gauge-circle-bg {
+            stroke: rgba(255,255,255,0.1);
+        }
+
+        .gauge-circle-fill {
+            stroke: #ff4444;
+            stroke-dasharray: 377;
+            stroke-dashoffset: 377;
+            transition: stroke-dashoffset 1s ease;
+        }
+
+        .gauge-percentage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 28px;
+            font-weight: bold;
+            color: #ff4444;
+        }
+
+        .gauge-label {
+            color: rgba(255,255,255,0.6);
+            font-size: 12px;
+        }
+
+        .performance-stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #ff8888;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Action Buttons */
+        .action-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .improve-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .improve-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(40,167,69,0.4);
+        }
+
+        .punish-btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 30px;
+            background: linear-gradient(135deg, #ff4444, #cc0000);
+            color: white;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .punish-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(255,68,68,0.4);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            margin-top: 25px;
+            color: rgba(255,255,255,0.3);
+            font-size: 11px;
+        }
+
+        @media (max-width: 600px) {
+            .teacher-header {
+                flex-direction: column;
+                text-align: center;
+                gap: 10px;
+            }
+            .message-text {
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>
+                👨‍🏫 AI STRICT TEACHER 
+                <span class="badge">MODE ACTIVATED</span>
+            </h1>
+            <div class="subtitle">⚠️ I'm watching you. No excuses. No distractions. ⚠️</div>
+        </div>
+
+        <!-- Teacher Card -->
+        <div class="teacher-card">
+            <div class="teacher-header">
+                <div class="teacher-name">
+                    <div class="teacher-avatar">👨‍🏫</div>
+                    <div class="teacher-info">
+                        <h3>Professor AI (Strict Mode)</h3>
+                        <p>🔴 Online • Monitoring • Zero Tolerance</p>
+                    </div>
+                </div>
+                <div class="warning-icon">⚠️</div>
+            </div>
+
+            <!-- Strict Message (Dynamic) -->
+            <div class="strict-message" id="strictMessage">
+                <div class="message-icon" id="messageIcon">📢</div>
+                <div class="message-text" id="messageText">You wasted 2 hours today on social media!</div>
+                <div class="message-subtext" id="messageSubtext">Action required: Revise Chapter 5 immediately</div>
+            </div>
+
+            <!-- Warning Cards -->
+            <div class="warning-cards" id="warningCards">
+                <!-- Dynamic warning cards -->
+            </div>
+        </div>
+
+        <!-- Performance Gauge -->
+        <div class="performance-section">
+            <div class="section-title">
+                <span>📊</span> STUDENT PERFORMANCE METRICS
+            </div>
+            <div class="gauge-container">
+                <div class="gauge">
+                    <svg width="150" height="150" viewBox="0 0 150 150">
+                        <circle cx="75" cy="75" r="60" fill="none" stroke-width="12" class="gauge-circle-bg"/>
+                        <circle cx="75" cy="75" r="60" fill="none" stroke-width="12" stroke-linecap="round" class="gauge-circle-fill" id="gaugeFill"/>
+                    </svg>
+                    <div class="gauge-percentage" id="gaugePercent">0%</div>
+                </div>
+                <div class="performance-stats">
+                    <div class="stat">
+                        <div class="stat-value" id="warningsCount">0</div>
+                        <div class="stat-label">⚠️ Warnings</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="disciplineScore">0</div>
+                        <div class="stat-label">📈 Discipline Score</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-value" id="focusHours">0</div>
+                        <div class="stat-label">⏱️ Focus Hours</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="improve-btn" id="improveBtn">💪 "I WILL IMPROVE, SIR!"</button>
+            <button class="punish-btn" id="punishBtn">⚠️ "I WASTED TIME"</button>
+        </div>
+
+        <div class="footer">
+            🤖 AI Strict Teacher v1.0 | Your progress is being monitored | No mercy, only results
+        </div>
+    </div>
+
+    <script>
+        // Strict messages array
+        const strictMessages = [
+            { icon: "📱", text: "You wasted 2 hours today on social media!", subtext: "Action required: Revise Chapter 5 immediately" },
+            { icon: "🎮", text: "Stop playing games! You have an exam in 7 days!", subtext: "Close all distractions. Focus now." },
+            { icon: "📺", text: "Netflix can wait. Your future cannot.", subtext: "Complete pending assignments by tonight." },
+            { icon: "😴", text: "You slept only 4 hours. That's inefficient!", subtext: "Sleep 7-8 hours for better retention." },
+            { icon: "📝", text: "Your mock test score dropped 15%!", subtext: "Revise chapters 3, 4, and 7 today." },
+            { icon: "⏰", text: "You're 30 minutes late to your study session!", subtext: "Wake up earlier. Discipline is key." },
+            { icon: "📖", text: "You haven't completed yesterday's target!", subtext: "Double today's study hours as punishment." },
+            { icon: "💬", text: "Chatting with friends? That's 45 minutes wasted!", subtext: "Phone on silent. Focus mode engaged." },
+            { icon: "🍕", text: "Junk food affects brain performance!", subtext: "Eat healthy. Your brain needs proper fuel." },
+            { icon: "📉", text: "Your weekly progress is below average!", subtext: "Create a stricter schedule starting NOW." }
+        ];
+
+        // Warning cards data
+        const warningCardsData = [
+            { icon: "📚", title: "PENDING REVISION", text: "Chapter 3, 5, 7" },
+            { icon: "⏰", title: "DEADLINE APPROACHING", text: "Assignment due in 2 days" },
+            { icon: "📝", title: "MOCK TEST SCORE", text: "65% (Needs improvement)" },
+            { icon: "🎯", title: "TODAY'S TARGET", text: "Study 6 hours minimum" }
+        ];
+
+        // Variables
+        let warningsCount = 3;
+        let disciplineScore = 65;
+        let focusHours = 12;
+        let lastMessageIndex = -1;
+
+        // DOM Elements
+        const messageIcon = document.getElementById('messageIcon');
+        const messageText = document.getElementById('messageText');
+        const messageSubtext = document.getElementById('messageSubtext');
+        const warningsCountSpan = document.getElementById('warningsCount');
+        const disciplineScoreSpan = document.getElementById('disciplineScore');
+        const focusHoursSpan = document.getElementById('focusHours');
+        const gaugePercentSpan = document.getElementById('gaugePercent');
+        const gaugeFill = document.getElementById('gaugeFill');
+        const improveBtn = document.getElementById('improveBtn');
+        const punishBtn = document.getElementById('punishBtn');
+        const warningCardsContainer = document.getElementById('warningCards');
+
+        // Update performance display
+        function updatePerformanceDisplay() {
+            warningsCountSpan.textContent = warningsCount;
+            disciplineScoreSpan.textContent = disciplineScore;
+            focusHoursSpan.textContent = focusHours;
+            
+            // Update gauge (circumference = 2 * pi * r = 2 * 3.14 * 60 = 377)
+            const circumference = 377;
+            const percent = Math.min(100, Math.max(0, disciplineScore));
+            const dashoffset = circumference - (percent / 100) * circumference;
+            gaugeFill.style.strokeDashoffset = dashoffset;
+            gaugePercentSpan.textContent = `${percent}%`;
+        }
+
+        // Generate random strict message
+        function getRandomMessage() {
+            let newIndex;
+            do {
+                newIndex = Math.floor(Math.random() * strictMessages.length);
+            } while(newIndex === lastMessageIndex && strictMessages.length > 1);
+            lastMessageIndex = newIndex;
+            return strictMessages[newIndex];
+        }
+
+        // Update strict message
+        function updateStrictMessage() {
+            const message = getRandomMessage();
+            messageIcon.textContent = message.icon;
+            messageText.textContent = message.text;
+            messageSubtext.textContent = message.subtext;
+            
+            // Add animation effect
+            const messageDiv = document.querySelector('.strict-message');
+            messageDiv.style.animation = 'none';
+            setTimeout(() => {
+                messageDiv.style.animation = 'messagePop 0.5s ease';
+            }, 10);
+        }
+
+        // Render warning cards
+        function renderWarningCards() {
+            warningCardsContainer.innerHTML = warningCardsData.map(card => `
+                <div class="warning-card">
+                    <div class="warning-card-icon">${card.icon}</div>
+                    <div class="warning-card-title">${card.title}</div>
+                    <div class="warning-card-text">${card.text}</div>
+                </div>
+            `).join('');
+        }
+
+        // Improve action - student promises to improve
+        function improve() {
+            // Reduce warnings, increase discipline score
+            if(warningsCount > 0) {
+                warningsCount = Math.max(0, warningsCount - 1);
+            }
+            disciplineScore = Math.min(100, disciplineScore + 5);
+            focusHours = Math.min(50, focusHours + 1);
+            
+            updatePerformanceDisplay();
+            
+            // Show positive but still strict message
+            messageIcon.textContent = "👍";
+            messageText.textContent = "That's better. But don't get comfortable.";
+            messageSubtext.textContent = "One improvement doesn't make a champion. Keep going!";
+            
+            const messageDiv = document.querySelector('.strict-message');
+            messageDiv.style.animation = 'none';
+            setTimeout(() => {
+                messageDiv.style.animation = 'messagePop 0.5s ease';
+            }, 10);
+            
+            // Random strict message after 3 seconds
+            setTimeout(() => {
+                updateStrictMessage();
+            }, 3000);
+        }
+        
+        // Punish action - student wasted time
+        function punish() {
+            // Increase warnings, decrease discipline score
+            warningsCount = Math.min(10, warningsCount + 1);
+            disciplineScore = Math.max(0, disciplineScore - 8);
+            focusHours = Math.max(0, focusHours - 2);
+            
+            updatePerformanceDisplay();
+            
+            // Show angry message
+            const angryMessages = [
+                { icon: "😠", text: "Disappointing! You're falling behind!", subtext: "Extra study hour added today!" },
+                { icon: "📉", text: "This is not acceptable!", subtext: "Complete 2 extra chapters tonight." },
+                { icon: "⚠️", text: "One more warning and there will be consequences!", subtext: "No breaks until you finish your target." },
+                { icon: "😤", text: "Your discipline score dropped!", subtext: "Review all weak topics immediately." }
+            ];
+            
+            const angry = angryMessages[Math.floor(Math.random() * angryMessages.length)];
+            messageIcon.textContent = angry.icon;
+            messageText.textContent = angry.text;
+            messageSubtext.textContent = angry.subtext;
+            
+            const messageDiv = document.querySelector('.strict-message');
+            messageDiv.style.animation = 'none';
+            setTimeout(() => {
+                messageDiv.style.animation = 'messagePop 0.5s ease';
+            }, 10);
+            
+            // Shake effect on warning cards
+            document.querySelectorAll('.warning-card').forEach(card => {
+                card.style.transform = 'translateX(5px)';
+                setTimeout(() => {
+                    card.style.transform = 'translateX(0)';
+                }, 200);
+            });
+            
+            // Auto update to random strict message after 4 seconds
+            setTimeout(() => {
+                updateStrictMessage();
+            }, 4000);
+        }
+
+        // Update warning cards dynamically based on warnings
+        function updateWarningCards() {
+            if(warningsCount >= 5) {
+                warningCardsData[2].text = `URGENT: ${warningsCount} Warnings!`;
+                warningCardsData[3].text = `Study ${8 + warningsCount} hours today!`;
+            } else {
+                warningCardsData[2].text = "Mock test score: 65% (Needs improvement)";
+                warningCardsData[3].text = "Study 6 hours minimum";
+            }
+            renderWarningCards();
+        }
+
+        // Auto update strict message every 15 seconds
+        let messageInterval = setInterval(updateStrictMessage, 15000);
+        
+        // Auto update warning cards
+        setInterval(() => {
+            updateWarningCards();
+        }, 1000);
+        
+        // Also update performance metrics over time (simulates teacher tracking)
+        setInterval(() => {
+            // Slight random changes to keep it dynamic
+            if(Math.random() > 0.7) {
+                // Teacher catches something
+                const randomWaste = Math.floor(Math.random() * 2);
+                if(randomWaste === 0 && focusHours > 0) {
+                    focusHours = Math.max(0, focusHours - 1);
+                    disciplineScore = Math.max(0, disciplineScore - 2);
+                    updatePerformanceDisplay();
+                }
+            }
+        }, 30000);
+
+        // Event listeners
+        improveBtn.addEventListener('click', improve);
+        punishBtn.addEventListener('click', punish);
+
+        // Initialize
+        renderWarningCards();
+        updatePerformanceDisplay();
+        updateStrictMessage();
+        
+        // Cleanup interval on page unload
+        window.addEventListener('beforeunload', () => {
+            if(messageInterval) clearInterval(messageInterval);
+        });
+    </script>
+</body>
+</html>
