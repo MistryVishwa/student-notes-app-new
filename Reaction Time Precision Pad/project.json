@@ -1,0 +1,17 @@
+{
+  "title": "Reaction Time Precision Pad",
+  "description": "A high-precision reaction time benchmarking tool with a 5-state machine, anti-cheat false start shielding, rolling history log, and localStorage best-record caching. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "benchmark",
+    "reaction-time",
+    "tool",
+    "vanilla-js",
+    "performance"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Reaction Time Precision Pad</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ─── Telemetry Dashboard ─── -->
+    <header class="dashboard">
+      <div class="metric">
+        <span class="metric-label">Last</span>
+        <span class="metric-value" id="last-time">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Best</span>
+        <span class="metric-value accent" id="best-time">—</span>
+      </div>
+      <div class="metric">
+        <span class="metric-label">Trial</span>
+        <span class="metric-value" id="trial-count">0</span>
+      </div>
+    </header>
+
+    <!-- ─── Main Pad ─── -->
+    <div class="pad" id="pad" role="button" tabindex="0">
+      <span class="pad-text" id="pad-text">Click to Start</span>
+    </div>
+
+    <!-- ─── History Sidebar ─── -->
+    <aside class="history" id="history">
+      <div class="history-header">History</div>
+      <div class="history-list" id="history-list"></div>
+    </aside>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,37 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="16" fill="#090a10"/>
+  <!-- Dashboard strip -->
+  <g transform="translate(8,6)">
+    <rect x="0" y="0" width="112" height="14" rx="7" fill="rgba(30,41,59,0.4)" stroke="rgba(51,65,85,0.3)" stroke-width="0.5"/>
+    <text x="10" y="5" font-size="3.5" fill="#475569" font-family="monospace" letter-spacing="1">LAST</text>
+    <text x="8" y="12" font-size="6" fill="#94a3b8" font-family="monospace" font-weight="700">264 ms</text>
+    <text x="44" y="5" font-size="3.5" fill="#475569" font-family="monospace" letter-spacing="1">BEST</text>
+    <text x="44" y="12" font-size="6" fill="#06b6d4" font-family="monospace" font-weight="700">187 ms</text>
+    <text x="78" y="5" font-size="3.5" fill="#475569" font-family="monospace" letter-spacing="1">TRIAL</text>
+    <text x="78" y="12" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">24</text>
+  </g>
+  <!-- Main pad -->
+  <g transform="translate(12,26)">
+    <rect x="0" y="0" width="68" height="68" rx="14" fill="rgba(30,41,59,0.25)" stroke="#10b981" stroke-width="1.5" filter="url(#glow)"/>
+    <text x="34" y="38" font-size="8" fill="#10b981" text-anchor="middle" font-family="monospace" font-weight="700">CLICK</text>
+    <text x="34" y="48" font-size="5" fill="#10b981" text-anchor="middle" font-family="monospace">NOW!</text>
+  </g>
+  <!-- History sidebar -->
+  <g transform="translate(85,26)">
+    <rect x="0" y="0" width="36" height="68" rx="8" fill="rgba(30,41,59,0.25)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <text x="18" y="6" font-size="3" fill="#475569" text-anchor="middle" font-family="monospace" letter-spacing="1">HISTORY</text>
+    <!-- Items -->
+    <rect x="3" y="10" width="30" height="7" rx="4" fill="rgba(15,23,42,0.5)" stroke="rgba(51,65,85,0.15)" stroke-width="0.3"/>
+    <text x="6" y="15" font-size="3.5" fill="#475569" font-family="monospace">#24</text>
+    <text x="22" y="15" font-size="3.5" fill="#06b6d4" font-family="monospace" font-weight="600">187</text>
+    <rect x="3" y="19" width="30" height="7" rx="4" fill="rgba(15,23,42,0.5)" stroke="rgba(51,65,85,0.15)" stroke-width="0.3"/>
+    <text x="6" y="24" font-size="3.5" fill="#475569" font-family="monospace">#23</text>
+    <text x="22" y="24" font-size="3.5" fill="#94a3b8" font-family="monospace">203</text>
+    <rect x="3" y="28" width="30" height="7" rx="4" fill="rgba(15,23,42,0.5)" stroke="rgba(51,65,85,0.15)" stroke-width="0.3"/>
+    <text x="6" y="33" font-size="3.5" fill="#475569" font-family="monospace">#22</text>
+    <text x="22" y="33" font-size="3.5" fill="#94a3b8" font-family="monospace">311</text>
+    <rect x="3" y="37" width="30" height="7" rx="4" fill="rgba(15,23,42,0.5)" stroke="rgba(51,65,85,0.15)" stroke-width="0.3"/>
+    <text x="6" y="42" font-size="3.5" fill="#475569" font-family="monospace">#21</text>
+    <text x="22" y="42" font-size="3" fill="#f59e0b" font-family="monospace">EARLY</text>
+  </g>
+</svg>
