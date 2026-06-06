@@ -261,6 +261,13 @@
         saveData();
     }
 
+    function sanitizeHTML(str) {
+        if (!str) return '';
+        const div = document.createElement('div');
+        div.textContent = str;
+        return div.innerHTML;
+    }
+
     function render() {
         listEl.innerHTML = '';
         subjects.forEach(sub => {
@@ -270,7 +277,7 @@
             
             card.innerHTML = `
                 <div class="subject-header">
-                    <span class="subject-name">${sub.name}</span>
+                    <span class="subject-name">${sanitizeHTML(sub.name)}</span>
                     <button class="btn-danger" style="padding: 4px 8px; font-size: 12px;" onclick="updateSubject(${sub.id}, 'del')">Remove</button>
                 </div>
                 <div class="stats">
