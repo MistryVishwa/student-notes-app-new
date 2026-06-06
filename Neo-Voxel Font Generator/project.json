@@ -1,0 +1,17 @@
+{
+  "title": "Neo-Voxel Font Generator",
+  "description": "An 8×8 pixel font design utility with click-and-drag grid drawing, real-time serialization (Hex, Binary, Vector indices), clipboard copy, and invert/clear controls. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "font-generator",
+    "pixel-art",
+    "utility",
+    "vanilla-js",
+    "cyberpunk"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}

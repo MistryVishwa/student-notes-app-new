@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neo-Voxel Font Generator</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ─── Top bar ─── -->
+    <header class="topbar">
+      <h1 class="logo">Neo‑Voxel</h1>
+      <div class="actions">
+        <button class="btn" id="copy-btn">⎘ Copy Hex</button>
+        <button class="btn" id="clear-btn">✕ Clear</button>
+        <button class="btn" id="invert-btn">⊞ Invert</button>
+      </div>
+    </header>
+
+    <!-- ─── Main ─── -->
+    <div class="workspace">
+
+      <!-- Left: Grid + Preview -->
+      <div class="canvas-section">
+        <div class="grid-wrap">
+          <div class="grid" id="grid"></div>
+        </div>
+        <div class="preview-wrap">
+          <div class="preview-label">Preview</div>
+          <div class="preview" id="preview"></div>
+        </div>
+      </div>
+
+      <!-- Right: Data panels -->
+      <div class="data-section">
+        <div class="panel">
+          <div class="panel-header">Hex Matrix</div>
+          <pre class="code" id="hex-output">[0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00]</pre>
+        </div>
+        <div class="panel">
+          <div class="panel-header">Binary Stream</div>
+          <pre class="code" id="bin-output">00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000\n00000000</pre>
+        </div>
+        <div class="panel">
+          <div class="panel-header">Vector Indices</div>
+          <pre class="code" id="vec-output">[]</pre>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
