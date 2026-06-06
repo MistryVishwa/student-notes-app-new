@@ -1,0 +1,18 @@
+{
+  "title": "Catch The Fruits Game",
+  "description": "A cyberpunk orchard arcade game where fresh fruits fall from the sky — catch them with your basket to score and build combos, but avoid rotten hazards! Features AABB collision, dynamic difficulty escalation every 12 seconds, and localStorage high scores. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "arcade",
+    "game",
+    "canvas",
+    "vanilla-js",
+    "fruits",
+    "cyberpunk"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}

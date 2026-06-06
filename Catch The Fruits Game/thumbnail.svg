@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="16" fill="#060814"/>
+  <!-- Dashboard -->
+  <g transform="translate(4,4)">
+    <rect x="0" y="0" width="120" height="16" rx="7" fill="rgba(30,41,59,0.4)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <text x="8" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">SCORE</text>
+    <text x="6" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">340</text>
+    <text x="36" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">COMBO</text>
+    <text x="36" y="13" font-size="6" fill="#10b981" font-family="monospace" font-weight="700">×5</text>
+    <text x="62" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">LIVES</text>
+    <text x="62" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">❤❤♡</text>
+    <text x="88" y="4.5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">BEST</text>
+    <text x="88" y="13" font-size="6" fill="#e2e8f0" font-family="monospace" font-weight="700">720</text>
+  </g>
+  <!-- Game area -->
+  <g transform="translate(4,24)">
+    <rect x="0" y="0" width="120" height="84" rx="6" fill="#080c1a" stroke="rgba(51,65,85,0.15)" stroke-width="0.5"/>
+    <!-- Falling fruits -->
+    <!-- Apple -->
+    <circle cx="30" cy="20" r="8" fill="#10b981"/>
+    <ellipse cx="28" cy="18" rx="3" ry="2" fill="rgba(255,255,255,0.08)"/>
+    <!-- Banana -->
+    <ellipse cx="70" cy="36" rx="10" ry="6" fill="#f59e0b" transform="rotate(-15,70,36)"/>
+    <ellipse cx="68" cy="34" rx="3" ry="1.5" fill="rgba(255,255,255,0.08)"/>
+    <!-- Grape -->
+    <circle cx="46" cy="50" r="3" fill="#a855f7"/>
+    <circle cx="50" cy="50" r="3" fill="#a855f7"/>
+    <circle cx="44" cy="53" r="3" fill="#a855f7"/>
+    <circle cx="48" cy="53" r="3" fill="#a855f7"/>
+    <circle cx="52" cy="53" r="3" fill="#a855f7"/>
+    <!-- Rotten -->
+    <ellipse cx="92" cy="62" rx="8" ry="6" fill="#5c6b4d"/>
+    <!-- Basket -->
+    <rect x="32" y="70" width="36" height="8" rx="4" fill="#10b981"/>
+    <rect x="30" y="68" width="40" height="12" rx="6" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="1"/>
+    <!-- Particle burst on recent catch -->
+    <circle cx="80" cy="58" r="1.5" fill="#10b981" opacity="0.6"/>
+    <circle cx="84" cy="56" r="1" fill="#10b981" opacity="0.5"/>
+    <circle cx="78" cy="54" r="1.2" fill="#10b981" opacity="0.4"/>
+    <circle cx="86" cy="60" r="0.8" fill="#10b981" opacity="0.3"/>
+  </g>
+  <!-- Controls hint -->
+  <text x="64" y="116" font-size="3" fill="#475569" text-anchor="middle" font-family="monospace">arrow keys  ·  tap screen halves</text>
+</svg>
