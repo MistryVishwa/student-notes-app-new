@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <rect width="128" height="128" rx="16" fill="#050811"/>
+  <!-- Dashboard -->
+  <g transform="translate(4,4)">
+    <rect x="0" y="0" width="120" height="16" rx="7" fill="rgba(255,255,255,0.02)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <text x="6" y="5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">SPACE</text>
+    <text x="4" y="13" font-size="5.5" fill="#e2e8f0" font-family="monospace" font-weight="700">72%</text>
+    <rect x="4" y="14" width="30" height="1.5" rx="1" fill="rgba(255,255,255,0.04)"/>
+    <rect x="4" y="14" width="22" height="1.5" rx="1" fill="#06b6d4"/>
+    <text x="42" y="5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">PLACED</text>
+    <text x="42" y="13" font-size="5.5" fill="#e2e8f0" font-family="monospace" font-weight="700">8/11</text>
+    <text x="72" y="5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">BEST</text>
+    <text x="72" y="13" font-size="5.5" fill="#06b6d4" font-family="monospace" font-weight="700">92%</text>
+    <text x="96" y="5" font-size="3" fill="#475569" font-family="monospace" letter-spacing="1">GOAL</text>
+    <text x="96" y="13" font-size="5.5" fill="#e2e8f0" font-family="monospace" font-weight="700">100%</text>
+  </g>
+  <!-- 8x8 container with placed blocks -->
+  <g transform="translate(16,26)">
+    <rect x="0" y="0" width="96" height="96" rx="4" fill="rgba(10,14,26,0.6)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <!-- Grid lines -->
+    <line x1="12" y1="0" x2="12" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="24" y1="0" x2="24" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="36" y1="0" x2="36" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="48" y1="0" x2="48" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="60" y1="0" x2="60" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="72" y1="0" x2="72" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="84" y1="0" x2="84" y2="96" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="12" x2="96" y2="12" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="24" x2="96" y2="24" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="36" x2="96" y2="36" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="48" x2="96" y2="48" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="60" x2="96" y2="60" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="72" x2="96" y2="72" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <line x1="0" y1="84" x2="96" y2="84" stroke="rgba(255,255,255,0.015)" stroke-width="0.3"/>
+    <!-- Placed blocks -->
+    <rect x="1" y="1" width="22" height="22" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="25" y="1" width="46" height="22" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="1" y="25" width="22" height="34" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="25" y="25" width="22" height="22" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="49" y="25" width="22" height="22" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="73" y="1" width="22" height="46" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="25" y="49" width="46" height="22" rx="3" fill="#06b6d4" opacity="0.85"/>
+    <rect x="1" y="61" width="94" height="10" rx="3" fill="#06b6d4" opacity="0.85"/>
+  </g>
+  <!-- Drag ghost example (cyan valid hover) -->
+  <rect x="58" y="68" width="24" height="24" rx="3" fill="#06b6d4" opacity="0.6" stroke="rgba(6,182,212,0.2)" stroke-width="0.5"/>
+  <!-- Controls -->
+  <g transform="translate(4,126)">
+    <rect x="0" y="0" width="30" height="8" rx="4" fill="rgba(255,255,255,0.02)" stroke="rgba(51,65,85,0.15)" stroke-width="0.3"/>
+    <text x="15" y="5.5" font-size="4" fill="#475569" text-anchor="middle" font-family="monospace">↻ R</text>
+  </g>
+  <!-- Queue -->
+  <g transform="translate(4,106)">
+    <rect x="0" y="0" width="120" height="18" rx="6" fill="rgba(255,255,255,0.02)" stroke="rgba(51,65,85,0.2)" stroke-width="0.5"/>
+    <text x="4" y="3" font-size="2.5" fill="#475569" font-family="monospace" letter-spacing="1">CARGO QUEUE</text>
+    <rect x="4" y="6" width="10" height="10" rx="2" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="0.3"/>
+    <text x="9" y="12" font-size="3" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-family="monospace">2×2</text>
+    <rect x="16" y="6" width="14" height="10" rx="2" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="0.3"/>
+    <text x="23" y="12" font-size="3" fill="rgba(255,255,255,0.4)" text-anchor="middle" font-family="monospace">3×2</text>
+    <rect x="32" y="6" width="10" height="10" rx="2" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="0.3"/>
+    <rect x="44" y="6" width="14" height="10" rx="2" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="0.3"/>
+    <rect x="60" y="6" width="10" height="10" rx="2" fill="rgba(6,182,212,0.15)" stroke="rgba(6,182,212,0.3)" stroke-width="0.3"/>
+  </g>
+</svg>

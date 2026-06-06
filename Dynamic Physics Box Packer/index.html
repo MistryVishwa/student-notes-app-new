@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+  <title>Dynamic Physics Box Packer</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <div class="app">
+
+    <!-- ─── Dashboard ─── -->
+    <header class="dash">
+      <div class="metric">
+        <span class="m-label">Space</span>
+        <span class="m-value" id="volume">0%</span>
+        <div class="bar"><div class="bar-fill" id="bar-fill"></div></div>
+      </div>
+      <div class="metric">
+        <span class="m-label">Placed</span>
+        <span class="m-value" id="placed">0</span>
+      </div>
+      <div class="metric">
+        <span class="m-label">Best</span>
+        <span class="m-value accent" id="best">0%</span>
+      </div>
+      <div class="metric">
+        <span class="m-label">Target</span>
+        <span class="m-value" id="target">100%</span>
+      </div>
+    </header>
+
+    <!-- ─── Container ─── -->
+    <div class="workspace">
+      <div class="container-wrap">
+        <div class="container" id="container">
+          <!-- grid lines via CSS -->
+          <!-- placed blocks injected here -->
+        </div>
+        <!-- drag ghost follows cursor -->
+      </div>
+
+      <!-- ─── Controls ─── -->
+      <div class="controls">
+        <button class="ctrl-btn" id="rotate-btn">↻ Rotate</button>
+        <button class="ctrl-btn" id="reset-btn">⟳ Reset</button>
+      </div>
+    </div>
+
+    <!-- ─── Queue ─── -->
+    <div class="queue-wrap">
+      <div class="queue-label">Cargo Queue</div>
+      <div class="queue" id="queue"></div>
+    </div>
+
+    <!-- ─── Drag Ghost ─── -->
+    <div class="ghost" id="ghost"></div>
+
+    <!-- ─── Victory Modal ─── -->
+    <div class="modal" id="modal">
+      <div class="modal-card">
+        <h2 class="modal-title">CONTAINER FULL</h2>
+        <div class="modal-stats">
+          <div class="m-row"><span>Efficiency</span><span id="m-eff">0%</span></div>
+          <div class="m-row"><span>Blocks</span><span id="m-blocks">0</span></div>
+          <div class="m-row"><span>Best</span><span id="m-best">0%</span></div>
+        </div>
+        <button class="btn-restart" id="btn-restart">⟳ Pack Again</button>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>

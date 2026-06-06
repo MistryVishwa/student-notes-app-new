@@ -1,0 +1,18 @@
+{
+  "title": "Dynamic Physics Box Packer",
+  "description": "A logistics puzzle tool where you drag rectangular cargo blocks into an 8×8 container with AABB collision detection, 20px grid snapping, real-time rotation, and volume efficiency tracking. Built with vanilla HTML5, CSS3, and JavaScript ES6+.",
+  "author": {
+    "name": "Girish Madarkar",
+    "github": "Girish0902"
+  },
+  "tags": [
+    "puzzle",
+    "physics",
+    "logistics",
+    "vanilla-js",
+    "aabb",
+    "grid"
+  ],
+  "entry": "index.html",
+  "thumbnail": "thumbnail.svg"
+}
