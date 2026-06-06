@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Micro-Lesson Flash Cards | Chinese Learning App Style | NSOC Contribution</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        h1 {
+            color: white;
+            font-size: 32px;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.5);
+        }
+
+        .subtitle {
+            color: rgba(255,255,255,0.7);
+            font-size: 14px;
+        }
+
+        /* Progress Bar */
+        .progress-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            color: white;
+            margin-bottom: 10px;
+            font-size: 14px;
+        }
+
+        .progress-bar-container {
+            background: rgba(255,255,255,0.2);
+            border-radius: 20px;
+            height: 12px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00b4db, #00ffcc);
+            border-radius: 20px;
+            transition: width 0.5s ease;
+            width: 0%;
+        }
+
+        .stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 15px;
+            justify-content: center;
+        }
+
+        .stat-badge {
+            background: rgba(0,0,0,0.3);
+            padding: 5px 15px;
+            border-radius: 20px;
+            color: white;
+            font-size: 12px;
+        }
+
+        /* Subject Filters */
+        .subject-filters {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 25px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.1);
+            color: white;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .filter-btn.active {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            box-shadow: 0 0 15px rgba(0,180,219,0.3);
+        }
+
+        /* Add Card Section */
+        .add-card-section {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 25px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: white;
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 15px;
+        }
+
+        .form-group {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        .form-group label {
+            display: block;
+            color: rgba(255,255,255,0.7);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .form-group input, .form-group select, .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: none;
+            border-radius: 12px;
+            background: rgba(255,255,255,0.15);
+            color: white;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 60px;
+        }
+
+        .add-card-btn {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 25px;
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        /* Flash Cards Grid */
+        .flashcards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 25px;
+        }
+
+        /* Flash Card 3D */
+        .flashcard {
+            background: transparent;
+            height: 280px;
+            perspective: 1000px;
+            cursor: pointer;
+        }
+
+        .flashcard-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+            border-radius: 20px;
+        }
+
+        .flashcard.flipped .flashcard-inner {
+            transform: rotateY(180deg);
+        }
+
+        .flashcard-front, .flashcard-back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .flashcard-front {
+            background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.05));
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .flashcard-back {
+            background: linear-gradient(135deg, #00b4db, #0083b0);
+            transform: rotateY(180deg);
+        }
+
+        .card-subject {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .card-subject.math { background: #ff6b6b; }
+        .card-subject.science { background: #4d96ff; }
+        .card-subject.english { background: #20c997; }
+        .card-subject.other { background: #ffd200; color: #333; }
+
+        .card-concept {
+            font-size: 18px;
+            font-weight: 600;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        .card-details {
+            font-size: 14px;
+            color: rgba(255,255,255,0.8);
+            line-height: 1.5;
+        }
+
+        .learned-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: #28a745;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: white;
+        }
+
+        .not-learned-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: rgba(255,255,255,0.7);
+        }
+
+        .card-actions {
+            position: absolute;
+            bottom: 15px;
+            left: 15px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .learn-btn {
+            background: #28a745;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .delete-btn {
+            background: #dc3545;
+            border: none;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 10px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .flip-hint {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            font-size: 12px;
+            color: rgba(255,255,255,0.5);
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 60px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            color: rgba(255,255,255,0.5);
+            grid-column: 1 / -1;
+        }
+
+        @media (max-width: 600px) {
+            .flashcards-grid {
+                grid-template-columns: 1fr;
+            }
+            .form-row {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🃏 Micro-Lesson Flash Cards</h1>
+            <div class="subtitle">Chinese Learning App Style | One Concept Per Card | Flip to Learn</div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="progress-header">
+                <span>📊 Learning Progress</span>
+                <span id="progressPercent">0%</span>
+            </div>
+            <div class="progress-bar-container">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            <div class="stats">
+                <div class="stat-badge">📚 Total: <span id="totalCards">0</span></div>
+                <div class="stat-badge">✅ Learned: <span id="learnedCards">0</span></div>
+                <div class="stat-badge">📖 To Learn: <span id="toLearnCards">0</span></div>
+            </div>
+        </div>
+
+        <!-- Subject Filters -->
+        <div class="subject-filters">
+            <button class="filter-btn active" data-subject="all">✨ All</button>
+            <button class="filter-btn" data-subject="math">📐 Mathematics</button>
+            <button class="filter-btn" data-subject="science">🔬 Science</button>
+            <button class="filter-btn" data-subject="english">📖 English</button>
+            <button class="filter-btn" data-subject="other">🎯 Other</button>
+        </div>
+
+        <!-- Add Card Section -->
+        <div class="add-card-section">
+            <div class="section-title">➕ Add New Flash Card</div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📚 Subject</label>
+                    <select id="subjectSelect">
+                        <option value="math">Mathematics</option>
+                        <option value="science">Science</option>
+                        <option value="english">English</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Concept / Term</label>
+                    <input type="text" id="conceptInput" placeholder="e.g., Pythagorean Theorem">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>📖 Definition / Explanation</label>
+                    <textarea id="definitionInput" placeholder="Explain the concept in simple words..."></textarea>
+                </div>
+            </div>
+            <button class="add-card-btn" id="addCardBtn">✨ Create Flash Card</button>
+        </div>
+
+        <!-- Flash Cards Grid -->
+        <div class="flashcards-grid" id="flashcardsGrid">
+            <!-- Cards will be added here -->
+        </div>
+    </div>
+
+    <script>
+        let flashcards = [];
+        let currentFilter = 'all';
+        let nextId = 1;
+
+        // Load from localStorage
+        function loadFlashcards() {
+            const saved = localStorage.getItem('microFlashcards');
+            if(saved) {
+                flashcards = JSON.parse(saved);
+                if(flashcards.length > 0) {
+                    nextId = Math.max(...flashcards.map(c => c.id)) + 1;
+                }
+            } else {
+                // Default flashcards
+                flashcards = [
+                    { id: nextId++, subject: "math", concept: "Pythagorean Theorem", definition: "In a right triangle, a² + b² = c², where c is the hypotenuse.", learned: false },
+                    { id: nextId++, subject: "math", concept: "Quadratic Formula", definition: "x = [-b ± √(b² - 4ac)] / 2a. Used to solve quadratic equations.", learned: false },
+                    { id: nextId++, subject: "science", concept: "Newton's First Law", definition: "An object remains at rest or in uniform motion unless acted by an external force.", learned: false },
+                    { id: nextId++, subject: "science", concept: "Photosynthesis", definition: "Plants convert sunlight, CO₂, and water into glucose and oxygen.", learned: false },
+                    { id: nextId++, subject: "english", concept: "Metaphor", definition: "A figure of speech comparing two things without using 'like' or 'as'.", learned: true },
+                    { id: nextId++, subject: "english", concept: "Onomatopoeia", definition: "Words that imitate sounds (e.g., buzz, bang, boom).", learned: false }
+                ];
+            }
+            renderFlashcards();
+            updateProgress();
+        }
+
+        // Save to localStorage
+        function saveFlashcards() {
+            localStorage.setItem('microFlashcards', JSON.stringify(flashcards));
+        }
+
+        // Add new flashcard
+        function addFlashcard() {
+            const subject = document.getElementById('subjectSelect').value;
+            const concept = document.getElementById('conceptInput').value.trim();
+            const definition = document.getElementById('definitionInput').value.trim();
+
+            if(!concept || !definition) {
+                alert('Please enter both concept and definition!');
+                return;
+            }
+
+            const newCard = {
+                id: nextId++,
+                subject: subject,
+                concept: concept,
+                definition: definition,
+                learned: false
+            };
+
+            flashcards.push(newCard);
+            saveFlashcards();
+            renderFlashcards();
+            updateProgress();
+
+            // Clear inputs
+            document.getElementById('conceptInput').value = '';
+            document.getElementById('definitionInput').value = '';
+        }
+
+        // Delete flashcard
+        function deleteFlashcard(id) {
+            if(confirm('Delete this flash card?')) {
+                flashcards = flashcards.filter(c => c.id !== id);
+                saveFlashcards();
+                renderFlashcards();
+                updateProgress();
+            }
+        }
+
+        // Toggle learned status
+        function toggleLearned(id) {
+            const card = flashcards.find(c => c.id === id);
+            if(card) {
+                card.learned = !card.learned;
+                saveFlashcards();
+                renderFlashcards();
+                updateProgress();
+            }
+        }
+
+        // Toggle flip (on card click)
+        function toggleFlip(cardElement, id) {
+            // Find the flashcard element
+            const flashcardDiv = cardElement.closest('.flashcard');
+            if(flashcardDiv) {
+                flashcardDiv.classList.toggle('flipped');
+            }
+        }
+
+        // Update progress stats
+        function updateProgress() {
+            const total = flashcards.length;
+            const learned = flashcards.filter(c => c.learned).length;
+            const toLearn = total - learned;
+            const percent = total === 0 ? 0 : (learned / total) * 100;
+
+            document.getElementById('totalCards').textContent = total;
+            document.getElementById('learnedCards').textContent = learned;
+            document.getElementById('toLearnCards').textContent = toLearn;
+            document.getElementById('progressPercent').textContent = `${Math.round(percent)}%`;
+            document.getElementById('progressFill').style.width = `${percent}%`;
+        }
+
+        // Get subject display name
+        function getSubjectName(subject) {
+            const names = {
+                math: 'Mathematics',
+                science: 'Science',
+                english: 'English',
+                other: 'Other'
+            };
+            return names[subject] || 'Other';
+        }
+
+        // Get subject color class
+        function getSubjectClass(subject) {
+            const classes = {
+                math: 'math',
+                science: 'science',
+                english: 'english',
+                other: 'other'
+            };
+            return classes[subject] || 'other';
+        }
+
+        // Render flashcards based on filter
+        function renderFlashcards() {
+            const grid = document.getElementById('flashcardsGrid');
+            let filteredCards = flashcards;
+
+            if(currentFilter !== 'all') {
+                filteredCards = flashcards.filter(c => c.subject === currentFilter);
+            }
+
+            if(filteredCards.length === 0) {
+                grid.innerHTML = '<div class="empty-state">📭 No flashcards found!<br>Create your first flash card to start learning.</div>';
+                return;
+            }
+
+            grid.innerHTML = filteredCards.map(card => `
+                <div class="flashcard" data-id="${card.id}">
+                    <div class="flashcard-inner">
+                        <!-- Front Side -->
+                        <div class="flashcard-front">
+                            <div class="card-subject ${getSubjectClass(card.subject)}">${getSubjectName(card.subject)}</div>
+                            <div class="card-concept">${escapeHtml(card.concept)}</div>
+                            <div class="flip-hint">🔄 Click to flip</div>
+                            ${card.learned ? '<div class="learned-badge">✅ Learned</div>' : '<div class="not-learned-badge">📖 Not learned</div>'}
+                            <div class="card-actions">
+                                <button class="learn-btn" onclick="event.stopPropagation(); toggleLearned(${card.id})">${card.learned ? '↺ Mark as Not Learned' : '✓ Mark as Learned'}</button>
+                                <button class="delete-btn" onclick="event.stopPropagation(); deleteFlashcard(${card.id})">🗑️ Delete</button>
+                            </div>
+                        </div>
+                        <!-- Back Side -->
+                        <div class="flashcard-back">
+                            <div class="card-subject ${getSubjectClass(card.subject)}">Definition</div>
+                            <div class="card-details">${escapeHtml(card.definition)}</div>
+                            <div class="flip-hint">🔄 Click to flip back</div>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+
+            // Add click event listeners for flip
+            document.querySelectorAll('.flashcard').forEach(card => {
+                card.addEventListener('click', (e) => {
+                    // Don't flip if clicking on buttons
+                    if(e.target.tagName !== 'BUTTON' && !e.target.classList.contains('learn-btn') && !e.target.classList.contains('delete-btn')) {
+                        card.classList.toggle('flipped');
+                    }
+                });
+            });
+        }
+
+        // Escape HTML
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // Set filter
+        function setFilter(subject) {
+            currentFilter = subject;
+            
+            // Update active button
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if(btn.dataset.subject === subject) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            renderFlashcards();
+        }
+
+        // Event listeners
+        document.getElementById('addCardBtn').addEventListener('click', addFlashcard);
+        
+        document.querySelectorAll('.filter-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                setFilter(btn.dataset.subject);
+            });
+        });
+
+        // Enter key for inputs
+        document.getElementById('conceptInput').addEventListener('keypress', (e) => {
+            if(e.key === 'Enter') addFlashcard();
+        });
+
+        // Initialize
+        loadFlashcards();
+    </script>
+</body>
+</html>
