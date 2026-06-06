@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Pattern-Shift — Match 3 Grid Evacuation</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <div id="app">
+    <header id="header">
+      <h1><span class="accent">PATTERN</span>-SHIFT</h1>
+      <span class="sub">match-3 &bull; grid evacuation protocol</span>
+    </header>
+
+    <main id="main">
+      <section id="board-section">
+        <div id="grid-container"></div>
+      </section>
+
+      <aside id="sidebar">
+        <div class="hud-block">
+          <span class="hud-label">SCORE</span>
+          <span class="hud-value" id="score-display">0</span>
+        </div>
+        <div class="hud-block">
+          <span class="hud-label">MOVES</span>
+          <span class="hud-value" id="moves-display">20</span>
+        </div>
+
+        <div id="status-panel">
+          <div class="status-title">STATUS LOG</div>
+          <div id="status-text">SELECT A TILE</div>
+        </div>
+
+        <button id="reset-btn">&#x21BB; RESET GRID</button>
+      </aside>
+    </main>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
