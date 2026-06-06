@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Number Merge — Bubbly Puzzle</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap');
+
+        :root {
+            --bg: #fff5f7;
+            --card: #ffffff;
+            --text: #5e4d52;
+            --primary: #ff85a2;
+            --secondary: #7dd3fc;
+            --border: #fce4ec;
+            --empty: #f8f1f3;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Fredoka', sans-serif;
+            background: var(--bg);
+            background-image: radial-gradient(#ffcad4 0.8px, transparent 0.8px);
+            background-size: 24px 24px;
+            color: var(--text);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.5rem;
+            margin: 0 0 10px;
+            text-shadow: 3px 3px 0px white;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stat-box {
+            background: var(--card);
+            padding: 10px;
+            border-radius: 20px;
+            border: 3px solid var(--border);
+            box-shadow: 0 5px 0px var(--border);
+        }
+
+        .stat-label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: #9ca3af;
+            margin-bottom: 2px;
+        }
+
+        .stat-value {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .game-board {
+            background: var(--card);
+            padding: 12px;
+            border-radius: 30px;
+            border: 4px solid var(--border);
+            box-shadow: 0 15px 0px var(--border);
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            position: relative;
+            aspect-ratio: 1;
+            margin: 0 auto;
+        }
+
+        .cell {
+            background: var(--empty);
+            border-radius: 18px;
+            width: 100%;
+            height: 100%;
+        }
+
+        .tile {
+            position: absolute;
+            width: calc(25% - 15px);
+            height: calc(25% - 15px);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: white;
+            transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            user-select: none;
+            z-index: 10;
+        }
+
+        /* Tile Colors based on value */
+        .tile-2 { background: #ff85a2; box-shadow: 0 6px 0 #d81b60; }
+        .tile-4 { background: #7dd3fc; box-shadow: 0 6px 0 #0284c7; }
+        .tile-8 { background: #facc15; box-shadow: 0 6px 0 #ca8a04; }
+        .tile-16 { background: #4ade80; box-shadow: 0 6px 0 #16a34a; }
+        .tile-32 { background: #f472b6; box-shadow: 0 6px 0 #db2777; }
+        .tile-64 { background: #fbbf24; box-shadow: 0 6px 0 #d97706; }
+        .tile-128 { background: #a78bfa; box-shadow: 0 6px 0 #7c3aed; }
+        .tile-256 { background: #fb7185; box-shadow: 0 6px 0 #e11d48; }
+        .tile-512 { background: #38bdf8; box-shadow: 0 6px 0 #0284c7; }
+
+        .overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 26px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            padding: 20px;
+            transition: opacity 0.3s ease;
+        }
+
+        .btn-cute {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            box-shadow: 0 6px 0px #d81b60;
+            transition: all 0.1s;
+        }
+
+        .btn-cute:active { transform: translateY(3px); box-shadow: 0 3px 0px #d81b60; }
+
+        .hidden { display: none !important; }
+
+        @keyframes pop {
+            0% { transform: scale(0.8); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        .tile-new { animation: pop 0.2s ease-out; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Number Merge 🫧</h1>
+
+        <div class="stats-grid">
+            <div class="stat-box">
+                <div class="stat-label">Level <span id="level-val">1</span> Score</div>
+                <div class="stat-value" id="score-val">0</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Target Bubble</div>
+                <div class="stat-value" id="target-val">128</div>
+            </div>
+            <div class="stat-box">
+                <div class="stat-label">Best Score</div>
+                <div class="stat-value" id="best-val">0</div>
+            </div>
+            <div class="stat-box" style="grid-column: span 2;">
+                <div class="stat-label">Moves Made</div>
+                <div class="stat-value" id="moves-val">0</div>
+            </div>
+        </div>
+
+        <div class="game-board" id="board">
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+            <div class="cell"></div><div class="cell"></div><div class="cell"></div><div class="cell"></div>
+
+            <div id="start-screen" class="overlay">
+                <h2 style="margin-bottom: 20px; color: var(--primary);">Ready to Pop?</h2>
+                <button class="btn-cute" onclick="startGame()">Start Game</button>
+            </div>
+
+            <div id="game-over" class="overlay hidden">
+                <h2 style="margin-bottom: 10px; color: #ef4444;">No more moves!</h2>
+                <p id="final-score" style="margin-bottom: 20px;">Score: 0</p>
+                <button class="btn-cute" onclick="startGame()">Try Again</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let state = {
+            grid: Array(16).fill(0),
+            score: 0,
+            best: localStorage.getItem('merge_best') || 0,
+            moves: 0,
+            level: 1,
+            target: 128
+        };
+
+        let touchStart = null;
+
+        function startGame() {
+            state.grid = Array(16).fill(0);
+            state.score = 0;
+            state.moves = 0;
+            state.level = 1;
+            state.target = 128;
+            document.getElementById('start-screen').classList.add('hidden');
+            document.getElementById('game-over').classList.add('hidden');
+            addTile(); addTile();
+            render();
+        }
+
+        function addTile() {
+            const empties = state.grid.map((v, i) => v === 0 ? i : null).filter(v => v !== null);
+            if (empties.length) {
+                state.grid[empties[Math.floor(Math.random() * empties.length)]] = Math.random() < 0.9 ? 2 : 4;
+            }
+        }
+
+        function render() {
+            document.querySelectorAll('.tile').forEach(t => t.remove());
+            state.grid.forEach((v, i) => {
+                if (v === 0) return;
+                const tile = document.createElement('div');
+                tile.className = `tile tile-${v}`;
+                tile.innerText = v;
+                tile.style.top = `calc(${Math.floor(i / 4) * 25}% + 12px)`;
+                tile.style.left = `calc(${(i % 4) * 25}% + 12px)`;
+                document.getElementById('board').appendChild(tile);
+            });
+            document.getElementById('score-val').innerText = state.score;
+            document.getElementById('moves-val').innerText = state.moves;
+            document.getElementById('level-val').innerText = state.level;
+            document.getElementById('target-val').innerText = state.target;
+            document.getElementById('best-val').innerText = state.best;
+
+            if (state.score > state.best) {
+                state.best = state.score;
+                localStorage.setItem('merge_best', state.best);
+            }
+
+            if (Math.max(...state.grid) >= state.target) {
+                state.level++;
+                state.target *= 2;
+            }
+        }
+
+        function handleMove(dir) {
+            let moved = false;
+            const rotate = (g) => {
+                let r = Array(16).fill(0);
+                for(let i=0; i<4; i++) for(let j=0; j<4; j++) r[j*4+(3-i)] = g[i*4+j];
+                return r;
+            };
+            const slide = (row) => {
+                let arr = row.filter(x => x);
+                for(let i=0; i<arr.length-1; i++) {
+                    if(arr[i] === arr[i+1]) {
+                        arr[i] *= 2; state.score += arr[i];
+                        arr.splice(i+1, 1); moved = true;
+                    }
+                }
+                while(arr.length < 4) arr.push(0);
+                return arr;
+            };
+
+            let g = [...state.grid];
+            const rots = { 'ArrowUp': 3, 'ArrowRight': 2, 'ArrowDown': 1, 'ArrowLeft': 0 }[dir];
+            if (rots === undefined) return;
+
+            for(let i=0; i<rots; i++) g = rotate(g);
+            for(let i=0; i<4; i++) {
+                let row = g.slice(i*4, i*4+4);
+                let next = slide(row);
+                if (JSON.stringify(row) !== JSON.stringify(next)) moved = true;
+                g.splice(i*4, 4, ...next);
+            }
+            for(let i=0; i<(4-rots)%4; i++) g = rotate(g);
+
+            if (moved) {
+                state.grid = g; state.moves++;
+                addTile(); render();
+                checkGameOver();
+            }
+        }
+
+        function checkGameOver() {
+            const hasEmpty = state.grid.includes(0);
+            if (hasEmpty) return;
+
+            // Check if any merges are possible
+            for (let i = 0; i < 16; i++) {
+                const val = state.grid[i];
+                const neighbors = [
+                    i % 4 < 3 ? i + 1 : -1, // Right
+                    i < 12 ? i + 4 : -1    // Down
+                ];
+                for (let n of neighbors) {
+                    if (n !== -1 && state.grid[n] === val) return;
+                }
+            }
+
+            // If we reach here, game over
+            document.getElementById('game-over').classList.remove('hidden');
+            document.getElementById('final-score').innerText = `Final Score: ${state.score}`;
+        }
+
+        // Keyboard support
+        window.addEventListener('keydown', e => handleMove(e.key));
+
+        // Swipe support
+        window.addEventListener('touchstart', e => {
+            touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
+        });
+
+        window.addEventListener('touchend', e => {
+            if (!touchStart) return;
+            const dx = e.changedTouches[0].clientX - touchStart.x;
+            const dy = e.changedTouches[0].clientY - touchStart.y;
+            
+            if (Math.abs(dx) > Math.abs(dy)) {
+                if (Math.abs(dx) > 30) handleMove(dx > 0 ? 'ArrowRight' : 'ArrowLeft');
+            } else {
+                if (Math.abs(dy) > 30) handleMove(dy > 0 ? 'ArrowDown' : 'ArrowUp');
+            }
+            touchStart = null;
+        });
+    </script>
+</body>
+</html>

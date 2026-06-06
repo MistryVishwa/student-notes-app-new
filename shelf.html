@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shelf Sorter — Sunshine Edition</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Quicksand:wght@500;700&display=swap');
+
+        :root {
+            --sun: #FFD54F;
+            --sky: #E3F2FD;
+            --grass: #81C784;
+            --wood: #A1887F;
+            --text: #5D4037;
+            --paper: #FFFFFF;
+        }
+
+        body {
+            margin: 0;
+            font-family: 'Quicksand', sans-serif;
+            background: linear-gradient(to bottom, #FFF9C4 0%, var(--sky) 100%);
+            color: var(--text);
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+            touch-action: none;
+        }
+
+        header {
+            padding: 20px;
+            text-align: center;
+        }
+
+        h1 {
+            margin: 0;
+            font-family: 'Outfit', sans-serif;
+            font-weight: 800;
+            color: var(--sun);
+            text-shadow: 2px 2px 0px white;
+            font-size: 2.5rem;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 40px;
+            margin-top: 10px;
+            font-weight: 700;
+        }
+
+        .instruction-box {
+            background: var(--paper);
+            padding: 15px 30px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            margin: 20px 0;
+            border: 3px solid var(--sun);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        .shelf-container {
+            width: 90%;
+            max-width: 800px;
+            height: 200px;
+            background: #fdfdfd;
+            border-bottom: 12px solid var(--wood);
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            gap: 8px;
+            padding: 0 20px;
+            position: relative;
+            border-radius: 4px;
+            margin-top: 50px;
+        }
+
+        .book {
+            width: 45px;
+            border-radius: 4px 4px 0 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: grab;
+            transition: transform 0.2s, box-shadow 0.2s;
+            color: white;
+            font-weight: 800;
+            font-size: 0.8rem;
+            user-select: none;
+            position: relative;
+            box-shadow: inset -4px 0 rgba(0,0,0,0.1);
+        }
+
+        .book:active { cursor: grabbing; }
+        .book.dragging { opacity: 0.4; }
+
+        .overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(255, 255, 255, 0.9);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            backdrop-filter: blur(5px);
+        }
+
+        .btn-start {
+            background: var(--sun);
+            color: white;
+            border: none;
+            padding: 15px 45px;
+            border-radius: 30px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 8px 0px #F9A825;
+            transition: 0.1s;
+        }
+
+        .btn-start:active { transform: translateY(4px); box-shadow: 0 4px 0px #F9A825; }
+
+        .hidden { display: none !important; }
+
+        .timer-circle {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            border: 4px solid var(--sun);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="start-overlay" class="overlay">
+        <h1>Shelf Sorter ☀️</h1>
+        <p style="margin-bottom: 30px;">Keep the library tidy! Arrange the books correctly.</p>
+        <button class="btn-start" onclick="startGame()">Open Library</button>
+    </div>
+
+    <div id="win-overlay" class="overlay hidden">
+        <h1 style="color: var(--grass)">PRISTINE! ✨</h1>
+        <p id="win-msg">The shelf is perfectly organized.</p>
+        <button class="btn-start" onclick="nextLevel()">Next Challenge</button>
+    </div>
+
+    <header>
+        <h1>SHELF SORTER</h1>
+        <div class="stats-bar">
+            <div>Level: <span id="level-val">1</span></div>
+            <div>Score: <span id="score-val">0</span></div>
+        </div>
+    </header>
+
+    <div class="timer-circle" id="timer">30</div>
+
+    <div class="instruction-box" id="rule-text">
+        Loading rule...
+    </div>
+
+    <div class="shelf-container" id="shelf">
+        <!-- Books will be injected here -->
+    </div>
+
+    <p style="margin-top: 40px; color: var(--wood); font-weight: 600;">Drag and drop to rearrange the books</p>
+
+    <script>
+        const RULES = [
+            { label: "Alphabetical Order (A-Z)", check: (arr) => arr.every((v, i) => i === 0 || v.title >= arr[i-1].title) },
+            { label: "Size: Small to Large", check: (arr) => arr.every((v, i) => i === 0 || v.height >= arr[i-1].height) },
+            { label: "Reverse Alphabetical (Z-A)", check: (arr) => arr.every((v, i) => i === 0 || v.title <= arr[i-1].title) },
+            { label: "Hue: Rainbow Order", check: (arr) => arr.every((v, i) => i === 0 || v.hue >= arr[i-1].hue) }
+        ];
+
+        const COLORS = [
+            { h: 0, c: "#E57373" },  // Red
+            { h: 30, c: "#FFB74D" }, // Orange
+            { h: 60, c: "#FFF176" }, // Yellow
+            { h: 120, c: "#81C784" },// Green
+            { h: 200, c: "#64B5F6" },// Blue
+            { h: 280, c: "#BA68C8" } // Purple
+        ];
+
+        let state = {
+            level: 0,
+            score: 0,
+            books: [],
+            timeLeft: 30,
+            timer: null
+        };
+
+        function startGame() {
+            document.getElementById('start-overlay').classList.add('hidden');
+            state.level = 0;
+            state.score = 0;
+            initLevel();
+        }
+
+        function initLevel() {
+            document.getElementById('win-overlay').classList.add('hidden');
+            state.timeLeft = Math.max(10, 30 - state.level * 2);
+            
+            const ruleIndex = state.level % RULES.length;
+            document.getElementById('rule-text').innerText = RULES[ruleIndex].label;
+            document.getElementById('level-val').innerText = state.level + 1;
+            document.getElementById('score-val').innerText = state.score;
+
+            generateBooks();
+            startTimer();
+        }
+
+        function generateBooks() {
+            const count = Math.min(12, 5 + Math.floor(state.level / 2));
+            state.books = [];
+            const alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+
+            for (let i = 0; i < count; i++) {
+                const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+                state.books.push({
+                    id: i,
+                    title: alphabet[Math.floor(Math.random() * 26)],
+                    height: 100 + Math.random() * 80,
+                    hue: color.h,
+                    color: color.c
+                });
+            }
+
+            // Shuffle to ensure it's not solved
+            state.books.sort(() => Math.random() - 0.5);
+            renderShelf();
+        }
+
+        function renderShelf() {
+            const shelf = document.getElementById('shelf');
+            shelf.innerHTML = '';
+            state.books.forEach((book, index) => {
+                const el = document.createElement('div');
+                el.className = 'book';
+                el.draggable = true;
+                el.style.height = `${book.height}px`;
+                el.style.backgroundColor = book.color;
+                el.innerText = book.title;
+                
+                el.addEventListener('dragstart', () => el.classList.add('dragging'));
+                el.addEventListener('dragend', () => {
+                    el.classList.remove('dragging');
+                    checkWin();
+                });
+
+                shelf.appendChild(el);
+            });
+
+            shelf.addEventListener('dragover', e => {
+                e.preventDefault();
+                const afterElement = getDragAfterElement(shelf, e.clientX);
+                const dragging = document.querySelector('.dragging');
+                if (afterElement == null) {
+                    shelf.appendChild(dragging);
+                } else {
+                    shelf.insertBefore(dragging, afterElement);
+                }
+            });
+        }
+
+        function getDragAfterElement(container, x) {
+            const draggableElements = [...container.querySelectorAll('.book:not(.dragging)')];
+            return draggableElements.reduce((closest, child) => {
+                const box = child.getBoundingClientRect();
+                const offset = x - box.left - box.width / 2;
+                if (offset < 0 && offset > closest.offset) {
+                    return { offset: offset, element: child };
+                } else {
+                    return closest;
+                }
+            }, { offset: Number.NEGATIVE_INFINITY }).element;
+        }
+
+        function checkWin() {
+            const currentOrder = [...document.querySelectorAll('.book')].map(el => {
+                return state.books.find(b => b.title === el.innerText && b.height === parseFloat(el.style.height));
+            });
+
+            const rule = RULES[state.level % RULES.length];
+            if (rule.check(currentOrder)) {
+                clearInterval(state.timer);
+                state.score += (state.level + 1) * 100 + state.timeLeft * 10;
+                document.getElementById('win-overlay').classList.remove('hidden');
+            }
+        }
+
+        function startTimer() {
+            clearInterval(state.timer);
+            updateTimerUI();
+            state.timer = setInterval(() => {
+                state.timeLeft--;
+                updateTimerUI();
+                if (state.timeLeft <= 0) {
+                    clearInterval(state.timer);
+                    alert("Time's up! The sun has set on the library. 🌇");
+                    startGame();
+                }
+            }, 1000);
+        }
+
+        function updateTimerUI() {
+            document.getElementById('timer').innerText = state.timeLeft;
+        }
+
+        function nextLevel() {
+            state.level++;
+            initLevel();
+        }
+    </script>
+</body>
+</html>

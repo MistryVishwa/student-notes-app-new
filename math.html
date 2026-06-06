@@ -239,9 +239,25 @@
         }
 
         function checkEquation() {
-            const str = state.currentEq.join('').replace('=', '===');
+            const eqString = state.currentEq.join('');
+            if (!eqString.includes('=')) return;
+
+            const parts = eqString.split('=');
+            if (parts.length !== 2) return;
+
+            const leftSide = parts[0];
+            const rightSide = parts[1];
+
+            // Strict validation: only numbers and basic operators
+            const isValid = (expr) => /^[0-9+\-*/(). ]+$/.test(expr);
+            if (!isValid(leftSide) || !isValid(rightSide)) return;
+
             try {
-                if (eval(str)) {
+                const leftValue = new Function('return ' + leftSide)();
+                const rightValue = new Function('return ' + rightSide)();
+
+                // Check if both sides match mathematically and aren't empty
+                if (leftValue === rightValue && leftSide.trim() !== '' && rightSide.trim() !== '') {
                     state.score += 150;
                     document.getElementById('feedback').innerText = "Equation Correct! ✨";
                     setTimeout(() => {

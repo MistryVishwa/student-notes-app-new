@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Velocity // Core Typing Suite</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="app-container">
+        <aside class="sidebar">
+            <div class="brand">
+                <h1 class="brand-title">VELOCITY</h1>
+                <span class="brand-subtitle">Core Typing Suite</span>
+            </div>
+
+            <hr class="divider">
+
+            <div class="metrics-panel">
+                <div class="metric-card">
+                    <span class="metric-label">WORDS PER MINUTE</span>
+                    <div id="metric-wpm" class="metric-value mono-text">000</div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-label">ACCURACY</span>
+                    <div id="metric-accuracy" class="metric-value mono-text">100%</div>
+                </div>
+
+                <div class="metric-card">
+                    <span class="metric-label">ELAPSED TIME</span>
+                    <div id="metric-time" class="metric-value mono-text">00.0s</div>
+                </div>
+
+                <div class="metric-row-split">
+                    <div class="metric-card sub-card">
+                        <span class="metric-label">ERRORS</span>
+                        <div id="metric-errors" class="metric-value mono-text text-error">0</div>
+                    </div>
+                    <div class="metric-card sub-card">
+                        <span class="metric-label">HIGH SCORE</span>
+                        <div id="metric-highscore" class="metric-value mono-text text-accent">0</div>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label for="duration-select" class="metric-label">TEST DURATION</label>
+                    <select id="duration-select" class="selector-dropdown">
+                        <option value="15">15 Seconds</option>
+                        <option value="30" selected>30 Seconds</option>
+                        <option value="60">60 Seconds</option>
+                    </select>
+                </div>
+            </div>
+
+            <button id="restart-btn" class="btn-primary">RESTART TEST</button>
+        </aside>
+
+        <main class="main-workspace">
+            <div class="playground-card" id="playground-card">
+                <div class="focus-overlay" id="focus-overlay">
+                    <div class="focus-prompt">
+                        <svg class="focus-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M15 3h6v6M9 21H3v-6M21 9v12a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h12" />
+                        </svg>
+                        <span>Click to Capture Input Stream</span>
+                    </div>
+                </div>
+
+                <div id="text-display" class="text-display mono-text"></div>
+                
+                <input type="text" id="keyboard-handler" class="hidden-catcher" autocomplete="off" autocapitalize="none" spellcheck="false">
+            </div>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

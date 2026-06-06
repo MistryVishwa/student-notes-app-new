@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VentureValidate | Startup Idea Validator & Market Evaluator</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Sidebar (Ideas Hub Selector) -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i data-lucide="rocket"></i>
+          </div>
+          <div class="logo-text">
+            <h2>VentureValidate</h2>
+            <span>Idea Evaluation Hub</span>
+          </div>
+        </div>
+        <button class="btn-sidebar-close" id="sidebar-toggle-close">&times;</button>
+      </div>
+
+      <div class="sidebar-action">
+        <button class="btn btn-primary btn-full" id="new-idea-btn">
+          <i data-lucide="plus"></i>
+          <span>New Startup Idea</span>
+        </button>
+      </div>
+
+      <div class="sidebar-menu">
+        <h3>My Startup Ideas</h3>
+        <ul class="ideas-list" id="ideas-list-container">
+          <!-- Dynamically loaded list of startup ideas -->
+        </ul>
+      </div>
+    </aside>
+
+    <!-- Main Content Workspace -->
+    <div class="workspace-wrapper">
+      <!-- Top Header -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="btn btn-icon btn-secondary" id="sidebar-toggle-open" title="Open Ideas Hub">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="current-idea-info">
+            <h1 id="current-idea-title">Select or Create an Idea</h1>
+            <span id="current-idea-category">SaaS Platform</span>
+          </div>
+        </div>
+
+        <div class="header-right">
+          <!-- Backup config files -->
+          <button id="export-btn" class="btn btn-secondary btn-icon" title="Export Ideas Database">
+            <i data-lucide="download"></i>
+          </button>
+          
+          <button id="reset-btn" class="btn btn-secondary btn-icon" title="Reset Database">
+            <i data-lucide="refresh-cw"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Main Workspace Scrollable Container -->
+      <main class="app-workspace" id="main-workspace" style="display: none;">
+        <!-- Tab Navigation Bar -->
+        <nav class="workspace-tabs">
+          <button class="tab-btn active" data-tab="overview">
+            <i data-lucide="layout-dashboard"></i>
+            <span>Overview & Dashboard</span>
+          </button>
+          <button class="tab-btn" data-tab="strategy">
+            <i data-lucide="target"></i>
+            <span>1. Profile & Strategy</span>
+          </button>
+          <button class="tab-btn" data-tab="market">
+            <i data-lucide="globe"></i>
+            <span>2. Market Analysis</span>
+          </button>
+          <button class="tab-btn" data-tab="business">
+            <i data-lucide="coins"></i>
+            <span>3. Business Model</span>
+          </button>
+          <button class="tab-btn" data-tab="checklists">
+            <i data-lucide="check-square"></i>
+            <span>4. Checklists</span>
+          </button>
+        </nav>
+
+        <!-- Tab contents wrapper -->
+        <div class="tab-content-container">
+          
+          <!-- TAB 1: OVERVIEW DASHBOARD -->
+          <div class="tab-pane active" id="tab-overview">
+            <div class="overview-grid">
+              
+              <!-- Viability Metrics Panel -->
+              <div class="metrics-card-wrapper">
+                <div class="viability-hero">
+                  <div class="hero-header">
+                    <h3>Overall Viability Index</h3>
+                    <span class="badge" id="validation-tier-badge">DRAFT</span>
+                  </div>
+                  <div class="hero-body">
+                    <div class="score-display">
+                      <span class="score-val" id="score-viability">0</span>
+                      <span class="score-max">/ 100</span>
+                    </div>
+                    <div class="score-bar-container">
+                      <div class="score-bar" id="viability-progress-bar" style="width: 0%;"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="metrics-scores-grid">
+                  <div class="score-mini-card">
+                    <div class="mini-card-header">
+                      <span>Innovation & Value</span>
+                      <i data-lucide="lightbulb" class="text-indigo"></i>
+                    </div>
+                    <div class="mini-card-val"><span id="score-innovation">0</span>%</div>
+                  </div>
+
+                  <div class="score-mini-card">
+                    <div class="mini-card-header">
+                      <span>Market Demand</span>
+                      <i data-lucide="trending-up" class="text-teal"></i>
+                    </div>
+                    <div class="mini-card-val"><span id="score-market">0</span>%</div>
+                  </div>
+
+                  <div class="score-mini-card">
+                    <div class="mini-card-header">
+                      <span>Feasibility</span>
+                      <i data-lucide="tool" class="text-amber"></i>
+                    </div>
+                    <div class="mini-card-val"><span id="score-feasibility">0</span>%</div>
+                  </div>
+
+                  <div class="score-mini-card">
+                    <div class="mini-card-header">
+                      <span>Risk Mitigation</span>
+                      <i data-lucide="shield-alert" class="text-rose"></i>
+                    </div>
+                    <div class="mini-card-val"><span id="score-risk">0</span>%</div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Graphs Analysis Panel -->
+              <div class="chart-panel">
+                <div class="chart-card">
+                  <h4>Startup Dimension Vector</h4>
+                  <div class="chart-wrapper">
+                    <canvas id="dimensionRadarChart"></canvas>
+                  </div>
+                </div>
+
+                <div class="chart-card">
+                  <h4>Market Estimator (TAM / SAM / SOM)</h4>
+                  <div class="chart-wrapper">
+                    <canvas id="marketFunnelChart"></canvas>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Idea Abstract Card -->
+              <div class="abstract-card col-full">
+                <div class="abstract-section">
+                  <h5>Problem Statement</h5>
+                  <p id="abstract-problem" class="abstract-placeholder">No problem defined yet. Go to Profile & Strategy.</p>
+                </div>
+                <div class="abstract-section">
+                  <h5>Proposed Solution</h5>
+                  <p id="abstract-solution" class="abstract-placeholder">No solution defined yet. Go to Profile & Strategy.</p>
+                </div>
+                <div class="abstract-section">
+                  <h5>Value Proposition</h5>
+                  <p id="abstract-value-prop" class="abstract-placeholder">No value proposition defined yet. Go to Profile & Strategy.</p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- TAB 2: PROFILE & STRATEGY -->
+          <div class="tab-pane" id="tab-strategy">
+            <form id="strategy-form" class="wizard-form">
+              <div class="form-section">
+                <h3>Core Startup Details</h3>
+                <div class="form-grid">
+                  <div class="form-group col-full">
+                    <label for="idea-name">Idea / Startup Project Name *</label>
+                    <input type="text" id="idea-name" required placeholder="e.g. EcoSphere Analytics, MediConnect">
+                  </div>
+                  <div class="form-group col-half">
+                    <label for="idea-category">Industry Category</label>
+                    <select id="idea-category">
+                      <option value="SaaS / Software">SaaS / Software</option>
+                      <option value="FinTech">FinTech</option>
+                      <option value="E-commerce">E-commerce</option>
+                      <option value="HealthTech / MedTech">HealthTech / MedTech</option>
+                      <option value="EdTech">EdTech</option>
+                      <option value="AI / DeepTech">AI / DeepTech</option>
+                      <option value="CleanTech / Climate">CleanTech / Climate</option>
+                      <option value="Consumer Product / App">Consumer Product / App</option>
+                      <option value="B2B Services">B2B Services</option>
+                    </select>
+                  </div>
+                  <div class="form-group col-half">
+                    <label for="idea-innovation">Innovation Tier</label>
+                    <select id="idea-innovation">
+                      <option value="Incremental Improvement">Incremental (Faster / Cheaper existing solution)</option>
+                      <option value="New Technology Application">Technology App (New tech applied to old problem)</option>
+                      <option value="Disruptive Innovation">Disruptive (Highly unique value, new market)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-section">
+                <h3>Problem-Solution Alignment</h3>
+                <div class="form-grid">
+                  <div class="form-group col-full">
+                    <label for="target-audience">Target Customer Segments *</label>
+                    <textarea id="target-audience" rows="2" required placeholder="Who experiences this problem? e.g. Freelancers doing cross-border taxes, Small boutique coffee shops"></textarea>
+                  </div>
+
+                  <div class="form-group col-full">
+                    <label for="problem-statement">Problem Statement *</label>
+                    <textarea id="problem-statement" rows="3" required placeholder="Describe the acute pain point. What is broken with current alternatives?"></textarea>
+                  </div>
+
+                  <div class="form-group col-full">
+                    <label for="solution-desc">Proposed Solution *</label>
+                    <textarea id="solution-desc" rows="3" required placeholder="How does your startup address this problem? Keep it simple and clear."></textarea>
+                  </div>
+
+                  <div class="form-group col-full">
+                    <label for="value-prop">Value Proposition *</label>
+                    <textarea id="value-prop" rows="2" required placeholder="Why would a customer buy from you instead of competitors? e.g. Saves 5 hours a week with 0 setup required."></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i data-lucide="save"></i>
+                  <span>Save Strategy Details</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB 3: MARKET EVALUATION -->
+          <div class="tab-pane" id="tab-market">
+            <form id="market-form" class="wizard-form">
+              <div class="form-grid-split">
+                <!-- TAM SAM SOM Estimator -->
+                <div class="form-section">
+                  <h3>Market Size Estimation (USD / Year)</h3>
+                  <p class="section-desc">TAM, SAM, and SOM help calculate your market capability scale.</p>
+                  
+                  <div class="form-group slider-group">
+                    <div class="slider-header">
+                      <label for="market-tam">Total Addressable Market (TAM)</label>
+                      <span class="value-badge">$<span id="lbl-tam">10,000,000</span></span>
+                    </div>
+                    <input type="range" id="market-tam" min="100000" max="1000000000" step="500000" value="50000000">
+                    <span class="field-sub">The total global demand for your product/service category if you reached 100% market share.</span>
+                  </div>
+
+                  <div class="form-group slider-group">
+                    <div class="slider-header">
+                      <label for="market-sam">Serviceable Addressable Market (SAM)</label>
+                      <span class="value-badge">$<span id="lbl-sam">2,500,000</span></span>
+                    </div>
+                    <input type="range" id="market-sam" min="50000" max="500000000" step="100000" value="10000000">
+                    <span class="field-sub">The segment of the TAM targeted by your products/services that is within your geographic and channel reach.</span>
+                  </div>
+
+                  <div class="form-group slider-group">
+                    <div class="slider-header">
+                      <label for="market-som">Serviceable Obtainable Market (SOM)</label>
+                      <span class="value-badge">$<span id="lbl-som">500,000</span></span>
+                    </div>
+                    <input type="range" id="market-som" min="10000" max="100000000" step="50000" value="1000000">
+                    <span class="field-sub">The share of SAM that your business can realistically capture in the short/medium term (e.g. Year 2-3).</span>
+                  </div>
+                </div>
+
+                <!-- Market Dynamics & Competition -->
+                <div class="form-section">
+                  <h3>Competitor & Market Environment</h3>
+                  <div class="form-group">
+                    <label for="competitor-level">Competition Level</label>
+                    <select id="competitor-level">
+                      <option value="Low (Blue Ocean, high educational cost)">Low / Blue Ocean (No direct competitors, high teaching cost)</option>
+                      <option value="Moderate (Clear niches, established players)">Moderate (Some direct competitors, defined niches available)</option>
+                      <option value="High (Red Ocean, heavy marketing needed)">High / Red Ocean (Highly fragmented, direct well-funded players)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="barrier-to-entry">Barriers to Entry</label>
+                    <select id="barrier-to-entry">
+                      <option value="Low (Easy copycat risk)">Low (Anyone can launch in a weekend, low defensibility)</option>
+                      <option value="Medium (Moderate setup / tech required)">Medium (Requires specific expertise, brand development, or API integrations)</option>
+                      <option value="High (Patented tech, strict licensing, high network effects)">High (Patented tech, regulatory compliance, large startup capital)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Defensibility Strategy Checkbox</label>
+                    <div class="custom-checkbox-list">
+                      <label class="chk-container">
+                        <input type="checkbox" class="defensibility-chk" value="data">
+                        Data Moat (Proprietary data network effects)
+                      </label>
+                      <label class="chk-container">
+                        <input type="checkbox" class="defensibility-chk" value="tech">
+                        Complex IP / Tech Architecture (Hard to clone)
+                      </label>
+                      <label class="chk-container">
+                        <input type="checkbox" class="defensibility-chk" value="network">
+                        Platform Network Effects (Users attract users)
+                      </label>
+                      <label class="chk-container">
+                        <input type="checkbox" class="defensibility-chk" value="brand">
+                        Brand / High Customer Switching Costs
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i data-lucide="save"></i>
+                  <span>Save Market Analytics</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB 4: BUSINESS MODEL -->
+          <div class="tab-pane" id="tab-business">
+            <form id="business-form" class="wizard-form">
+              <div class="form-grid-split">
+                <!-- Revenue Model Planning -->
+                <div class="form-section">
+                  <h3>Revenue Architecture</h3>
+                  
+                  <div class="form-group">
+                    <label for="rev-model">Primary Revenue Model</label>
+                    <select id="rev-model">
+                      <option value="Subscription / SaaS">Subscription / SaaS (Recurring monthly/annual fee)</option>
+                      <option value="Transactional / Marketplace">Transactional / Marketplace (Commission per transaction)</option>
+                      <option value="Freemium / Premium Add-ons">Freemium (Basic tier free, paid upgrades)</option>
+                      <option value="Ad-supported / Data Monetization">Ad-Supported (Free tier, ads / aggregated analytics)</option>
+                      <option value="One-time License / Hardware Sales">One-time purchase / Hardware sales</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="pricing-tier">Expected Pricing Point Tier</label>
+                    <select id="pricing-tier">
+                      <option value="Low Ticket ($1 - $10 / month)">Low Ticket / High Volume ($1 - $10 / month)</option>
+                      <option value="Mid Ticket ($11 - $99 / month)">Mid Ticket ($11 - $99 / month)</option>
+                      <option value="Enterprise ($100+ / month)">Enterprise / High Touch ($100+ / month)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="gross-margin">Target Gross Margin %</label>
+                    <select id="gross-margin">
+                      <option value="High (80%+ e.g. Software/SaaS)">High (80%+ e.g. Pure Digital Software / SaaS)</option>
+                      <option value="Medium (40% - 79% e.g. Marketplace, Agency)">Medium (40% - 79% e.g. Tech-enabled service, physical hybrid)</option>
+                      <option value="Low (<40% e.g. Hardware, E-commerce resell)">Low (&lt;40% e.g. Hardware manufacturing, resale logistics)</option>
+                    </select>
+                  </div>
+                </div>
+
+                <!-- Scalability and Costs -->
+                <div class="form-section">
+                  <h3>Scalability & Viability Dynamics</h3>
+                  
+                  <div class="form-group slider-group">
+                    <div class="slider-header">
+                      <label for="scalability-level">Scalability Index</label>
+                      <span class="value-badge"><span id="lbl-scalability">5</span>/10</span>
+                    </div>
+                    <input type="range" id="scalability-level" min="1" max="10" step="1" value="5">
+                    <span class="field-sub">Does onboarding 10,000 customers require linearly more staff/costs (1) or practically zero extra operational costs (10)?</span>
+                  </div>
+
+                  <div class="form-group">
+                    <label for="capital-req">Initial Capital Requirements</label>
+                    <select id="capital-req">
+                      <option value="Low (Bootstrappable with API/No-code)">Low (Bootstrappable with No-code / standard web stack)</option>
+                      <option value="Medium (Needs core developer hire / key API licenses)">Medium (Requires initial team hiring / cloud licenses / security audits)</option>
+                      <option value="High (Needs heavy server clusters, physical operations, inventory)">High (Requires factories, heavy custom machine learning clusters, physical stock)</option>
+                    </select>
+                  </div>
+
+                  <div class="form-group">
+                    <label>Funding Strategy Plan</label>
+                    <select id="funding-strategy">
+                      <option value="Organic Bootstrapping">Organic Bootstrapping (Self-funded, growth via revenue reinvestment)</option>
+                      <option value="VC / Angel Seed Funding">VC / Angel Seed Funding (Dilutive funding, rapid speed priority)</option>
+                      <option value="Grants / Crowdfunding">Grants / Crowdfunding (Non-dilutive, community-led validation)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div class="form-actions">
+                <button type="submit" class="btn btn-primary btn-icon-text">
+                  <i data-lucide="save"></i>
+                  <span>Save Business Model Strategy</span>
+                </button>
+              </div>
+            </form>
+          </div>
+
+          <!-- TAB 5: VALIDATION CHECKLISTS -->
+          <div class="tab-pane" id="tab-checklists">
+            <div class="checklists-grid">
+              
+              <!-- Segment 1: Customer Discovery -->
+              <div class="checklist-card">
+                <div class="checklist-title">
+                  <i data-lucide="users" class="text-teal"></i>
+                  <h4>Phase 1: Customer Discovery</h4>
+                </div>
+                <ul class="checklist-items">
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="customer" data-weight="5" value="interviews">
+                      Conducted at least 10 customer interviews
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="customer" data-weight="5" value="pain-confirmed">
+                      Target segment confirms the pain point is top-3
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="customer" data-weight="5" value="channels">
+                      Identified clear organic distribution channels to reach customers
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="customer" data-weight="5" value="willing-to-pay">
+                      Interviewees indicated a clear willingness to pay for the solution
+                    </label>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Segment 2: Product-Market Fit Validation -->
+              <div class="checklist-card">
+                <div class="checklist-title">
+                  <i data-lucide="target" class="text-indigo"></i>
+                  <h4>Phase 2: Market Validation</h4>
+                </div>
+                <ul class="checklist-items">
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="pmf" data-weight="5" value="landing-page">
+                      Built landing page with sign-up form
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="pmf" data-weight="5" value="conversion">
+                      Achieved conversion rates above 5% on landing page visits
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="pmf" data-weight="5" value="letters-of-intent">
+                      Secured letters of intent (LOIs) or waitlist signups
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="pmf" data-weight="5" value="mvp-feedback">
+                      Validated low-fidelity interactive mockups/MVP with users
+                    </label>
+                  </li>
+                </ul>
+              </div>
+
+              <!-- Segment 3: Launch Readiness -->
+              <div class="checklist-card">
+                <div class="checklist-title">
+                  <i data-lucide="milestone" class="text-amber"></i>
+                  <h4>Phase 3: Launch & Execution Readiness</h4>
+                </div>
+                <ul class="checklist-items">
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="launch" data-weight="5" value="domain">
+                      Secured domain and branding assets
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="launch" data-weight="5" value="pricing">
+                      Finalized tier structures and pricing mechanics
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="launch" data-weight="5" value="legal">
+                      Evaluated licensing, privacy policies, or legal requirements
+                    </label>
+                  </li>
+                  <li>
+                    <label class="chk-container">
+                      <input type="checkbox" class="validation-checklist-item" data-category="launch" data-weight="5" value="launch-plan">
+                      Drafted launch plan (Product Hunt, newsletters, outreach)
+                    </label>
+                  </li>
+                </ul>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </main>
+
+      <!-- Welcome panel when no ideas exist or none is selected -->
+      <div class="welcome-container" id="welcome-pane">
+        <i data-lucide="lightbulb" class="welcome-icon"></i>
+        <h2>Welcome to VentureValidate</h2>
+        <p>A structured validation tool designed to score startup opportunities, evaluate TAM/SAM/SOM market sizes, and track business risks.</p>
+        <button class="btn btn-primary" id="welcome-create-btn">
+          <i data-lucide="plus"></i>
+          <span>Add Your First Idea</span>
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

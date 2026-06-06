@@ -81,8 +81,10 @@
   function saveState() {
     try {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(habits));
-    } catch {
-      /* quota exceeded — silently degrade */
+    } catch (error) {
+      console.error("Storage Quota Exceeded:", error);
+      // Alert the user so they do not lose data silently
+      alert("Storage full! Unable to save progress. Please clear some browser data to continue saving your habits.");
     }
   }
 

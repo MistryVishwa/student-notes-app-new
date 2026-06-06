@@ -253,6 +253,15 @@ You are free to use:
 
 ## 📜 Contribution Guidelines
 
+### 📁 Where to Put Your Project
+To keep this repository organized, **all new projects must be placed in their own dedicated folder at the ROOT level of the repository.** **❌ DO NOT:**
+* Do not place your project inside the `calculator/` folder (or any other existing project's folder). 
+* Do not place your files loosely in the root directory without a containing folder.
+
+**✅ DO:**
+* Create a new folder at the root level named after your project (e.g., `student-notes-app/my-awesome-game/`).
+* Place all your HTML, CSS, and JS files strictly inside that new folder.
+
 Before submitting a PR:
 
 * Create a dedicated folder for your project.
@@ -261,6 +270,12 @@ Before submitting a PR:
 * Do not overwrite existing work.
 * Test your project before submission.
 * Keep pull requests small and focused.
+
+### 🎨 Centralized Theme Management
+To maintain a consistent UI/UX across all projects, **do not write custom dark mode toggles**. Instead, link the global theme files in your project's `index.html`:
+1. Add `<link rel="stylesheet" href="../global-theme.css">` inside your `<head>`.
+2. Add `<script src="../global-theme.js"></script>` before the closing `</body>` tag.
+3. Use the CSS variables (`var(--bg-color)`, `var(--text-color)`, etc.) in your local CSS files instead of hardcoding colors.
 
 ---
 

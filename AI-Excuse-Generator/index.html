@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Excuse Generator</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="container">
+    <h1>🤖 AI Excuse Generator</h1>
+
+    <input type="text" id="name" placeholder="Your Name">
+
+    <input type="text" id="teacher" placeholder="Teacher Name">
+
+    <input type="text" id="subject" placeholder="Subject">
+
+    <select id="category">
+        <option>Assignment</option>
+        <option>Attendance</option>
+        <option>Late Submission</option>
+        <option>Missed Exam</option>
+        <option>Project Delay</option>
+    </select>
+
+    <input type="text" id="reason" placeholder="Reason">
+
+    <button onclick="generateExcuse()">Generate Excuse</button>
+
+    <div class="output">
+        <textarea id="result" readonly></textarea>
+        <p id="count">Words: 0</p>
+
+        <button onclick="copyText()">Copy</button>
+        <button onclick="downloadText()">Download</button>
+    </div>
+
+    <button id="themeBtn">🌙 Toggle Theme</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
