@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DevGrit | Coding Challenge Tracker</title>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- ChartJS -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dark-theme">
+  <div class="app-container">
+    <!-- Sidebar profile and daily goals -->
+    <aside class="app-sidebar" id="app-sidebar">
+      <div class="sidebar-header">
+        <div class="logo-area">
+          <div class="logo-icon">
+            <i data-lucide="code-2"></i>
+          </div>
+          <div class="logo-text">
+            <h2>DevGrit</h2>
+            <span>Coding Tracker</span>
+          </div>
+        </div>
+        <button class="btn-sidebar-close" id="sidebar-toggle-close">&times;</button>
+      </div>
+
+      <!-- User Profile Card -->
+      <div class="profile-card">
+        <div class="avatar-wrapper">
+          <img id="profile-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=devgrit" alt="Developer Avatar">
+          <button id="edit-profile-btn" class="btn-edit-avatar" title="Edit Profile">
+            <i data-lucide="edit-2"></i>
+          </button>
+        </div>
+        <h3 id="profile-name">Vishwa Mistry</h3>
+        <span id="profile-bio">Problem Solver & Algorithmic Thinker</span>
+        
+        <div class="streak-mini-widget">
+          <i data-lucide="flame" class="streak-icon"></i>
+          <div>
+            <span class="lbl">Solving Streak</span>
+            <span class="val" id="streak-counter">0 Days</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Today's Daily Target -->
+      <div class="target-manager-section">
+        <div class="section-title-row">
+          <h3>Daily Target Goal</h3>
+          <button id="edit-target-btn" class="btn btn-secondary btn-icon btn-sm" title="Edit Daily Goal">
+            <i data-lucide="edit-3"></i>
+          </button>
+        </div>
+        <div class="daily-progress-container">
+          <div class="progress-ring-wrapper">
+            <svg class="progress-ring" width="100" height="100">
+              <circle class="progress-ring__circle-bg" stroke="rgba(255,255,255,0.05)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+              <circle id="daily-progress-ring" class="progress-ring__circle" stroke="var(--clr-primary)" stroke-width="8" fill="transparent" r="40" cx="50" cy="50"/>
+            </svg>
+            <div class="progress-ring-text">
+              <span id="daily-solved-count" class="solved-val">0</span>
+              <span class="slash">/</span>
+              <span id="daily-target-count" class="target-val">3</span>
+            </div>
+          </div>
+          <span class="lbl-status" id="daily-target-status">Keep pushing!</span>
+          
+          <!-- Inline target editor overlay -->
+          <div class="inline-target-form" id="inline-target-form" style="display: none;">
+            <input type="number" id="daily-target-input" min="1" max="50" placeholder="Target">
+            <button class="btn btn-primary btn-sm" id="save-target-btn">Set</button>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Workspace Area -->
+    <div class="workspace-wrapper">
+      <!-- Top header bar -->
+      <header class="app-header">
+        <div class="header-left">
+          <button class="btn btn-icon btn-secondary" id="sidebar-toggle-open">
+            <i data-lucide="menu"></i>
+          </button>
+          <div class="header-title-wrapper">
+            <h1>Analytics Dashboard</h1>
+            <p>Track problem difficulties, platform distribution, and algorithmic analytics</p>
+          </div>
+        </div>
+
+        <div class="header-actions">
+          <!-- Backup file controls -->
+          <button id="import-btn" class="btn btn-secondary btn-icon" title="Import JSON Backup">
+            <i data-lucide="upload"></i>
+          </button>
+          <input type="file" id="import-file" accept=".json" style="display: none;">
+
+          <button id="export-btn" class="btn btn-secondary btn-icon" title="Export JSON Backup">
+            <i data-lucide="download"></i>
+          </button>
+
+          <button id="reset-btn" class="btn btn-secondary btn-icon" title="Reset Database">
+            <i data-lucide="refresh-cw"></i>
+          </button>
+
+          <div class="divider"></div>
+
+          <!-- Theme toggle -->
+          <button id="theme-toggle" class="btn btn-icon" title="Toggle Theme">
+            <i data-lucide="sun" class="sun-icon"></i>
+            <i data-lucide="moon" class="moon-icon"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Scrollable workspace viewports -->
+      <main class="app-workspace">
+        
+        <!-- Top Difficulty Metrics Grid -->
+        <section class="stats-row">
+          <div class="stat-card difficulty-card easy">
+            <div class="card-header-row">
+              <span class="label">Easy Solved</span>
+              <span class="badge difficulty-badge easy">Easy</span>
+            </div>
+            <span class="value" id="stat-easy">0</span>
+            <div class="mini-bar-container">
+              <div class="mini-bar" id="easy-progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="sub" id="easy-pct">0% of total solved</span>
+          </div>
+
+          <div class="stat-card difficulty-card medium">
+            <div class="card-header-row">
+              <span class="label">Medium Solved</span>
+              <span class="badge difficulty-badge medium">Medium</span>
+            </div>
+            <span class="value" id="stat-medium">0</span>
+            <div class="mini-bar-container">
+              <div class="mini-bar" id="medium-progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="sub" id="medium-pct">0% of total solved</span>
+          </div>
+
+          <div class="stat-card difficulty-card hard">
+            <div class="card-header-row">
+              <span class="label">Hard Solved</span>
+              <span class="badge difficulty-badge hard">Hard</span>
+            </div>
+            <span class="value" id="stat-hard">0</span>
+            <div class="mini-bar-container">
+              <div class="mini-bar" id="hard-progress-bar" style="width: 0%;"></div>
+            </div>
+            <span class="sub" id="hard-pct">0% of total solved</span>
+          </div>
+
+          <div class="stat-card summary-card">
+            <div class="card-header-row">
+              <span class="label">Total Solved</span>
+              <i data-lucide="award" class="trophy-icon"></i>
+            </div>
+            <span class="value" id="stat-total">0</span>
+            <div class="mini-bar-container total">
+              <div class="mini-bar" style="width: 100%;"></div>
+            </div>
+            <span class="sub" id="weekly-solved-count-label">0 solved this week</span>
+          </div>
+        </section>
+
+        <!-- Charts and Progress Section -->
+        <section class="dashboard-grid">
+          <!-- Charts Visual Canvas -->
+          <div class="panel-card col-span-2">
+            <div class="panel-header">
+              <h3>Problem Solving Analytics</h3>
+              <div class="chart-toggles">
+                <button class="btn btn-sm btn-secondary active" id="btn-chart-difficulty">Difficulty Matrix</button>
+                <button class="btn btn-sm btn-secondary" id="btn-chart-tags">Topic Tags</button>
+                <button class="btn btn-sm btn-secondary" id="btn-chart-timeline">Daily Volume Timeline</button>
+              </div>
+            </div>
+            <div class="chart-wrapper">
+              <canvas id="analyticsChart"></canvas>
+            </div>
+          </div>
+
+          <!-- Achievements Trophies -->
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3>Achievements & Badges</h3>
+            </div>
+            <div class="badges-grid" id="badges-grid-container">
+              <!-- Dynamically injected by JS -->
+            </div>
+          </div>
+        </section>
+
+        <!-- Logs Lists & Filters Section -->
+        <section class="panel-card">
+          <div class="panel-header flex-column">
+            <div class="filters-row-top">
+              <h3>Problem Log Database</h3>
+              <button class="btn btn-primary btn-icon-text" id="add-challenge-btn">
+                <i data-lucide="plus"></i>
+                <span>Log Problem</span>
+              </button>
+            </div>
+            <div class="filters-grid">
+              <div class="search-box">
+                <i data-lucide="search"></i>
+                <input type="text" id="log-search" placeholder="Search by title, tags, description, notes...">
+              </div>
+              
+              <div class="select-filters">
+                <select id="filter-platform">
+                  <option value="all">All Platforms</option>
+                  <option value="LeetCode">LeetCode</option>
+                  <option value="HackerRank">HackerRank</option>
+                  <option value="Codeforces">Codeforces</option>
+                  <option value="GeeksforGeeks">GeeksforGeeks</option>
+                  <option value="CodeChef">CodeChef</option>
+                  <option value="Other">Other</option>
+                </select>
+
+                <select id="filter-difficulty">
+                  <option value="all">All Difficulties</option>
+                  <option value="Easy">Easy</option>
+                  <option value="Medium">Medium</option>
+                  <option value="Hard">Hard</option>
+                </select>
+
+                <select id="filter-language">
+                  <option value="all">All Languages</option>
+                  <!-- Dynamically populated -->
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <div class="logs-container" id="logs-list-container">
+            <!-- Dynamically injected by JS -->
+          </div>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: ADD / EDIT CHALLENGE -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="challenge-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2 id="modal-title">Log Coding Challenge</h2>
+        <button class="btn-close" id="modal-close-btn">&times;</button>
+      </div>
+      <form id="challenge-form" class="modal-form">
+        <input type="hidden" id="edit-challenge-id">
+
+        <div class="form-grid">
+          <div class="form-group col-full">
+            <label for="form-title">Problem Title *</label>
+            <input type="text" id="form-title" required placeholder="e.g. Reverse Linked List II">
+          </div>
+
+          <div class="form-group col-half">
+            <label for="form-platform">Platform *</label>
+            <select id="form-platform" required>
+              <option value="LeetCode">LeetCode</option>
+              <option value="HackerRank">HackerRank</option>
+              <option value="Codeforces">Codeforces</option>
+              <option value="GeeksforGeeks">GeeksforGeeks</option>
+              <option value="CodeChef">CodeChef</option>
+              <option value="Other">Other</option>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label for="form-difficulty">Difficulty *</label>
+            <select id="form-difficulty" required>
+              <option value="Easy">Easy</option>
+              <option value="Medium">Medium</option>
+              <option value="Hard">Hard</option>
+            </select>
+          </div>
+
+          <div class="form-group col-half">
+            <label for="form-language">Language Used</label>
+            <input type="text" id="form-language" placeholder="e.g. C++, Python, JavaScript">
+          </div>
+
+          <div class="form-group col-half">
+            <label for="form-date">Date Solved *</label>
+            <input type="date" id="form-date" required>
+          </div>
+
+          <div class="form-group col-full">
+            <label for="form-link">Problem Link</label>
+            <input type="url" id="form-link" placeholder="e.g. https://leetcode.com/problems/reverse-linked-list-ii/">
+          </div>
+
+          <div class="form-group col-full">
+            <label for="form-tags">Topic Tags (comma separated)</label>
+            <input type="text" id="form-tags" placeholder="e.g. Array, Dynamic Programming, String">
+          </div>
+
+          <div class="form-group col-full">
+            <label for="form-code">Solution / Code Snippet</label>
+            <textarea id="form-code" class="code-font" rows="5" placeholder="// Paste your working solution code here..."></textarea>
+          </div>
+
+          <div class="form-group col-full">
+            <label for="form-notes">Analysis & Review Notes</label>
+            <textarea id="form-notes" rows="3" placeholder="Identify time/space complexities or key insights..."></textarea>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="modal-cancel-btn">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Log</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================== -->
+  <!-- MODAL: EDIT PROFILE -->
+  <!-- ========================================== -->
+  <div class="modal-overlay" id="profile-modal" style="display: none;">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h2>Update Developer Profile</h2>
+        <button class="btn-close" id="profile-modal-close">&times;</button>
+      </div>
+      <form id="profile-form" class="modal-form">
+        <div class="form-group">
+          <label for="form-profile-name">Username / Nickname *</label>
+          <input type="text" id="form-profile-name" required placeholder="e.g. karthik2004-tech">
+        </div>
+
+        <div class="form-group">
+          <label for="form-profile-bio">Bio / Tagline</label>
+          <input type="text" id="form-profile-bio" placeholder="e.g. Algorithms student, coding enthusiast">
+        </div>
+
+        <div class="form-group">
+          <label for="form-profile-avatar">Avatar URL</label>
+          <input type="url" id="form-profile-avatar" placeholder="https://api.dicebear.com/7.x/...">
+        </div>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-secondary" id="profile-modal-cancel">Cancel</button>
+          <button type="submit" class="btn btn-primary">Save Profile</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
