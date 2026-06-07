@@ -23,7 +23,7 @@ self.onmessage = function(event) {
   if (message === 'START') {
     // Start tick loop if not already running
     if (!timerId) {
-      console.log('[Worker] Starting tick loop');
+      console.debug('[Worker] Starting tick loop');
       
       timerId = setInterval(() => {
         // Send tick message to main thread
@@ -34,7 +34,7 @@ self.onmessage = function(event) {
   else if (message === 'STOP') {
     // Stop the interval
     if (timerId) {
-      console.log('[Worker] Stopping tick loop');
+      console.debug('[Worker] Stopping tick loop');
       clearInterval(timerId);
       timerId = null;
     }
@@ -43,4 +43,4 @@ self.onmessage = function(event) {
 
 // Notify main thread that worker is ready
 self.postMessage('WORKER_READY');
-console.log('[Worker] Initialized and ready');
+console.debug('[Worker] Initialized and ready');
