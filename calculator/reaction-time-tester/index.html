@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reaction Time Tester</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <header id="hud">
+      <div class="hud-cell">
+        <span class="hud-label">Attempt</span>
+        <span id="attemptDisplay" class="hud-value">0</span>
+      </div>
+      <div class="hud-cell">
+        <span class="hud-label">Average</span>
+        <span id="avgDisplay" class="hud-value">—</span>
+      </div>
+      <div class="hud-cell">
+        <span class="hud-label">Best</span>
+        <span id="bestDisplay" class="hud-value">—</span>
+      </div>
+    </header>
+
+    <div id="reactionPanel" class="state-idle">
+      <span id="panelText">Click to Start</span>
+    </div>
+
+    <aside id="historyPanel">
+      <h3>Recent Trials</h3>
+      <div id="historyList">
+        <div class="history-empty">No trials yet</div>
+      </div>
+    </aside>
+  </div>
+
+  <script src="script.js"></script>
+</body>
+</html>
