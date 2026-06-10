@@ -25,6 +25,7 @@ exports.getPatterns = (req, res) => {
  * GET /api/patterns/:id
  * Returns specific pattern with LeetCode problem statistics
  * Isolates external API failures using Promise.allSettled for graceful degradation
+ * Implements graceful fallback if LeetCode API fails for individual problems
  */
 exports.getPatternDetails = async (req, res) => {
   const { id } = req.params;
@@ -54,6 +55,7 @@ exports.getPatternDetails = async (req, res) => {
   try {
     // Fetch problem stats with error isolation
     // Use Promise.allSettled to handle individual problem failures without failing entire request
+    // Fetch problem stats with graceful fallback for failures
     const problemsWithStats = await Promise.allSettled(
       pattern.problems.map(async (slug) => {
         const stats = await fetchLeetCodeProblem(slug);
@@ -136,9 +138,7 @@ exports.getPatternDetails = async (req, res) => {
     const response = formatSuccess(fullPattern);
     res.status(200).json(response);
   } catch (err) {
-    // Unexpected error (shouldn't happen with Promise.allSettled, but just in case)
-    console.error(`[PATTERN_DETAILS] Unexpected error for pattern ${id}:`, err.message);
-
+    console.error(`Error in getPatternDetails for pattern ${id}:`, err.message);
     const response = formatError(
       ErrorCodes.LEETCODE_FETCH_FAILED,
       'Failed to fetch problem statistics from LeetCode',
