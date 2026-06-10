@@ -2,12 +2,16 @@ const express = require('express');
 const cors = require('cors');
 const path = require('path');
 const apiRoutes = require('./routes/api');
+const { responseValidationMiddleware } = require('./middleware/responseValidator');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
 
 app.use(cors());
 app.use(express.json());
+
+// Response validation middleware (development only)
+app.use(responseValidationMiddleware);
 
 // API Routes
 app.use('/api', apiRoutes);
