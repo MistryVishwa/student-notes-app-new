@@ -68,6 +68,10 @@ function copyText(){
 
 function downloadText(){
 
+    const topic = document.getElementById("subject").value || "Absence";
+    const sanitizedTopic = topic.replace(/[^a-zA-Z0-9-_]/g, '-').replace(/-+/g, '-').replace(/^-|-$/g, '').substring(0, 30) || 'Absence';
+    const fileName = `Excuse-for-${sanitizedTopic}.txt`;
+
     const content =
         document.getElementById("result").value;
 
@@ -80,7 +84,7 @@ function downloadText(){
     link.href =
         URL.createObjectURL(blob);
 
-    link.download = "excuse-letter.txt";
+    link.download = fileName;
 
     link.click();
 }
