@@ -125,11 +125,16 @@ function saveHistory(text){
         JSON.parse(localStorage.getItem("excuses")) || [];
 
     history.push(text);
+    history = history.slice(-50);
 
-    localStorage.setItem(
-        "excuses",
-        JSON.stringify(history)
-    );
+    try {
+        localStorage.setItem(
+            "excuses",
+            JSON.stringify(history)
+        );
+    } catch (e) {
+        console.warn("LocalStorage quota exceeded. Oldest items dropped, but could not save current state.");
+    }
 }
 
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
