@@ -333,34 +333,32 @@ Happy Contributing! 🚀
 
 To ensure all applications provide a consistent user experience across devices, contributors must adhere to the following mobile-first design and testing guidelines:
 
-### Clipboard API Standard
-When implementing copy-to-clipboard functionality across any component, you **must** provide error handling and a fallback mechanism. `navigator.clipboard.writeText` can fail if permissions are denied or if the app is not in a secure context. 
+### LocalStorage Utility Standard
+When implementing `localStorage` across any component, you **must** use `try/catch` blocks to prevent the application from crashing if the browser's storage quota is exceeded or if storage is restricted (e.g., in Private/Incognito mode).
 
-Use the following pattern to ensure modern `.catch()` error handling and a legacy fallback:
+Use the following standard utility pattern for all LocalStorage interactions:
 
-```javascript
-function safeCopyToClipboard(text) {
-    if (navigator.clipboard && window.isSecureContext) {
-        navigator.clipboard.writeText(text).catch(err => {
-            console.warn('Clipboard API failed, attempting fallback.', err);
-            fallbackCopy(text);
-        });
-    } else {
-        fallbackCopy(text);
-    }
-}
-
-function fallbackCopy(text) {
-    const textArea = document.createElement("textarea");
-    textArea.value = text;
-    document.body.appendChild(textArea);
-    textArea.select();
+\`\`\`javascript
+const StorageUtil = {
+  set(key, value) {
     try {
-        document.execCommand('copy');
-    } catch (err) {
-        console.error('Fallback copy failed.', err);
+      localStorage.setItem(key, JSON.stringify(value));
+      return true;
+    } catch (error) {
+      console.error('LocalStorage quota exceeded or unavailable:', error);
+      // Optional: Alert the user or fallback to memory storage
+      return false;
     }
-    document.body.removeChild(textArea);
-}
-```
+  },
+  get(key, defaultValue = null) {
+    try {
+      const item = localStorage.getItem(key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch (error) {
+      console.error('Error reading from LocalStorage:', error);
+      return defaultValue;
+    }
+  }
+};
+\`\`\`
 
